@@ -4,6 +4,9 @@
 
 #ifndef GOBANG_MATHFUNCTION_H
 #define GOBANG_MATHFUNCTION_H
+
 int min(int x, int y);
+
 int max(int x, int y);
+
 #endif //GOBANG_MATHFUNCTION_H
