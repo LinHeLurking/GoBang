@@ -23,8 +23,8 @@ char drawing_board[BOARD_SIZE][BOARD_SIZE * CHAR_SIZE * 2] = {
         "┣━╋━╋━╋━╋━╋━╋━╋━╋━╋━╋━╋━╋━╋━┫",
         "┗━┻━┻━┻━┻━┻━┻━┻━┻━┻━┻━┻━┻━┻━┛"
 };
-char white_piece[] = "○";
-char black_piece[] = "●";
+char white_piece[] = "●";
+char black_piece[] = "○";
 //0==null 1==white -1==black
 extern int status_board[BOARD_SIZE][BOARD_SIZE];
 

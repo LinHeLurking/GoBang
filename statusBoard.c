@@ -38,7 +38,7 @@ int add_piece(int i, int j, int pc) {
  *  return 1 -> successful
  * */
 int dfs_add_piece(int i, int j, int pc) {
-    if (status_board[i][j] != 0 && pc != 0)
+    if (dfs_status_board[i][j] != 0 && pc != 0)
         return -1;
     dfs_status_board[i][j] = pc;
     dfs_oblique_lines_1[i + j][j] = pc;

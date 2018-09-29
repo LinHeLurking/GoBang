@@ -90,13 +90,6 @@ int winner_check() {
     return 0;
 }
 
-int get_status(int player_side, int *array_to_querry, int array_len, int index) {
-    if (index == -1 || index > array_len - 1)
-        return 0 - player_side;
-    else
-        return array_to_querry[index];
-}
-
 typedef struct {
     //offset==1:
     int trans[3];
