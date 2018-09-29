@@ -8,4 +8,6 @@
 
 int add_piece(int i, int j, int pc);
 
+int dfs_add_piece(int i, int j, int pc);
+
 #endif //GOBANG_STATUSBOARD_H

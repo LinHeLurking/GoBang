@@ -9,4 +9,6 @@ int min(int x, int y);
 
 int max(int x, int y);
 
+int better(int x, int y, int player_side);
+
 #endif //GOBANG_MATHFUNCTION_H
