@@ -6,11 +6,13 @@
 #include "statusBoard.h"
 #include "mathFunction.h"
 
-#define DFS_DEPTH 4
+
 #define TRIE_SIZE 50
 
 extern int best_i;
 extern int best_j;
+extern int last_i;
+extern int last_j;
 
 extern int status_board[BOARD_SIZE][BOARD_SIZE];
 extern int oblique_lines_1[2 * BOARD_SIZE][BOARD_SIZE];
@@ -215,7 +217,7 @@ int grade_estimate(int player_side) {
         for (int j = -1; j <= BOARD_SIZE; ++j) {
             cur = j == -1 || j == BOARD_SIZE ? tr[cur].trans[0 - player_side + OFFSET] : tr[cur].trans[
                     status_board[i][j] + OFFSET];
-            if ((tr[cur].grade > 0 && player_side == WHITE) || (tr[cur].grade < 0 && player_side == BLACK)) {
+            if ((tr[cur].grade > 0) || (tr[cur].grade < 0)) {
                 grade += tr[cur].grade;
                 --j;
                 continue;
@@ -231,7 +233,7 @@ int grade_estimate(int player_side) {
         for (int i = -1; i <= BOARD_SIZE; ++i) {
             cur = i == -1 || i == BOARD_SIZE ? tr[cur].trans[0 - player_side + OFFSET] : tr[cur].trans[
                     status_board[i][j] + OFFSET];
-            if ((tr[cur].grade > 0 && player_side == WHITE) || (tr[cur].grade < 0 && player_side == BLACK)) {
+            if ((tr[cur].grade > 0) || (tr[cur].grade < 0)) {
                 grade += tr[cur].grade;
                 --i;
                 continue;
@@ -248,7 +250,7 @@ int grade_estimate(int player_side) {
         for (int j = -1; j <= BOARD_SIZE; ++j) {
             cur = j == -1 || j == BOARD_SIZE ? tr[cur].trans[0 - player_side + OFFSET] : tr[cur].trans[
                     oblique_lines_1[sum][j] + OFFSET];
-            if ((tr[cur].grade > 0 && player_side == WHITE) || (tr[cur].grade < 0 && player_side == BLACK)) {
+            if ((tr[cur].grade > 0) || (tr[cur].grade < 0)) {
                 grade += tr[cur].grade;
                 --j;
                 continue;
@@ -263,7 +265,7 @@ int grade_estimate(int player_side) {
         for (int j = -1; j <= BOARD_SIZE; ++j) {
             cur = j == -1 || j == BOARD_SIZE ? tr[cur].trans[0 - player_side + OFFSET] : tr[cur].trans[
                     oblique_lines_2[delta + BOARD_SIZE][j] + OFFSET];
-            if ((tr[cur].grade > 0 && player_side == WHITE) || (tr[cur].grade < 0 && player_side == BLACK)) {
+            if ((tr[cur].grade > 0) || (tr[cur].grade < 0)) {
                 grade += tr[cur].grade;
                 --j;
                 continue;
@@ -291,13 +293,13 @@ int grade_estimate(int player_side) {
 #define J 1
 #define GRADE 2
 
-void generate_possible_pos(int (*pos)[3], int *num) {
+void generate_possible_pos(int pos_i[MAX_POS], int pos_j[MAX_POS], int *num) {
     *num = 0;
-    for (int i = 0; i < BOARD_SIZE; ++i) {
-        for (int j = 0; j < BOARD_SIZE; ++j) {
-            if (dfs_status_board[i][j] != 0) {
-                pos[*num][I] = i;
-                pos[*num][J] = j;
+    for (int i = max(0, last_i - 5); i < min(last_i + 5, BOARD_SIZE); ++i) {
+        for (int j = max(0, last_j - 5); j < min(last_j + 5, BOARD_SIZE); ++j) {
+            if (dfs_status_board[i][j] == VOID) {
+                pos_i[(*num)] = i;
+                pos_j[(*num)] = j;
                 ++(*num);
             }
         }
@@ -307,32 +309,38 @@ void generate_possible_pos(int (*pos)[3], int *num) {
 
 //remember that the larger the grade is, the better the status is for WHITE. and vice versa.
 int alpha_beta_dfs(int my_player_side, int search_player_side, int search_depth, int alpha, int beta) {
-    if (search_depth == 0) {
-        return grade_estimate(my_player_side);
+    if (search_depth == 1) {
+        return grade_estimate(search_player_side);
+        //return grade_estimate(search_depth) + grade_estimate(0 - search_depth);
     }
     //the first one is i second one is j and the third one is the grade
-    int possible_pos[MAX_POS][3] = {};
+    int possible_pos_i[MAX_POS] = {};
+    int possible_pos_j[MAX_POS] = {};
+    int possible_pos_grade[MAX_POS] = {};
     int pos_num = 0;
-    generate_possible_pos(possible_pos, &pos_num);
-    int grade = 0;
+    generate_possible_pos(possible_pos_i, possible_pos_j, &pos_num);
+    int grade = INF * (0 - search_player_side);
     for (int k = 0; k < pos_num; ++k) {
-        dfs_add_piece(possible_pos[k][I], possible_pos[k][J], my_player_side);
+        int old_i = last_i, old_j = last_j;
+        dfs_add_piece(possible_pos_i[k], possible_pos_j[k], my_player_side);
 
-        possible_pos[k][GRADE] = alpha_beta_dfs(my_player_side, 0 - search_player_side, search_depth - 1, alpha, beta);
+        possible_pos_grade[k] = alpha_beta_dfs(my_player_side, 0 - search_player_side, search_depth - 1, alpha, beta);
 
         //look back
-        dfs_add_piece(possible_pos[k][I], possible_pos[k][J], VOID);
+        last_i = old_i;
+        last_j = old_j;
+        dfs_add_piece(possible_pos_i[k], possible_pos_j[k], VOID);
     }
     int best_pos = -1;
     for (int k = 0; k < pos_num; ++k) {
-        int tmp = better(grade, possible_pos[k][GRADE], search_player_side);
+        int tmp = better(grade, possible_pos_grade[k], search_player_side);
         if (tmp != grade) {
             grade = tmp;
             best_pos = k;
         }
     }
-    best_i = possible_pos[best_pos][I];
-    best_j = possible_pos[best_pos][J];
+    best_i = possible_pos_i[best_pos];
+    best_j = possible_pos_j[best_pos];
     return grade;
 }
 

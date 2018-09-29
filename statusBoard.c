@@ -18,6 +18,7 @@ int dfs_oblique_lines_1[2 * BOARD_SIZE][BOARD_SIZE] = {};
 int dfs_oblique_lines_2[2 * BOARD_SIZE][BOARD_SIZE] = {};
 
 int best_i = -1, best_j = -1;
+int last_i = -1, last_j = -1;
 
 /*  return -1 if that position is occupied
  *  return 0 if pc==0, which means there's nothing to do
@@ -43,5 +44,7 @@ int dfs_add_piece(int i, int j, int pc) {
     dfs_status_board[i][j] = pc;
     dfs_oblique_lines_1[i + j][j] = pc;
     dfs_oblique_lines_2[i - j + BOARD_SIZE][j] = pc;
+    last_i = i;
+    last_j = j;
     return 1;
 }

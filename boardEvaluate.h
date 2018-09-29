@@ -17,7 +17,7 @@ void trie_test();
 
 int grade_estimate(int player_side);
 
-void generate_possible_pos(int (*pos)[3], int *num);
+void generate_possible_pos(int pos_i[], int pos_j[], int *num);
 
 
 int alpha_beta_dfs(int my_player_side, int search_player_side, int search_depth, int alpha, int beta);
