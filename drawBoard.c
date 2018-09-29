@@ -26,7 +26,7 @@ char drawing_board[BOARD_SIZE][BOARD_SIZE * CHAR_SIZE * 2] = {
 char white_piece[] = "○";
 char black_piece[] = "●";
 //0==null 1==white -1==black
-int status_board[BOARD_SIZE][BOARD_SIZE] = {};
+extern int status_board[BOARD_SIZE][BOARD_SIZE];
 
 void output_board() {
     for (int i = 0; i < BOARD_SIZE; ++i) {

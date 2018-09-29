@@ -1,12 +1,11 @@
 #include "icld.h"
-
+#include "statusBoard.h"
 #include "drawBoard.h"
 #include "boardEvaluate.h"
 
-extern int status_board[BOARD_SIZE][BOARD_SIZE];
-
-
-
+void init() {
+    build_trie();
+}
 
 void test() {
     int test_status[BOARD_SIZE][BOARD_SIZE] = {
@@ -28,7 +27,7 @@ void test() {
     };
     for (int i = 0; i < BOARD_SIZE; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
-            status_board[i][j] = test_status[i][j];
+            add_piece(i, j, test_status[i][j]);
         }
     }
     output_board();
@@ -47,6 +46,7 @@ void test() {
 }
 
 int main() {
+    init();
     test();
     return 0;
 }
