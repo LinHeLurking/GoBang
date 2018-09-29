@@ -119,7 +119,7 @@ trie tr[TRIE_SIZE];
  *  011-1/-1110 -> 10
  *
  * */
-int OFFSET = 1;
+#define OFFSET 1
 int grade[STR_TO_RECOGNIZE] = {100000, 10000, 1000, 100, 10, 1000, 1000, 100, 100, 10, 10, -100000, -10000, -1000, -100,
                                -10, -1000, -1000, -100, -100, -10, -10};
 //cautions!! if you change this array, the grade[] also needs changing
@@ -346,3 +346,4 @@ int alpha_beta_dfs(int my_player_side, int search_player_side, int search_depth,
 #undef I
 #undef J
 #undef GRADE
+#undef OFFSET

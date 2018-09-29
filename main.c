@@ -2,6 +2,7 @@
 #include "statusBoard.h"
 #include "drawBoard.h"
 #include "boardEvaluate.h"
+#include "interact.h"
 
 void init() {
     build_trie();
@@ -48,9 +49,6 @@ void test() {
 
 int main() {
     init();
-    test();
-    //trie_test();
-    output_board();
-    printf("The grade of white in row and col: %d\n", grade_estimate(WHITE));
+    play();
     return 0;
 }
