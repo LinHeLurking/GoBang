@@ -5,6 +5,7 @@
 #include "drawBoard.h"
 #include "icld.h"
 
+extern int dfs_status_board[BOARD_SIZE][BOARD_SIZE];
 
 char drawing_board[BOARD_SIZE][BOARD_SIZE * CHAR_SIZE * 2] = {
         "┏━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┓",
@@ -51,5 +52,33 @@ void output_board() {
             }
         }
         printf("%s\n", drawing_board[i]);
+    }
+}
+
+void dfs_output_board() {
+    printf(" ");
+    for (int i = 1; i <= BOARD_SIZE; ++i) {
+        printf("%d", i);
+        if (i < 10)
+            printf(" ");
+    }
+    printf("\n");
+    char dfs_drawing_board[BOARD_SIZE][BOARD_SIZE * CHAR_SIZE * 2];
+    memcpy(dfs_drawing_board, drawing_board, sizeof(dfs_drawing_board));
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        printf("%c", 'A' + i);
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            //CHAR_SIZE-1: avoid copying the end symbol of string.
+            if (dfs_status_board[i][j] == 1) {
+                for (int k = 0; k < CHAR_SIZE - 1; ++k) {
+                    dfs_drawing_board[i][j * GAP + k] = white_piece[k];
+                }
+            } else if (dfs_status_board[i][j] == -1) {
+                for (int k = 0; k < CHAR_SIZE - 1; ++k) {
+                    dfs_drawing_board[i][j * GAP + k] = black_piece[k];
+                }
+            }
+        }
+        printf("%s\n", dfs_drawing_board[i]);
     }
 }

@@ -62,7 +62,8 @@ void human_vs_computer() {
         }
         //output_board();
 
-        alpha_beta_dfs(computer_player, computer_player, DFS_DEPTH, 0, 0);
+        //human==WHITE computer==WHITE
+        alpha_beta_dfs(computer_player, DFS_DEPTH, INF * (0 - WHITE), INF * (0 - BLACK));
         int win_status = winner_check();
         if (win_status == WHITE) {
             output_board();

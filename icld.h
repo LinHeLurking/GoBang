@@ -17,6 +17,6 @@
 #define HUMAN_VS_HUMAN 0
 #define HUMAN_VS_COMPUTER 1
 #define DFS_DEPTH 4
-#define INF 1000000
+#define INF 100000000
 
 #endif //GOBANG_ICLD_H

@@ -19,3 +19,4 @@ int better(int x, int y, int player_side) {
     else
         return min(x, y);
 }
+

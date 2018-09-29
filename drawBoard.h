@@ -8,4 +8,6 @@
 
 void output_board();
 
+void dfs_output_board();
+
 #endif //GOBANG_DRAWBOARD_H

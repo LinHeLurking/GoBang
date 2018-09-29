@@ -5,6 +5,8 @@
 #include "boardEvaluate.h"
 #include "statusBoard.h"
 #include "mathFunction.h"
+//
+#include "drawBoard.h"
 
 
 #define TRIE_SIZE 50
@@ -295,8 +297,8 @@ int grade_estimate(int player_side) {
 
 void generate_possible_pos(int pos_i[MAX_POS], int pos_j[MAX_POS], int *num) {
     *num = 0;
-    for (int i = max(0, last_i - 5); i < min(last_i + 5, BOARD_SIZE); ++i) {
-        for (int j = max(0, last_j - 5); j < min(last_j + 5, BOARD_SIZE); ++j) {
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
             if (dfs_status_board[i][j] == VOID) {
                 pos_i[(*num)] = i;
                 pos_j[(*num)] = j;
@@ -308,8 +310,11 @@ void generate_possible_pos(int pos_i[MAX_POS], int pos_j[MAX_POS], int *num) {
 
 
 //remember that the larger the grade is, the better the status is for WHITE. and vice versa.
-int alpha_beta_dfs(int my_player_side, int search_player_side, int search_depth, int alpha, int beta) {
-    if (search_depth == 1) {
+//alpha -> the best for white, beta -> the best for black
+int alpha_beta_dfs(int search_player_side, int search_depth, int alpha, int beta) {
+    if (search_depth == 0) {
+        //printf("Direct estimate: %d\n", grade_estimate(search_player_side));
+        //dfs_output_board();
         return grade_estimate(search_player_side);
         //return grade_estimate(search_depth) + grade_estimate(0 - search_depth);
     }
@@ -319,29 +324,47 @@ int alpha_beta_dfs(int my_player_side, int search_player_side, int search_depth,
     int possible_pos_grade[MAX_POS] = {};
     int pos_num = 0;
     generate_possible_pos(possible_pos_i, possible_pos_j, &pos_num);
-    int grade = INF * (0 - search_player_side);
+    best_i = possible_pos_i[0];
+    best_j = possible_pos_j[0];
+    //int grade = INF * (0 - search_player_side);
+    //int cur_best_grade = INF * (0 - search_player_side);
     for (int k = 0; k < pos_num; ++k) {
         int old_i = last_i, old_j = last_j;
-        dfs_add_piece(possible_pos_i[k], possible_pos_j[k], my_player_side);
+        dfs_add_piece(possible_pos_i[k], possible_pos_j[k], search_player_side);
 
-        possible_pos_grade[k] = alpha_beta_dfs(my_player_side, 0 - search_player_side, search_depth - 1, alpha, beta);
-
+        possible_pos_grade[k] = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
+        alpha = better(alpha, possible_pos_grade[k], WHITE);
+        beta = better(beta, possible_pos_grade[k], BLACK);
         //look back
         last_i = old_i;
         last_j = old_j;
         dfs_add_piece(possible_pos_i[k], possible_pos_j[k], VOID);
+        if (search_player_side == BLACK && possible_pos_grade[k] < alpha) {
+            pos_num = k + 1;
+            break;
+        } else if (search_player_side == WHITE && possible_pos_grade[k] > beta) {
+            pos_num = k + 1;
+            break;
+        }
     }
-    int best_pos = -1;
+    int best_pos = 0;
     for (int k = 0; k < pos_num; ++k) {
-        int tmp = better(grade, possible_pos_grade[k], search_player_side);
-        if (tmp != grade) {
-            grade = tmp;
-            best_pos = k;
+        //int tmp = better(grade, possible_pos_grade[k], search_player_side);
+        if (search_player_side == WHITE) {
+            if (alpha < possible_pos_grade[k]) {
+                alpha = possible_pos_grade[k];
+                best_pos = k;
+            }
+        } else {
+            if (beta > possible_pos_grade[k]) {
+                beta = possible_pos_grade[k];
+                best_pos = k;
+            }
         }
     }
     best_i = possible_pos_i[best_pos];
     best_j = possible_pos_j[best_pos];
-    return grade;
+    return possible_pos_grade[best_pos];
 }
 
 #undef I
