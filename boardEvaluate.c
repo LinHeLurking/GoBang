@@ -79,6 +79,23 @@ int winner_check() {
     return 0;
 }
 
+int get_status(int player_side, int *array_to_querry, int array_len, int index) {
+    if (index == -1 || index > array_len - 1)
+        return 0 - player_side;
+    else
+        return array_to_querry[index];
+}
+
+typedef struct {
+    //offset==1:
+    int trans[3];
+    int grade;
+} trie;
+
+trie tr[TRIE_SIZE];
+#define STR_TO_RECOGNIZE 22
+#define END 11
+#define MAX_STR_SIZE 8
 /*  evaluate the grade of this status board using AC auto-machine
  *  0111110 -> 100000
  *  011110 -> 10000
@@ -86,90 +103,176 @@ int winner_check() {
  *  0110 -> 100
  *  010 -> 10
  *
- *  011110/011110 -> 1000
- *  01110/01110 -> 100
- *  0110/0110 -> 10
+ *  01111-1/-111110 -> 1000
+ *  0111-1/-11110 -> 100
+ *  011-1/-1110 -> 10
  *
  * */
-
-int get_status(int cur_color, int *array_to_querry, int array_len, int index) {
-    if (index == -1 || index > array_len - 1)
-        return 0 - cur_color;
-    else
-        return array_to_querry[index];
-}
-
 int OFFSET = 1;
-typedef struct {
-    //offset==1:
-    int trans[3];
-    int status;
-} trie;
-
-trie tr[TRIE_SIZE];
-#define STR_TO_RECOGNIZE 22
-#define END 10
-#define MAX_STR_SIZE 8
+int grade[STR_TO_RECOGNIZE] = {100000, 10000, 1000, 100, 10, 1000, 1000, 100, 100, 10, 10, -100000, -10000, -1000, -100,
+                               -10, -1000, -1000, -100, -100, -10, -10};
+//cautions!! if you change this array, the grade[] also needs changing
 int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
+        //WHITE: 0 <= index < 11 BLACK: 11 <= index < STR_TO_RECOGNIZE
+
         //alive
         //white
-        {VOID,  WHITE, WHITE, WHITE, WHITE, WHITE, VOID, END},
-        {VOID,  WHITE, WHITE, WHITE, WHITE, VOID,  END},
-        {VOID,  WHITE, WHITE, WHITE, VOID,  END},
-        {VOID,  WHITE, WHITE, VOID,  END},
-        {VOID,  WHITE, VOID,  END},
+        {VOID,  WHITE, WHITE, WHITE, WHITE, WHITE, VOID, END},//100000
+        {VOID,  WHITE, WHITE, WHITE, WHITE, VOID,  END},//10000
+        {VOID,  WHITE, WHITE, WHITE, VOID,  END},//1000
+        {VOID,  WHITE, WHITE, VOID,  END},//100
+        {VOID,  WHITE, VOID,  END},//10
         //half alive
         //white
-        {BLACK, WHITE, WHITE, WHITE, WHITE, VOID,  END},
-        {VOID,  WHITE, WHITE, WHITE, WHITE, BLACK, END},
-        {BLACK, WHITE, WHITE, WHITE, VOID,  END},
-        {VOID,  WHITE, WHITE, WHITE, BLACK, END},
-        {BLACK, WHITE, WHITE, VOID,  END},
-        {VOID,  WHITE, WHITE, BLACK, END},
+        {BLACK, WHITE, WHITE, WHITE, WHITE, VOID,  END},//1000
+        {VOID,  WHITE, WHITE, WHITE, WHITE, BLACK, END},//1000
+        {BLACK, WHITE, WHITE, WHITE, VOID,  END},//100
+        {VOID,  WHITE, WHITE, WHITE, BLACK, END},//100
+        {BLACK, WHITE, WHITE, VOID,  END},//10
+        {VOID,  WHITE, WHITE, BLACK, END},//10
+
         //alive
         //black
-        {VOID,  BLACK, BLACK, BLACK, BLACK, BLACK, VOID, END},
-        {VOID,  BLACK, BLACK, BLACK, BLACK, VOID,  END},
-        {VOID,  BLACK, BLACK, BLACK, VOID,  END},
-        {VOID,  BLACK, BLACK, VOID,  END},
-        {VOID,  BLACK, VOID,  END},
+        {VOID,  BLACK, BLACK, BLACK, BLACK, BLACK, VOID, END},//-100000
+        {VOID,  BLACK, BLACK, BLACK, BLACK, VOID,  END},//-10000
+        {VOID,  BLACK, BLACK, BLACK, VOID,  END},//-1000
+        {VOID,  BLACK, BLACK, VOID,  END},//-100
+        {VOID,  BLACK, VOID,  END},//-10
         //half alive
         //black
-        {WHITE, BLACK, BLACK, BLACK, BLACK, VOID,  END},
-        {VOID,  BLACK, BLACK, BLACK, BLACK, WHITE, END},
-        {WHITE, BLACK, BLACK, BLACK, VOID,  END},
-        {VOID,  BLACK, BLACK, BLACK, WHITE, END},
-        {WHITE, BLACK, BLACK, VOID,  END},
-        {VOID,  BLACK, BLACK, WHITE, END},
+        {WHITE, BLACK, BLACK, BLACK, BLACK, VOID,  END},//-1000
+        {VOID,  BLACK, BLACK, BLACK, BLACK, WHITE, END},//-1000
+        {WHITE, BLACK, BLACK, BLACK, VOID,  END},//-100
+        {VOID,  BLACK, BLACK, BLACK, WHITE, END},//-100
+        {WHITE, BLACK, BLACK, VOID,  END},//-10
+        {VOID,  BLACK, BLACK, WHITE, END},//-10
 };
 
 void build_trie() {
+    //!! remember the OFFSET !!
     int cnt = 0;
     for (int i = 0; i < TRIE_SIZE; ++i) {
-        tr[i].status = 0;
+        tr[i].grade = 0;
         memset(tr[i].trans, 0, sizeof(tr[i].trans));
     }
     //build the trie here
     for (int i = 0; i < STR_TO_RECOGNIZE; ++i) {
         int cur = 0;
-        for (int k = 0; pattern[i][k] == END; ++k) {
-            if (tr[cur].trans[pattern[i][k]] == 0) {
-                tr[cur].trans[pattern[i][k]] = ++cnt;
+        for (int k = 0;; ++k) {
+            if (tr[cur].trans[pattern[i][k] + OFFSET] == 0) {
+                tr[cur].trans[pattern[i][k] + OFFSET] = ++cnt;
             }
             if (pattern[i][k + 1] == END) {
-                tr[cnt].status = 1;
+                tr[cnt].grade = grade[i];
                 break;
             }
-            cur = tr[cur].trans[pattern[i][k]];
+            cur = tr[cur].trans[pattern[i][k] + OFFSET];
         }
     }
 };
-#undef STR_TO_RECOGNIZE
-#undef END
-#undef MAX_STR_SIZE
 
-int grade_estimate() {
-    //int grade = 0;
+void trie_test() {
+    for (int i = 0; i < TRIE_SIZE; ++i) {
+        printf("%d ", tr[i].grade);
+        if ((i + 1) % 20 == 0)
+            printf("\n");
+    }
+    printf("\n");
+    for (int i = 0; i < STR_TO_RECOGNIZE; ++i) {
+        printf("Testing the ");
+        for (int j = 0; pattern[i][j] != END; ++j) {
+            printf(" %d", pattern[i][j]);
+        }
+        printf(" \n\n");
+        int cur = 0;
+        for (int j = 0;; ++j) {
+            if (pattern[i][j] == END) {
+                if (tr[cur].grade != 0)
+                    printf("match successfully\n");
+                else
+                    printf("match failed\n");
+                break;
+            }
+            cur = tr[cur].trans[pattern[i][j] + OFFSET];
+            printf("current 'cur': %d\n", cur);
+        }
+        printf("\n");
+    }
+}
+
+int grade_estimate(int player_side) {
+    //grades in nodes of trie is for WHITE if they are larger than 0, and vice versa.
+    int grade = 0;
+    //attention! when loop in oblique,loop must exceed the boundary of array using get_status()
+
+    //loop for row
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        int cur = 0;
+        for (int j = -1; j <= BOARD_SIZE; ++j) {
+            cur = j == -1 || j == BOARD_SIZE ? tr[cur].trans[0 - player_side + OFFSET] : tr[cur].trans[
+                    status_board[i][j] + OFFSET];
+            if ((tr[cur].grade > 0 && player_side == WHITE) || (tr[cur].grade < 0 && player_side == BLACK)) {
+                grade += tr[cur].grade;
+                --j;
+                continue;
+            }
+            if (cur == 0) {
+                --j;
+            }
+        }
+    }
+    //loop in col
+    for (int j = 0; j < BOARD_SIZE; ++j) {
+        int cur = 0;
+        for (int i = -1; i <= BOARD_SIZE; ++i) {
+            cur = i == -1 || i == BOARD_SIZE ? tr[cur].trans[0 - player_side + OFFSET] : tr[cur].trans[
+                    status_board[i][j] + OFFSET];
+            if ((tr[cur].grade > 0 && player_side == WHITE) || (tr[cur].grade < 0 && player_side == BLACK)) {
+                grade += tr[cur].grade;
+                --i;
+                continue;
+            }
+            if (cur == 0) {
+                --i;
+            }
+        }
+    }
+    //loop in oblique
+    //sum==i+j delta=i-j
+    for (int sum = 0; sum < 2 * BOARD_SIZE - 1; ++sum) {
+        int cur = 0;
+        for (int j = -1; j <= BOARD_SIZE; ++j) {
+            cur = j == -1 || j == BOARD_SIZE ? tr[cur].trans[0 - player_side + OFFSET] : tr[cur].trans[
+                    oblique_lines_1[sum][j] + OFFSET];
+            if ((tr[cur].grade > 0 && player_side == WHITE) || (tr[cur].grade < 0 && player_side == BLACK)) {
+                grade += tr[cur].grade;
+                --j;
+                continue;
+            }
+            if (cur == 0) {
+                --j;
+            }
+        }
+    }
+    for (int delta = -14; delta < BOARD_SIZE; ++delta) {
+        int cur = 0;
+        for (int j = -1; j <= BOARD_SIZE; ++j) {
+            cur = j == -1 || j == BOARD_SIZE ? tr[cur].trans[0 - player_side + OFFSET] : tr[cur].trans[
+                    oblique_lines_2[delta + BOARD_SIZE][j] + OFFSET];
+            if ((tr[cur].grade > 0 && player_side == WHITE) || (tr[cur].grade < 0 && player_side == BLACK)) {
+                grade += tr[cur].grade;
+                --j;
+                continue;
+            }
+            if (cur == 0) {
+                --j;
+            }
+        }
+    }
+    return grade;
 }
 
 #undef TRIE_SIZE
+#undef STR_TO_RECOGNIZE
+#undef END
+#undef MAX_STR_SIZE

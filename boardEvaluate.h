@@ -9,10 +9,12 @@
 
 int winner_check();
 
-int get_status(int cur_color, int *array_to_querry, int array_len, int index);
+int get_status(int player_side, int *array_to_querry, int array_len, int index);
 
 void build_trie();
 
-int grade_estimate();
+void trie_test();
+
+int grade_estimate(int player_side);
 
 #endif //GOBANG_BOARDEVALUATE_H
