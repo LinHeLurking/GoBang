@@ -212,9 +212,8 @@ void build_trie() {
                     if (p == -1)
                         tr[tr[tmp].trans[i]].fail = root;
                 }
-            }
-            if (tr[tmp].trans[i] != -1)
                 q[tail++] = tr[tmp].trans[i];
+            }
         }
     }
 };
@@ -235,14 +234,19 @@ void trie_test() {
         int cur = 0;
         for (int j = 0;; ++j) {
             if (pattern[i][j] == END) {
-                if (tr[cur].grade != 0)
+                if (tr[cur].grade == grade[i])
                     printf("match successfully\n");
                 else
                     printf("match failed\n");
                 break;
             }
-            cur = tr[cur].trans[pattern[i][j] + OFFSET];
-            printf("current 'cur': %d\n", cur);
+            int p = tr[cur].trans[pattern[i][j] + OFFSET];
+            if (p == -1) {
+                cur = tr[cur].fail;
+            } else {
+                cur = p;
+            }
+            //printf("current 'cur': %d\n", cur);
         }
         printf("\n");
     }
@@ -258,14 +262,16 @@ int grade_estimate(int player_side) {
         int cur = 0;
         for (int j = -1; j <= BOARD_SIZE; ++j) {
             int ch = j == -1 || j == BOARD_SIZE ? 0 - player_side : status_board[i][j];
-            while (tr[cur].trans[ch] == -1 && cur != 0) {
+            while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
                 cur = tr[cur].fail;
             }
-            cur = tr[cur].trans[ch];
+            cur = tr[cur].trans[ch + OFFSET];
             cur = cur == -1 ? 0 : cur;
             int tmp = cur;
             while (tmp != 0 && tr[tmp].grade != 0) {
-                grade += tr[tmp].grade;
+                if (player_side == WHITE && tr[tmp].grade > 0) {
+                    grade += tr[tmp].grade;
+                }
                 tmp = tr[tmp].fail;
             }
         }
@@ -275,14 +281,16 @@ int grade_estimate(int player_side) {
         int cur = 0;
         for (int i = -1; i <= BOARD_SIZE; ++i) {
             int ch = i == -1 || i == BOARD_SIZE ? 0 - player_side : status_board[i][j];
-            while (tr[cur].trans[ch] == -1 && cur != 0) {
+            while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
                 cur = tr[cur].fail;
             }
-            cur = tr[cur].trans[ch];
+            cur = tr[cur].trans[ch + OFFSET];
             cur = cur == -1 ? 0 : cur;
             int tmp = cur;
             while (tmp != 0 && tr[tmp].grade != 0) {
-                grade += tr[tmp].grade;
+                if (player_side == WHITE && tr[tmp].grade > 0) {
+                    grade += tr[tmp].grade;
+                }
                 tmp = tr[tmp].fail;
             }
         }
@@ -295,14 +303,16 @@ int grade_estimate(int player_side) {
         int cur = 0;
         for (int j = -1; j <= BOARD_SIZE; ++j) {
             int ch = j == -1 || j == BOARD_SIZE ? 0 - player_side : oblique_lines_1[sum][j];
-            while (tr[cur].trans[ch] == -1 && cur != 0) {
+            while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
                 cur = tr[cur].fail;
             }
-            cur = tr[cur].trans[ch];
+            cur = tr[cur].trans[ch + OFFSET];
             cur = cur == -1 ? 0 : cur;
             int tmp = cur;
             while (tmp != 0 && tr[tmp].grade != 0) {
-                grade += tr[tmp].grade;
+                if (player_side == WHITE && tr[tmp].grade > 0) {
+                    grade += tr[tmp].grade;
+                }
                 tmp = tr[tmp].fail;
             }
         }
@@ -311,14 +321,16 @@ int grade_estimate(int player_side) {
         int cur = 0;
         for (int j = -1; j < BOARD_SIZE; ++j) {
             int ch = j == -1 || j == BOARD_SIZE ? 0 - player_side : oblique_lines_2[delta + BOARD_SIZE][j];
-            while (tr[cur].trans[ch] == -1 && cur != 0) {
+            while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
                 cur = tr[cur].fail;
             }
-            cur = tr[cur].trans[ch];
+            cur = tr[cur].trans[ch + OFFSET];
             cur = cur == -1 ? 0 : cur;
             int tmp = cur;
             while (tmp != 0 && tr[tmp].grade != 0) {
-                grade += tr[tmp].grade;
+                if (player_side == WHITE && tr[tmp].grade > 0) {
+                    grade += tr[tmp].grade;
+                }
                 tmp = tr[tmp].fail;
             }
         }
@@ -361,7 +373,7 @@ int alpha_beta_dfs(int search_player_side, int search_depth, int alpha, int beta
     if (search_depth == 0) {
         //printf("Direct estimate: %d\n", grade_estimate(search_player_side));
         //dfs_output_board();
-        return grade_estimate(search_player_side);
+        return grade_estimate(search_player_side) + grade_estimate(0 - search_player_side);
         //return grade_estimate(search_depth) + grade_estimate(0 - search_depth);
     }
     //the first one is i second one is j and the third one is the grade
