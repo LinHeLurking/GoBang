@@ -98,6 +98,7 @@ typedef struct {
     //offset==1:
     int trans[3];
     int grade;
+    int fail;
 } trie;
 
 trie tr[TRIE_SIZE];
@@ -154,6 +155,14 @@ int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
         {VOID,  BLACK, BLACK, BLACK, WHITE, END},//-100
         {WHITE, BLACK, BLACK, VOID,  END},//-10
         {VOID,  BLACK, BLACK, WHITE, END},//-10
+
+        //one-one
+        //{BLACK, WHITE, VOID,  END},//0
+        //{VOID,  WHITE, BLACK, END},//0
+
+
+        //void
+        //{VOID,  VOID,  END}//0
 };
 
 void build_trie() {
@@ -161,13 +170,14 @@ void build_trie() {
     int cnt = 0;
     for (int i = 0; i < TRIE_SIZE; ++i) {
         tr[i].grade = 0;
-        memset(tr[i].trans, 0, sizeof(tr[i].trans));
+        tr[i].fail = -1;
+        memset(tr[i].trans, -1, sizeof(tr[i].trans));
     }
     //build the trie here
     for (int i = 0; i < STR_TO_RECOGNIZE; ++i) {
         int cur = 0;
         for (int k = 0;; ++k) {
-            if (tr[cur].trans[pattern[i][k] + OFFSET] == 0) {
+            if (tr[cur].trans[pattern[i][k] + OFFSET] == -1) {
                 tr[cur].trans[pattern[i][k] + OFFSET] = ++cnt;
             }
             if (pattern[i][k + 1] == END) {
@@ -175,6 +185,36 @@ void build_trie() {
                 break;
             }
             cur = tr[cur].trans[pattern[i][k] + OFFSET];
+        }
+    }
+    //build fail ptr here
+    int root = 0;
+    tr[root].fail = -1;
+    int head = 0, tail = 1;
+    int q[TRIE_SIZE] = {};
+    q[head] = root;
+    while (head != tail) {
+        int tmp = q[head++];
+        int p = -1;
+        for (int i = 0; i < 3; ++i) {
+            if (tr[tmp].trans[i] != -1) {
+                if (tmp == root)
+                    tr[tr[tmp].trans[i]].fail = root;
+                else {
+                    p = tr[tmp].fail;
+                    while (p != -1) {
+                        if (tr[p].trans[i] != -1) {
+                            tr[tr[tmp].trans[i]].fail = tr[p].trans[i];
+                            break;
+                        }
+                        p = tr[p].fail;
+                    }
+                    if (p == -1)
+                        tr[tr[tmp].trans[i]].fail = root;
+                }
+            }
+            if (tr[tmp].trans[i] != -1)
+                q[tail++] = tr[tmp].trans[i];
         }
     }
 };
@@ -217,15 +257,16 @@ int grade_estimate(int player_side) {
     for (int i = 0; i < BOARD_SIZE; ++i) {
         int cur = 0;
         for (int j = -1; j <= BOARD_SIZE; ++j) {
-            cur = j == -1 || j == BOARD_SIZE ? tr[cur].trans[0 - player_side + OFFSET] : tr[cur].trans[
-                    status_board[i][j] + OFFSET];
-            if ((tr[cur].grade > 0) || (tr[cur].grade < 0)) {
-                grade += tr[cur].grade;
-                --j;
-                continue;
+            int ch = j == -1 || j == BOARD_SIZE ? 0 - player_side : status_board[i][j];
+            while (tr[cur].trans[ch] == -1 && cur != 0) {
+                cur = tr[cur].fail;
             }
-            if (cur == 0) {
-                --j;
+            cur = tr[cur].trans[ch];
+            cur = cur == -1 ? 0 : cur;
+            int tmp = cur;
+            while (tmp != 0 && tr[tmp].grade != 0) {
+                grade += tr[tmp].grade;
+                tmp = tr[tmp].fail;
             }
         }
     }
@@ -233,47 +274,52 @@ int grade_estimate(int player_side) {
     for (int j = 0; j < BOARD_SIZE; ++j) {
         int cur = 0;
         for (int i = -1; i <= BOARD_SIZE; ++i) {
-            cur = i == -1 || i == BOARD_SIZE ? tr[cur].trans[0 - player_side + OFFSET] : tr[cur].trans[
-                    status_board[i][j] + OFFSET];
-            if ((tr[cur].grade > 0) || (tr[cur].grade < 0)) {
-                grade += tr[cur].grade;
-                --i;
-                continue;
+            int ch = i == -1 || i == BOARD_SIZE ? 0 - player_side : status_board[i][j];
+            while (tr[cur].trans[ch] == -1 && cur != 0) {
+                cur = tr[cur].fail;
             }
-            if (cur == 0) {
-                --i;
+            cur = tr[cur].trans[ch];
+            cur = cur == -1 ? 0 : cur;
+            int tmp = cur;
+            while (tmp != 0 && tr[tmp].grade != 0) {
+                grade += tr[tmp].grade;
+                tmp = tr[tmp].fail;
             }
         }
     }
+
+
     //loop in oblique
     //sum==i+j delta=i-j
     for (int sum = 0; sum < 2 * BOARD_SIZE; ++sum) {
         int cur = 0;
         for (int j = -1; j <= BOARD_SIZE; ++j) {
-            cur = j == -1 || j == BOARD_SIZE ? tr[cur].trans[0 - player_side + OFFSET] : tr[cur].trans[
-                    oblique_lines_1[sum][j] + OFFSET];
-            if ((tr[cur].grade > 0) || (tr[cur].grade < 0)) {
-                grade += tr[cur].grade;
-                --j;
-                continue;
+            int ch = j == -1 || j == BOARD_SIZE ? 0 - player_side : oblique_lines_1[sum][j];
+            while (tr[cur].trans[ch] == -1 && cur != 0) {
+                cur = tr[cur].fail;
             }
-            if (cur == 0) {
-                --j;
+            cur = tr[cur].trans[ch];
+            cur = cur == -1 ? 0 : cur;
+            int tmp = cur;
+            while (tmp != 0 && tr[tmp].grade != 0) {
+                grade += tr[tmp].grade;
+                tmp = tr[tmp].fail;
             }
         }
     }
     for (int delta = -14; delta < BOARD_SIZE; ++delta) {
         int cur = 0;
-        for (int j = -1; j <= BOARD_SIZE; ++j) {
-            cur = j == -1 || j == BOARD_SIZE ? tr[cur].trans[0 - player_side + OFFSET] : tr[cur].trans[
-                    oblique_lines_2[delta + BOARD_SIZE][j] + OFFSET];
-            if ((tr[cur].grade > 0) || (tr[cur].grade < 0)) {
-                grade += tr[cur].grade;
-                --j;
-                continue;
+        for (int j = -1; j < BOARD_SIZE; ++j) {
+            int ch = j == -1 || j == BOARD_SIZE ? 0 - player_side : oblique_lines_2[delta + BOARD_SIZE][j];
+            while (tr[cur].trans[ch] == -1 && cur != 0) {
+                cur = tr[cur].fail;
             }
-            if (cur == 0) {
-                --j;
+            cur = tr[cur].trans[ch];
+            cur = cur == -1 ? 0 : cur;
+            int tmp = cur;
+            while (tmp != 0 && tr[tmp].grade != 0) {
+                grade += tr[tmp].grade;
+                tmp = tr[tmp].fail;
             }
         }
     }
