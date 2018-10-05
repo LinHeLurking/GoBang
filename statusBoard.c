@@ -17,7 +17,7 @@ int dfs_status_board[BOARD_SIZE][BOARD_SIZE] = {};
 int dfs_oblique_lines_1[2 * BOARD_SIZE][BOARD_SIZE] = {};
 int dfs_oblique_lines_2[2 * BOARD_SIZE][BOARD_SIZE] = {};
 
-int best_i = -1, best_j = -1;
+//int best_i = -1, best_j = -1;
 int last_i = -1, last_j = -1;
 
 /*  return -1 if that position is occupied
@@ -25,10 +25,8 @@ int last_i = -1, last_j = -1;
  *  return 1 -> successful
  * */
 int add_piece(int i, int j, int pc) {
-    if (status_board[i][j] != 0)
+    if (status_board[i][j] != VOID)
         return -1;
-    else if (pc == 0)
-        return 0;
     status_board[i][j] = pc;
     oblique_lines_1[i + j][j] = pc;
     oblique_lines_2[i - j + BOARD_SIZE][j] = pc;
@@ -38,12 +36,12 @@ int add_piece(int i, int j, int pc) {
 /*  return -1 if that position is occupied
  *  return 1 -> successful
  * */
-int dfs_add_piece(int i, int j, int pc) {
-    if (dfs_status_board[i][j] != 0 && pc != 0)
+int dfs_add_piece(int i, int j, int piece_color) {
+    if (dfs_status_board[i][j] != VOID && piece_color != VOID)
         return -1;
-    dfs_status_board[i][j] = pc;
-    dfs_oblique_lines_1[i + j][j] = pc;
-    dfs_oblique_lines_2[i - j + BOARD_SIZE][j] = pc;
+    dfs_status_board[i][j] = piece_color;
+    dfs_oblique_lines_1[i + j][j] = piece_color;
+    dfs_oblique_lines_2[i - j + BOARD_SIZE][j] = piece_color;
     last_i = i;
     last_j = j;
     return 1;

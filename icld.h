@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #define BOARD_SIZE 15
 #define CHAR_SIZE 4
 #define GAP 6
@@ -16,7 +17,13 @@
 #define VOID 0
 #define HUMAN_VS_HUMAN 0
 #define HUMAN_VS_COMPUTER 1
-#define DFS_DEPTH 4
-#define INF 100000000
+#define DFS_DEPTH 2
+#define INF 1000000007
+#define DEBUG
+
+typedef struct{
+    int grade;
+    int i,j;
+}drop_choice;
 
 #endif //GOBANG_ICLD_H

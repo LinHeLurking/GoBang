@@ -9,7 +9,7 @@
 
 #define OFFSET 1
 
-extern int best_i, best_j;
+//extern int best_i, best_j;
 
 char player_side[3][10] = {
         " black",
@@ -51,7 +51,6 @@ void human_vs_computer() {
         int st = -1;
         int cnt = 0;
         while (st == -1) {
-
             if (cnt++ != 0) {
                 printf("There is already a piece in this place!\n");
                 printf("Round for %s, input the position you want to place the piece\n",
@@ -61,9 +60,6 @@ void human_vs_computer() {
             st = add_piece(i, j, human_player);
         }
         //output_board();
-
-        //human==WHITE computer==WHITE
-        alpha_beta_dfs(computer_player, DFS_DEPTH, INF * (0 - WHITE), INF * (0 - BLACK));
         int win_status = winner_check();
         if (win_status == WHITE) {
             output_board();
@@ -75,8 +71,19 @@ void human_vs_computer() {
             break;
         }
 
-        add_piece(best_i, best_j, computer_player);
+        drop_choice choice = alpha_beta_dfs(computer_player, DFS_DEPTH);
+        st = add_piece(choice.i, choice.j, computer_player);
         output_board();
+        //dfs_output_board();
+        if (st == -1) {
+            printf("Search error!\n");
+            exit(-1);
+        }
+
+#ifdef DEBUG
+        printf("The grade estimate:\nBLACK: %d\nWHITE: %d\n", grade_estimate(BLACK), grade_estimate(WHITE));
+#endif
+
         win_status = winner_check();
         if (win_status == WHITE) {
             output_board();
@@ -124,7 +131,6 @@ void human_vs_human() {
 
 int read_pos(int *i, int *j) {
     char input[10] = {};
-
     *i = *j = -1;
     while (true) {
         scanf("%s", input);

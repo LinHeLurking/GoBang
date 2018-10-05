@@ -5,14 +5,14 @@
 #include "boardEvaluate.h"
 #include "statusBoard.h"
 #include "mathFunction.h"
+#include "icld.h"
 //
-#include "drawBoard.h"
-
+//#include "drawBoard.h"
 
 #define TRIE_SIZE 50
 
-extern int best_i;
-extern int best_j;
+//extern int best_i;
+//extern int best_j;
 extern int last_i;
 extern int last_j;
 
@@ -103,7 +103,7 @@ typedef struct {
 
 trie tr[TRIE_SIZE];
 #define STR_TO_RECOGNIZE 22
-#define END 11
+#define END 3
 #define MAX_STR_SIZE 8
 /*  evaluate the grade of this status board using AC auto-machine
  *  0111110 -> 100000
@@ -155,14 +155,6 @@ int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
         {VOID,  BLACK, BLACK, BLACK, WHITE, END},//-100
         {WHITE, BLACK, BLACK, VOID,  END},//-10
         {VOID,  BLACK, BLACK, WHITE, END},//-10
-
-        //one-one
-        //{BLACK, WHITE, VOID,  END},//0
-        //{VOID,  WHITE, BLACK, END},//0
-
-
-        //void
-        //{VOID,  VOID,  END}//0
 };
 
 void build_trie() {
@@ -195,7 +187,7 @@ void build_trie() {
     q[head] = root;
     while (head != tail) {
         int tmp = q[head++];
-        int p = -1;
+        int p;
         for (int i = 0; i < 3; ++i) {
             if (tr[tmp].trans[i] != -1) {
                 if (tmp == root)
@@ -269,7 +261,7 @@ int grade_estimate(int player_side) {
             cur = cur == -1 ? 0 : cur;
             int tmp = cur;
             while (tmp != 0 && tr[tmp].grade != 0) {
-                if (player_side == WHITE && tr[tmp].grade > 0) {
+                if ((player_side == WHITE && tr[tmp].grade > 0) || (player_side == BLACK && tr[tmp].grade < 0)) {
                     grade += tr[tmp].grade;
                 }
                 tmp = tr[tmp].fail;
@@ -288,7 +280,7 @@ int grade_estimate(int player_side) {
             cur = cur == -1 ? 0 : cur;
             int tmp = cur;
             while (tmp != 0 && tr[tmp].grade != 0) {
-                if (player_side == WHITE && tr[tmp].grade > 0) {
+                if ((player_side == WHITE && tr[tmp].grade > 0) || (player_side == BLACK && tr[tmp].grade < 0)) {
                     grade += tr[tmp].grade;
                 }
                 tmp = tr[tmp].fail;
@@ -310,7 +302,7 @@ int grade_estimate(int player_side) {
             cur = cur == -1 ? 0 : cur;
             int tmp = cur;
             while (tmp != 0 && tr[tmp].grade != 0) {
-                if (player_side == WHITE && tr[tmp].grade > 0) {
+                if ((player_side == WHITE && tr[tmp].grade > 0) || (player_side == BLACK && tr[tmp].grade < 0)) {
                     grade += tr[tmp].grade;
                 }
                 tmp = tr[tmp].fail;
@@ -328,7 +320,7 @@ int grade_estimate(int player_side) {
             cur = cur == -1 ? 0 : cur;
             int tmp = cur;
             while (tmp != 0 && tr[tmp].grade != 0) {
-                if (player_side == WHITE && tr[tmp].grade > 0) {
+                if ((player_side == WHITE && tr[tmp].grade > 0) || (player_side == BLACK && tr[tmp].grade < 0)) {
                     grade += tr[tmp].grade;
                 }
                 tmp = tr[tmp].fail;
@@ -353,13 +345,13 @@ int grade_estimate(int player_side) {
 #define J 1
 #define GRADE 2
 
-void generate_possible_pos(int pos_i[MAX_POS], int pos_j[MAX_POS], int *num) {
+void generate_possible_pos(drop_choice *drop_choice1, int *num) {
     *num = 0;
     for (int i = 0; i < BOARD_SIZE; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
             if (dfs_status_board[i][j] == VOID) {
-                pos_i[(*num)] = i;
-                pos_j[(*num)] = j;
+                drop_choice1[*num].i = i;
+                drop_choice1[*num].j = j;
                 ++(*num);
             }
         }
@@ -368,61 +360,46 @@ void generate_possible_pos(int pos_i[MAX_POS], int pos_j[MAX_POS], int *num) {
 
 
 //remember that the larger the grade is, the better the status is for WHITE. and vice versa.
-//alpha -> the best for white, beta -> the best for black
-int alpha_beta_dfs(int search_player_side, int search_depth, int alpha, int beta) {
+drop_choice alpha_beta_dfs(int search_player_side, int search_depth) {
+    drop_choice result;
+    result.i = result.j = 0;
+    result.grade = 0;
+
     if (search_depth == 0) {
-        //printf("Direct estimate: %d\n", grade_estimate(search_player_side));
-        //dfs_output_board();
-        return grade_estimate(search_player_side) + grade_estimate(0 - search_player_side);
-        //return grade_estimate(search_depth) + grade_estimate(0 - search_depth);
+        result.grade = grade_estimate(search_player_side) + grade_estimate(0 - search_player_side);
+        return result;
     }
     //the first one is i second one is j and the third one is the grade
-    int possible_pos_i[MAX_POS] = {};
-    int possible_pos_j[MAX_POS] = {};
-    int possible_pos_grade[MAX_POS] = {};
-    int pos_num = 0;
-    generate_possible_pos(possible_pos_i, possible_pos_j, &pos_num);
-    best_i = possible_pos_i[0];
-    best_j = possible_pos_j[0];
-    //int grade = INF * (0 - search_player_side);
-    //int cur_best_grade = INF * (0 - search_player_side);
-    for (int k = 0; k < pos_num; ++k) {
-        int old_i = last_i, old_j = last_j;
-        dfs_add_piece(possible_pos_i[k], possible_pos_j[k], search_player_side);
 
-        possible_pos_grade[k] = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
-        alpha = better(alpha, possible_pos_grade[k], WHITE);
-        beta = better(beta, possible_pos_grade[k], BLACK);
-        //look back
-        last_i = old_i;
-        last_j = old_j;
-        dfs_add_piece(possible_pos_i[k], possible_pos_j[k], VOID);
-        if (search_player_side == BLACK && possible_pos_grade[k] < alpha) {
-            pos_num = k + 1;
-            break;
-        } else if (search_player_side == WHITE && possible_pos_grade[k] > beta) {
-            pos_num = k + 1;
-            break;
+    drop_choice drop_choice1[MAX_POS];
+    int pos_num = 0;
+    //generate possible places to drop a piece
+    generate_possible_pos(drop_choice1, &pos_num);
+
+    //traverse the possible places
+    if (search_player_side == WHITE) {
+        result.grade = 0 - INF;
+        for (int k = 0; k < pos_num; ++k) {
+            dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, WHITE);
+            drop_choice tmp;
+            tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1);
+            tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
+            result = *max_drop_choice(&result, &tmp);
+            dfs_add_piece(tmp.i, tmp.j, VOID);
         }
-    }
-    int best_pos = 0;
-    for (int k = 0; k < pos_num; ++k) {
-        //int tmp = better(grade, possible_pos_grade[k], search_player_side);
-        if (search_player_side == WHITE) {
-            if (alpha < possible_pos_grade[k]) {
-                alpha = possible_pos_grade[k];
-                best_pos = k;
-            }
-        } else {
-            if (beta > possible_pos_grade[k]) {
-                beta = possible_pos_grade[k];
-                best_pos = k;
-            }
+        return result;
+    } else {
+        result.grade = INF;
+        for (int k = 0; k < pos_num; ++k) {
+            dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, BLACK);
+            drop_choice tmp;
+            tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1);
+            tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
+            result = *min_drop_choice(&result, &tmp);
+            dfs_add_piece(tmp.i, tmp.j, VOID);
         }
+        return result;
     }
-    best_i = possible_pos_i[best_pos];
-    best_j = possible_pos_j[best_pos];
-    return possible_pos_grade[best_pos];
 }
 
 #undef I
