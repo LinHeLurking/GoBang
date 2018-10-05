@@ -101,6 +101,9 @@ void human_vs_human() {
     int player = BLACK;
     while (true) {
         output_board();
+#ifdef DEBUG
+        printf("The grade estimate:\nBLACK: %d\nWHITE: %d\n", grade_estimate(BLACK), grade_estimate(WHITE));
+#endif
         printf("Round for %s, input the position you want to place the piece\n", player_side[player + OFFSET]);
         int i, j;
         read_pos(&i, &j);
@@ -126,6 +129,7 @@ void human_vs_human() {
             printf("The player of%s won.\n", player_side[BLACK + OFFSET]);
             break;
         }
+        player = 0 - player;
     }
 }
 

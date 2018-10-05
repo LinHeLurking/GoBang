@@ -17,19 +17,3 @@ int max(int x, int y) {
     else
         return x;
 }
-
-drop_choice *min_drop_choice(drop_choice *a, drop_choice *b) {
-    if (a->grade > b->grade) {
-        return b;
-    } else {
-        return a;
-    }
-}
-
-drop_choice *max_drop_choice(drop_choice *a, drop_choice *b) {
-    if (a->grade > b->grade) {
-        return a;
-    } else {
-        return b;
-    }
-}

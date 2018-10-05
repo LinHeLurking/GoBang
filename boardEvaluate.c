@@ -384,7 +384,9 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth) {
             drop_choice tmp;
             tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1);
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
-            result = *max_drop_choice(&result, &tmp);
+            if (tmp.grade > result.grade) {
+                result = tmp;
+            }
             dfs_add_piece(tmp.i, tmp.j, VOID);
         }
         return result;
@@ -395,7 +397,9 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth) {
             drop_choice tmp;
             tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1);
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
-            result = *min_drop_choice(&result, &tmp);
+            if (tmp.grade < result.grade) {
+                result = tmp;
+            }
             dfs_add_piece(tmp.i, tmp.j, VOID);
         }
         return result;
