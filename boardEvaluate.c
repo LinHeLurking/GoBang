@@ -149,8 +149,8 @@ void insert(int *s, int grade) {
  *
  * */
 
-int grade[STR_TO_RECOGNIZE] = {100000, 10000, 1000, 100, 10, 1000, 1000, 100, 100, 10, 10, -100000, -10000, -1000, -100,
-                               -10, -1000, -1000, -100, -100, -10, -10};
+int grade[STR_TO_RECOGNIZE] = {100000, 10000, 1000, 100, 10, 1100, 1100, 100, 100, 10, 10, -100000, -10000, -1000, -100,
+                               -10, -1100, -1100, -100, -100, -10, -10};
 //cautions!! if you change this array, the grade[] also needs changing
 int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
         //WHITE: 0 <= index < 11 BLACK: 11 <= index < STR_TO_RECOGNIZE
@@ -164,8 +164,8 @@ int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
         {VOID,  WHITE, VOID,  END},//10
         //half alive
         //white
-        {BLACK, WHITE, WHITE, WHITE, WHITE, VOID,  END},//1000
-        {VOID,  WHITE, WHITE, WHITE, WHITE, BLACK, END},//1000
+        {BLACK, WHITE, WHITE, WHITE, WHITE, VOID,  END},//1100
+        {VOID,  WHITE, WHITE, WHITE, WHITE, BLACK, END},//1100
         {BLACK, WHITE, WHITE, WHITE, VOID,  END},//100
         {VOID,  WHITE, WHITE, WHITE, BLACK, END},//100
         {BLACK, WHITE, WHITE, VOID,  END},//10
@@ -180,8 +180,8 @@ int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
         {VOID,  BLACK, VOID,  END},//-10
         //half alive
         //black
-        {WHITE, BLACK, BLACK, BLACK, BLACK, VOID,  END},//-1000
-        {VOID,  BLACK, BLACK, BLACK, BLACK, WHITE, END},//-1000
+        {WHITE, BLACK, BLACK, BLACK, BLACK, VOID,  END},//-1100
+        {VOID,  BLACK, BLACK, BLACK, BLACK, WHITE, END},//-1100
         {WHITE, BLACK, BLACK, BLACK, VOID,  END},//-100
         {VOID,  BLACK, BLACK, BLACK, WHITE, END},//-100
         {WHITE, BLACK, BLACK, VOID,  END},//-10
@@ -322,7 +322,7 @@ int grade_estimate(int player_side) {
             }
         }
     }
-    for (int delta = -14; delta < BOARD_SIZE; ++delta) {
+    for (int delta = -14; delta <  BOARD_SIZE; ++delta) {
         int cur = 0;
         for (int j = -1; j <= BOARD_SIZE; ++j) {
             int ch = j == -1 || j == min(BOARD_SIZE - delta, BOARD_SIZE) ? 0 - player_side : dfs_oblique_lines_2[delta +

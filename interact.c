@@ -82,6 +82,7 @@ void human_vs_computer() {
 
 #ifdef DEBUG
         printf("The grade estimate:\nBLACK: %d\nWHITE: %d\n", grade_estimate(BLACK), grade_estimate(WHITE));
+        printf("dfs grade: %d\n", choice.grade);
 #endif
 
         win_status = winner_check();

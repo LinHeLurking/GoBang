@@ -21,7 +21,7 @@
 #define DFS_DEPTH 2
 #define INF 1000000007
 #define DEBUG
-#define DFS_BOARD_DEBUG
+//#define DFS_BOARD_DEBUG
 
 #define GRADE_DEBUG printf("Direct grade estimate for BLACK: %d\n",grade_estimate(BLACK));printf("Direct grade estimate for WHITE: %d\n",grade_estimate(WHITE));
 
