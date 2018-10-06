@@ -5,7 +5,7 @@
 #include "interact.h"
 
 void init() {
-    build_trie();
+    AC_build();
 }
 
 void test() {
