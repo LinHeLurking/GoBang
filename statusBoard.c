@@ -16,6 +16,7 @@ void __status_init(boardStatus *boardStatus1) {
     memset(boardStatus1->oblique_lines_1, 0, sizeof(boardStatus1->oblique_lines_1));
     memset(boardStatus1->oblique_lines_2, 0, sizeof(boardStatus1->oblique_lines_2));
     boardStatus1->last_i = boardStatus1->last_j = -1;
+    boardStatus1->white_step = boardStatus1->black_step = 0;
 }
 
 void status_init() {

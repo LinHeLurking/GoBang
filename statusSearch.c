@@ -25,9 +25,9 @@ void generate_possible_pos(drop_choice *drop_choice1, int *num) {
     }
 }
 
-
 //remember that the larger the grade is, the better the status is for WHITE. and vice versa.
-drop_choice alpha_beta_dfs(int search_player_side, int search_depth) {
+//alpha is the upper bound and beta is the lower bound.
+drop_choice alpha_beta_dfs(int search_player_side, int search_depth, int alpha, int beta) {
     drop_choice result;
     result.i = result.j = 0;
     result.grade = 0;
@@ -38,6 +38,7 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth) {
     }
     drop_choice drop_choice1[MAX_POS];
     int pos_num = 0;
+
     //generate proper places to drop a piece
     generate_possible_pos(drop_choice1, &pos_num);
 
@@ -51,14 +52,16 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth) {
         result.grade = 0 - INF;
         for (int k = 0; k < pos_num; ++k) {
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, WHITE);
-
             drop_choice tmp;
-            tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1);
+            tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
             if (tmp.grade > result.grade) {
                 result = tmp;
             }
             dfs_add_piece(tmp.i, tmp.j, VOID);
+            alpha = max(alpha, result.grade);
+            if (beta <= alpha)
+                break;
         }
         return result;
     } else {
@@ -71,12 +74,15 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth) {
         for (int k = 0; k < pos_num; ++k) {
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, BLACK);
             drop_choice tmp;
-            tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1);
+            tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
             if (tmp.grade < result.grade) {
                 result = tmp;
             }
             dfs_add_piece(tmp.i, tmp.j, VOID);
+            beta = min(beta, result.grade);
+            if (beta <= alpha)
+                break;
         }
         return result;
     }

@@ -1,8 +1,9 @@
 //
-// Created by Nine_yota on 2018-09-30.
+// Created by Nine_yota on 2018-10-08.
 //
 
-#include "mathFunction.h"
+#include "mathFunc.h"
+
 
 int min(int x, int y) {
     if (x < y)
@@ -12,8 +13,9 @@ int min(int x, int y) {
 }
 
 int max(int x, int y) {
-    if (x < y)
-        return y;
-    else
+    if (x > y)
         return x;
+    else
+        return y;
 }
+
