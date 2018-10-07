@@ -2,22 +2,22 @@
 // Created by Nine_yota on 2018-09-29.
 //
 #include "icld.h"
-
+#include "statusBoard.h"
+#include "mathFunction.h"
+#include "drawBoard.h"
 #ifndef GOBANG_BOARDEVALUATE_H
 #define GOBANG_BOARDEVALUATE_H
 
 int winner_check();
 
-void trie_test();
-
 int grade_estimate(int player_side);
 
-void generate_possible_pos(drop_choice *drop_choice1, int *num);
+
 
 void AC_build();
 
 
-drop_choice alpha_beta_dfs(int search_player_side, int search_depth);
+
 
 
 #endif //GOBANG_BOARDEVALUATE_H

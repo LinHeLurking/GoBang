@@ -3,4 +3,4 @@ project(GoBang C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(GoBang main.c icld.h drawBoard.c drawBoard.h boardEvaluate.c boardEvaluate.h statusBoard.c statusBoard.h interact.c interact.h mathFunction.c mathFunction.h)
+add_executable(GoBang main.c icld.h drawBoard.c drawBoard.h boardEvaluate.c boardEvaluate.h statusBoard.c statusBoard.h interact.c interact.h mathFunction.c mathFunction.h statusSearch.c statusSearch.h)

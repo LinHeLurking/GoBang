@@ -5,7 +5,8 @@
 #include "drawBoard.h"
 #include "icld.h"
 
-extern int dfs_status_board[BOARD_SIZE][BOARD_SIZE];
+extern boardStatus status;
+extern boardStatus dfs_status;
 
 char drawing_board[BOARD_SIZE][BOARD_SIZE * CHAR_SIZE * 2] = {
         "┏━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┓",
@@ -27,7 +28,7 @@ char drawing_board[BOARD_SIZE][BOARD_SIZE * CHAR_SIZE * 2] = {
 char white_piece[] = "●";
 char black_piece[] = "○";
 //0==null 1==white -1==black
-extern int status_board[BOARD_SIZE][BOARD_SIZE];
+
 
 void output_board() {
     printf(" ");
@@ -41,11 +42,11 @@ void output_board() {
         printf("%c", 'A' + i);
         for (int j = 0; j < BOARD_SIZE; ++j) {
             //CHAR_SIZE-1: avoid copying the end symbol of string.
-            if (status_board[i][j] == 1) {
+            if (status.board[i][j] == 1) {
                 for (int k = 0; k < CHAR_SIZE - 1; ++k) {
                     drawing_board[i][j * GAP + k] = white_piece[k];
                 }
-            } else if (status_board[i][j] == -1) {
+            } else if (status.board[i][j] == -1) {
                 for (int k = 0; k < CHAR_SIZE - 1; ++k) {
                     drawing_board[i][j * GAP + k] = black_piece[k];
                 }
@@ -69,11 +70,11 @@ void dfs_output_board() {
         printf("%c", 'A' + i);
         for (int j = 0; j < BOARD_SIZE; ++j) {
             //CHAR_SIZE-1: avoid copying the end symbol of string.
-            if (dfs_status_board[i][j] == 1) {
+            if (dfs_status.board[i][j] == 1) {
                 for (int k = 0; k < CHAR_SIZE - 1; ++k) {
                     dfs_drawing_board[i][j * GAP + k] = white_piece[k];
                 }
-            } else if (dfs_status_board[i][j] == -1) {
+            } else if (dfs_status.board[i][j] == -1) {
                 for (int k = 0; k < CHAR_SIZE - 1; ++k) {
                     dfs_drawing_board[i][j * GAP + k] = black_piece[k];
                 }

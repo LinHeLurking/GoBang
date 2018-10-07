@@ -3,7 +3,10 @@
 //
 
 #include "icld.h"
-
+#include "drawBoard.h"
+#include "statusBoard.h"
+#include "boardEvaluate.h"
+#include "statusSearch.h"
 #ifndef GOBANG_INTERACT_H
 #define GOBANG_INTERACT_H
 

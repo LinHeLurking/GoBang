@@ -6,6 +6,7 @@
 
 void init() {
     AC_build();
+    status_init();
 }
 
 void test() {

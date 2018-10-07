@@ -3,9 +3,6 @@
 //
 
 #include "interact.h"
-#include "drawBoard.h"
-#include "statusBoard.h"
-#include "boardEvaluate.h"
 
 #define OFFSET 1
 

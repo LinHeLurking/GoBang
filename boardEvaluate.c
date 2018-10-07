@@ -3,11 +3,7 @@
 //
 
 #include "boardEvaluate.h"
-#include "statusBoard.h"
-#include "mathFunction.h"
-#include "icld.h"
-//
-#include "drawBoard.h"
+
 
 #define TRIE_SIZE 50
 #define STATUS_NUM 3
@@ -16,18 +12,9 @@
 #define MAX_STR_SIZE 8
 #define OFFSET 1
 
-//extern int best_i;
-//extern int best_j;
-extern int last_i;
-extern int last_j;
 
-extern int status_board[BOARD_SIZE][BOARD_SIZE];
-extern int oblique_lines_1[2 * BOARD_SIZE][BOARD_SIZE];
-extern int oblique_lines_2[2 * BOARD_SIZE][BOARD_SIZE];
-
-extern int dfs_status_board[BOARD_SIZE][BOARD_SIZE];
-extern int dfs_oblique_lines_1[2 * BOARD_SIZE][BOARD_SIZE];
-extern int dfs_oblique_lines_2[2 * BOARD_SIZE][BOARD_SIZE];
+extern boardStatus status;
+extern boardStatus dfs_status;
 
 //1==white wins -1== black wins 0==no one wins
 int winner_check() {
@@ -40,7 +27,7 @@ int winner_check() {
         memset(continuous5, 0, sizeof(continuous5));
         for (int j = 0; j < BOARD_SIZE; ++j) {
             sum -= continuous5[j % 5];
-            continuous5[j % 5] = status_board[i][j];
+            continuous5[j % 5] = status.board[i][j];
             sum += continuous5[j % 5];
             if (sum == 5)
                 return 1;
@@ -54,7 +41,7 @@ int winner_check() {
         memset(continuous5, 0, sizeof(continuous5));
         for (int i = 0; i < BOARD_SIZE; ++i) {
             sum -= continuous5[i % 5];
-            continuous5[i % 5] = status_board[i][j];
+            continuous5[i % 5] = status.board[i][j];
             sum += continuous5[i % 5];
             if (sum == 5)
                 return 1;
@@ -71,7 +58,7 @@ int winner_check() {
         int j = offset - i;
         for (; i >= 0 && j < BOARD_SIZE; --i, ++j) {
             sum -= continuous5[i % 5];
-            continuous5[i % 5] = status_board[i][j];
+            continuous5[i % 5] = status.board[i][j];
             sum += continuous5[i % 5];
             if (sum == 5)
                 return 1;
@@ -87,7 +74,7 @@ int winner_check() {
         int j = i - offset;
         for (; i < BOARD_SIZE && j < BOARD_SIZE; ++i, ++j) {
             sum -= continuous5[i % 5];
-            continuous5[i % 5] = status_board[i][j];
+            continuous5[i % 5] = status.board[i][j];
             sum += continuous5[i % 5];
             if (sum == 5)
                 return 1;
@@ -223,39 +210,6 @@ void AC_build() {
     build_AC_fail();
 }
 
-void trie_test() {
-    for (int i = 0; i < TRIE_SIZE; ++i) {
-        printf("%d ", tr[i].grade);
-        if ((i + 1) % 20 == 0)
-            printf("\n");
-    }
-    printf("\n");
-    for (int i = 0; i < STR_TO_RECOGNIZE; ++i) {
-        printf("Testing the ");
-        for (int j = 0; pattern[i][j] != END; ++j) {
-            printf(" %d", pattern[i][j]);
-        }
-        printf(" \n\n");
-        int cur = 0;
-        for (int j = 0;; ++j) {
-            if (pattern[i][j] == END) {
-                if (tr[cur].grade == grade[i])
-                    printf("match successfully\n");
-                else
-                    printf("match failed\n");
-                break;
-            }
-            int p = tr[cur].trans[pattern[i][j] + OFFSET];
-            if (p == -1) {
-                cur = tr[cur].fail;
-            } else {
-                cur = p;
-            }
-            //printf("current 'cur': %d\n", cur);
-        }
-        printf("\n");
-    }
-}
 
 int grade_estimate(int player_side) {
     //grades in nodes of trie is for WHITE if they are larger than 0, and vice versa.
@@ -265,7 +219,7 @@ int grade_estimate(int player_side) {
     for (int i = 0; i < BOARD_SIZE; ++i) {
         int cur = 0;
         for (int j = -1; j <= BOARD_SIZE; ++j) {
-            int ch = j == -1 || j == BOARD_SIZE ? 0 - player_side : dfs_status_board[i][j];
+            int ch = j == -1 || j == BOARD_SIZE ? 0 - player_side : dfs_status.board[i][j];
             while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
                 cur = tr[cur].fail;
             }
@@ -284,7 +238,7 @@ int grade_estimate(int player_side) {
     for (int j = 0; j < BOARD_SIZE; ++j) {
         int cur = 0;
         for (int i = -1; i <= BOARD_SIZE; ++i) {
-            int ch = i == -1 || i == BOARD_SIZE ? 0 - player_side : dfs_status_board[i][j];
+            int ch = i == -1 || i == BOARD_SIZE ? 0 - player_side : dfs_status.board[i][j];
             while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
                 cur = tr[cur].fail;
             }
@@ -307,7 +261,7 @@ int grade_estimate(int player_side) {
         int cur = 0;
         for (int j = -1; j <= BOARD_SIZE; ++j) {
             int ch = j == -1 || j == min(sum + 1, BOARD_SIZE) ? 0 - player_side
-                                                              : dfs_oblique_lines_1[sum][j];
+                                                              : dfs_status.oblique_lines_1[sum][j];
             while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
                 cur = tr[cur].fail;
             }
@@ -322,10 +276,10 @@ int grade_estimate(int player_side) {
             }
         }
     }
-    for (int delta = -14; delta <  BOARD_SIZE; ++delta) {
+    for (int delta = -14; delta < BOARD_SIZE; ++delta) {
         int cur = 0;
         for (int j = -1; j <= BOARD_SIZE; ++j) {
-            int ch = j == -1 || j == min(BOARD_SIZE - delta, BOARD_SIZE) ? 0 - player_side : dfs_oblique_lines_2[delta +
+            int ch = j == -1 || j == min(BOARD_SIZE - delta, BOARD_SIZE) ? 0 - player_side : dfs_status.oblique_lines_2[delta +
                                                                                                                  BOARD_SIZE][j];
             while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
                 cur = tr[cur].fail;
@@ -349,87 +303,4 @@ int grade_estimate(int player_side) {
 #undef STR_TO_RECOGNIZE
 #undef END
 #undef MAX_STR_SIZE
-
-
-/*
- *  DFS starts here
- * */
-#define MAX_POS 225
-#define I 0
-#define J 1
-#define GRADE 2
-
-void generate_possible_pos(drop_choice *drop_choice1, int *num) {
-    *num = 0;
-    for (int i = 0; i < BOARD_SIZE; ++i) {
-        for (int j = 0; j < BOARD_SIZE; ++j) {
-            if (dfs_status_board[i][j] == VOID) {
-                drop_choice1[*num].i = i;
-                drop_choice1[*num].j = j;
-                ++(*num);
-            }
-        }
-    }
-}
-
-
-//remember that the larger the grade is, the better the status is for WHITE. and vice versa.
-drop_choice alpha_beta_dfs(int search_player_side, int search_depth) {
-    drop_choice result;
-    result.i = result.j = 0;
-    result.grade = 0;
-
-    if (search_depth == 0) {
-        result.grade = grade_estimate(search_player_side) + grade_estimate(0 - search_player_side);
-        return result;
-    }
-    drop_choice drop_choice1[MAX_POS];
-    int pos_num = 0;
-    //generate proper places to drop a piece
-    generate_possible_pos(drop_choice1, &pos_num);
-
-    //traverse the proper places
-    if (search_player_side == WHITE) {
-#ifdef DFS_BOARD_DEBUG
-        printf("dfs board:\n");
-        dfs_output_board();
-        GRADE_DEBUG
-#endif
-        result.grade = 0 - INF;
-        for (int k = 0; k < pos_num; ++k) {
-            dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, WHITE);
-
-            drop_choice tmp;
-            tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1);
-            tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
-            if (tmp.grade > result.grade) {
-                result = tmp;
-            }
-            dfs_add_piece(tmp.i, tmp.j, VOID);
-        }
-        return result;
-    } else {
-#ifdef DFS_BOARD_DEBUG
-        printf("dfs board:\n");
-        dfs_output_board();
-        GRADE_DEBUG
-#endif
-        result.grade = INF;
-        for (int k = 0; k < pos_num; ++k) {
-            dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, BLACK);
-            drop_choice tmp;
-            tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1);
-            tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
-            if (tmp.grade < result.grade) {
-                result = tmp;
-            }
-            dfs_add_piece(tmp.i, tmp.j, VOID);
-        }
-        return result;
-    }
-}
-
-#undef I
-#undef J
-#undef GRADE
 #undef OFFSET
