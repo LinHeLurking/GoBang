@@ -3,7 +3,7 @@
 //
 #include "icld.h"
 #include "statusBoard.h"
-
+#include "mathFunc.h"
 #include "drawBoard.h"
 #ifndef GOBANG_BOARDEVALUATE_H
 #define GOBANG_BOARDEVALUATE_H

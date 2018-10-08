@@ -92,6 +92,7 @@ int root = 0;
 int count = 0;
 
 void AC_init() {
+    root = count = 0;
     for (int i = 0; i < TRIE_SIZE; ++i) {
         tr[i].grade = 0;
         tr[i].fail = -1;
@@ -168,7 +169,7 @@ int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
 };
 
 void build_AC_fail() {
-    int AC_list[TRIE_SIZE * 3 + 5];
+    int AC_list[TRIE_SIZE];
     memset(AC_list, 0, sizeof(AC_list));
     int head = 0, tail = 0;
     AC_list[tail++] = root;
@@ -206,7 +207,6 @@ void AC_build() {
 int grade_estimate(int player_side) {
     //grades in nodes of trie is for WHITE if they are larger than 0, and vice versa.
     int grade = 0;
-
     //loop for row
     for (int i = 0; i < BOARD_SIZE; ++i) {
         int cur = 0;
@@ -271,7 +271,8 @@ int grade_estimate(int player_side) {
     for (int delta = -14; delta < BOARD_SIZE; ++delta) {
         int cur = 0;
         for (int j = -1; j <= BOARD_SIZE; ++j) {
-            int ch = j == -1 || j == min(BOARD_SIZE - delta, BOARD_SIZE) ? 0 - player_side : dfs_status.oblique_lines_2[
+            //TODO: here is a bug.
+            int ch = j == -1 || j == BOARD_SIZE ? 0 - player_side : dfs_status.oblique_lines_2[
                     delta + BOARD_SIZE][j];
             while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
                 cur = tr[cur].fail;
