@@ -37,7 +37,7 @@ void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_playe
         }
     }
     choice_sort(drop_choice1, *num);
-    *num = min(*num, 100);
+    *num = int_min(*num, 100);
 }
 
 #ifdef PRUNE_DEBUG
@@ -82,7 +82,7 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
             if (beta < alpha) {
 #ifdef PRUNE_DEBUG
                 ++prune_cnt;
-                if (!(prune_cnt % 100))printf("prune_cnt: %d\n", prune_cnt);
+                if (!(prune_cnt % 1000))printf("prune_cnt: %d\n", prune_cnt);
 #endif
                 return result;
             }
@@ -109,7 +109,7 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
             if (beta < alpha) {
 #ifdef PRUNE_DEBUG
                 ++prune_cnt;
-                if (!(prune_cnt % 100))printf("prune_cnt: %d\n", prune_cnt);
+                if (!(prune_cnt % 1000))printf("prune_cnt: %d\n", prune_cnt);
 #endif
                 return result;
             }

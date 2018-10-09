@@ -5,9 +5,9 @@
 #include "boardEvaluate.h"
 
 
-#define TRIE_SIZE 50
+#define TRIE_SIZE 100
 #define STATUS_NUM 3
-#define STR_TO_RECOGNIZE 26
+#define STR_TO_RECOGNIZE 28
 #define END 7
 #define MAX_STR_SIZE 8
 #define OFFSET 1
@@ -129,8 +129,9 @@ void insert(int *s, int grade) {
  *
  * */
 
-int grade[STR_TO_RECOGNIZE] = {100000, 10000, 1000, 100, 10, 10000, 10000, 1100, 1100, 100, 100, 10, 10, -100000,
-                               -10000, -1000, -100, -10, -10000, -10000, -1100, -1100, -100, -100, -10, -10};
+int grade[STR_TO_RECOGNIZE] = {100000, 10000, 1000, 100, 10, 100000, 100000, 1100, 1100, 100, 100, 10, 10, -100000,
+                               -10000, -1000, -100, -10, -100000, -100000, -1100, -1100, -100, -100, -10, -10, 100000,
+                               -100000};
 //cautions!! if you change this array, the grade[] also needs changing
 int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
         //WHITE: 0 <= index < 11 BLACK: 11 <= index < STR_TO_RECOGNIZE
@@ -144,8 +145,8 @@ int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
         {VOID,  WHITE, VOID,  END},//10
         //half alive
         //white
-        {BLACK, WHITE, WHITE, WHITE, WHITE, WHITE, VOID,  END},//10000
-        {VOID,  WHITE, WHITE, WHITE, WHITE, WHITE, BLACK, END},//10000
+        {BLACK, WHITE, WHITE, WHITE, WHITE, WHITE, VOID,  END},//100000
+        {VOID,  WHITE, WHITE, WHITE, WHITE, WHITE, BLACK, END},//100000
         {BLACK, WHITE, WHITE, WHITE, WHITE, VOID,  END},//1100
         {VOID,  WHITE, WHITE, WHITE, WHITE, BLACK, END},//1100
         {BLACK, WHITE, WHITE, WHITE, VOID,  END},//100
@@ -162,14 +163,19 @@ int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
         {VOID,  BLACK, VOID,  END},//-10
         //half alive
         //black
-        {WHITE, BLACK, BLACK, BLACK, BLACK, BLACK, VOID,  END},//-10000
-        {VOID,  BLACK, BLACK, BLACK, BLACK, BLACK, WHITE, END},//-10000
+        {WHITE, BLACK, BLACK, BLACK, BLACK, BLACK, VOID,  END},//-100000
+        {VOID,  BLACK, BLACK, BLACK, BLACK, BLACK, WHITE, END},//-100000
         {WHITE, BLACK, BLACK, BLACK, BLACK, VOID,  END},//-1100
         {VOID,  BLACK, BLACK, BLACK, BLACK, WHITE, END},//-1100
         {WHITE, BLACK, BLACK, BLACK, VOID,  END},//-100
         {VOID,  BLACK, BLACK, BLACK, WHITE, END},//-100
         {WHITE, BLACK, BLACK, VOID,  END},//-10
         {VOID,  BLACK, BLACK, WHITE, END},//-10
+
+        //totally dead five
+        {BLACK, WHITE, WHITE, WHITE, WHITE, WHITE, END},//100000
+        {WHITE, BLACK, BLACK, BLACK, BLACK, BLACK, WHITE, END}//-100000
+
 };
 
 void build_AC_fail() {
