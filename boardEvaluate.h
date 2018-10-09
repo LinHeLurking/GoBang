@@ -21,6 +21,8 @@ int grade_estimate(int player_side);
 
 void AC_build();
 
+int pos_estimate(int i, int j, int player_side);
+
 
 
 

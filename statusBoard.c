@@ -16,7 +16,7 @@ void __status_init(boardStatus *boardStatus1) {
     memset(boardStatus1->oblique_lines_1, 0, sizeof(boardStatus1->oblique_lines_1));
     memset(boardStatus1->oblique_lines_2, 0, sizeof(boardStatus1->oblique_lines_2));
     boardStatus1->last_i = boardStatus1->last_j = -1;
-    boardStatus1->white_step = boardStatus1->black_step = 0;
+    boardStatus1->white_steps = boardStatus1->black_steps = 0;
 }
 
 void status_init() {
@@ -36,6 +36,8 @@ int add_piece(int i, int j, int pc) {
     status.oblique_lines_2[i - j + BOARD_SIZE][j] = pc;
     status.last_i = i;
     status.last_j = j;
+    status.white_steps++;
+    status.black_steps++;
     return dfs_add_piece(i, j, pc);
 }
 
@@ -50,5 +52,12 @@ int dfs_add_piece(int i, int j, int piece_color) {
     dfs_status.oblique_lines_2[i - j + BOARD_SIZE][j] = piece_color;
     dfs_status.last_i = i;
     dfs_status.last_j = j;
+    if (piece_color == VOID) {
+        dfs_status.white_steps--;
+        dfs_status.black_steps--;
+    } else {
+        dfs_status.white_steps++;
+        dfs_status.black_steps++;
+    }
     return 1;
 }

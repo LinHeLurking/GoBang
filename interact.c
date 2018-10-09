@@ -6,6 +6,7 @@
 
 #define OFFSET 1
 
+
 //extern int best_i, best_j;
 
 char player_side[3][10] = {
@@ -39,9 +40,11 @@ void human_vs_computer() {
     int human_player = BLACK;
     int computer_player = WHITE;
     output_board();
+#ifdef PRUNE_DEBUG
+    extern int prune_cnt;
+#endif
 
     while (true) {
-
         printf("Round for %s, input the position you want to place the piece\n", player_side[human_player + OFFSET]);
         int i, j;
         read_pos(&i, &j);
@@ -79,6 +82,9 @@ void human_vs_computer() {
 #ifdef DEBUG
         printf("The grade estimate:\nBLACK: %d\nWHITE: %d\n", grade_estimate(BLACK), grade_estimate(WHITE));
         printf("dfs grade: %d\n", choice.grade);
+#endif
+#ifdef PRUNE_DEBUG
+        prune_cnt = 0;
 #endif
 
         win_status = winner_check();

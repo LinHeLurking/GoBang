@@ -18,16 +18,19 @@
 #define VOID 0
 #define HUMAN_VS_HUMAN 0
 #define HUMAN_VS_COMPUTER 1
-#define DFS_DEPTH 2
-#define INF 1000000007
+#define DFS_DEPTH 4
+#define INF 20000000000007
 #define DEBUG
-#define DFS_BOARD_DEBUG
+//#define DFS_BOARD_DEBUG
+#define PRUNE_DEBUG
 
 #define GRADE_DEBUG printf("Direct grade estimate for BLACK: %d\n",grade_estimate(BLACK));printf("Direct grade estimate for WHITE: %d\n",grade_estimate(WHITE));
 
 typedef struct {
-    int grade;
+    long long grade;
     int i, j;
+    //this is used for searching
+    long long grade_estimate;
 } drop_choice;
 
 
