@@ -35,10 +35,6 @@ void status_init() {
     __status_init(&dfs_status);
 }
 
-/*  return -1 if that position is occupied
- *  return 0 if pc==0, which means there's nothing to do
- *  return 1 -> successful
- * */
 
 void update_line_grade_row(int row_index, int player_side) {
     int _grade = 0;
@@ -117,8 +113,9 @@ void update_line_grade_oblique_delta(int oblique_delta_index, int player_side) {
     int cur = 0;
     int _grade = 0;
     for (int k = -1; k <= BOARD_SIZE; ++k) {
-        int ch = k == int_max(-1, -1 - oblique_delta_index) || int_min(BOARD_SIZE - oblique_delta_index, BOARD_SIZE) ?
-                 0 - player_side : dfs_status.oblique_line_delta[oblique_delta_index + BOARD_SIZE][k];
+        int ch =
+                k == int_max(-1, -1 - oblique_delta_index) || k == int_min(BOARD_SIZE - oblique_delta_index, BOARD_SIZE)
+                ? 0 - player_side : dfs_status.oblique_line_delta[oblique_delta_index + BOARD_SIZE][k];
         while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
             cur = tr[cur].fail;
         }
@@ -135,7 +132,7 @@ void update_line_grade_oblique_delta(int oblique_delta_index, int player_side) {
     //dfs_status.total_grade[PLAYER_IN_LINE] -= dfs_status.oblique_delta_grade[PLAYER_IN_LINE][oblique_delta_index];
     //dfs_status.total_grade[PLAYER_IN_LINE] += _grade;
 
-    dfs_status.oblique_delta_grade[PLAYER_IN_LINE][oblique_delta_index] = _grade;
+    dfs_status.oblique_delta_grade[PLAYER_IN_LINE][oblique_delta_index + BOARD_SIZE] = _grade;
 
 }
 
@@ -150,6 +147,12 @@ void update_grade(int i, int j) {
     update_line_grade_oblique_sum(i + j, BLACK);
     update_line_grade_oblique_delta(i - j, BLACK);
 }
+
+
+/*  return -1 if that position is occupied
+ *  return 0 if pc==0, which means there's nothing to do
+ *  return 1 -> successful
+ * */
 
 int add_piece(int i, int j, int piece_color) {
     if (status.board[i][j] != VOID)

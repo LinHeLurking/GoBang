@@ -17,8 +17,8 @@ typedef struct {
     //0 for black and 1 for white orz
     int row_grade[2][BOARD_SIZE];
     int col_grade[2][BOARD_SIZE];
-    int oblique_sum_grade[2][2 * BOARD_SIZE];
-    int oblique_delta_grade[2][2 * BOARD_SIZE];
+    int oblique_sum_grade[2][2 * BOARD_SIZE + 5];
+    int oblique_delta_grade[2][2 * BOARD_SIZE + 5];
     //long long total_grade[2];
 
     //these are used to record the last place and the total steps
