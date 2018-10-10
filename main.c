@@ -4,6 +4,7 @@
 #include "boardEvaluate.h"
 #include "interact.h"
 #include "mathFunc.h"
+#include "AC_Automachine.h"
 
 void init() {
     AC_build();

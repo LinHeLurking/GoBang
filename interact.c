@@ -7,8 +7,6 @@
 #define OFFSET 1
 
 
-//extern int best_i, best_j;
-
 char player_side[3][10] = {
         " black",
         " ",
@@ -18,9 +16,11 @@ char player_side[3][10] = {
 void play() {
     printf("Welcome to Amadeus GoBang game!\nPlease input the code of corresponding mode:\n");
     int mode = -1;
+    char tmp;
     while (mode == -1) {
         printf("Human vs. human: 0\nHuman vs. computer: 1\n");
-        scanf("%d", &mode);
+        scanf("%c", &tmp);
+        mode = tmp - '0';
         switch (mode) {
             case HUMAN_VS_HUMAN:
                 human_vs_human();
@@ -72,15 +72,18 @@ void human_vs_computer() {
         }
         drop_choice choice = alpha_beta_dfs(computer_player, DFS_DEPTH, 0 - INF, INF);
         st = add_piece(choice.i, choice.j, computer_player);
+
         output_board();
-        //dfs_output_board();
+
+
+
         if (st == -1) {
             printf("Search error!\n");
             exit(-1);
         }
 
 #ifdef DEBUG
-        printf("The grade estimate:\nBLACK: %d\nWHITE: %d\n", grade_estimate(BLACK), grade_estimate(WHITE));
+        printf("The grade estimate:\nBLACK: %lld\nWHITE: %lld\n", grade_estimate(BLACK), grade_estimate(WHITE));
         printf("dfs grade: %lld\n", choice.grade);
 #endif
 #ifdef PRUNE_DEBUG
@@ -105,7 +108,7 @@ void human_vs_human() {
     while (true) {
         output_board();
 #ifdef DEBUG
-        printf("The grade estimate:\nBLACK: %d\nWHITE: %d\n", grade_estimate(BLACK), grade_estimate(WHITE));
+        printf("The grade estimate:\nBLACK: %lld\nWHITE: %lld\n", grade_estimate(BLACK), grade_estimate(WHITE));
 #endif
         printf("Round for %s, input the position you want to place the piece\n", player_side[player + OFFSET]);
         int i, j;

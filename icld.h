@@ -23,8 +23,20 @@
 #define DEBUG
 //#define DFS_BOARD_DEBUG
 #define PRUNE_DEBUG
+#define PLYAER_SIDE_DEBUG
 
-#define GRADE_DEBUG printf("Direct grade estimate for BLACK: %d\n",grade_estimate(BLACK));printf("Direct grade estimate for WHITE: %d\n",grade_estimate(WHITE));
+#define TRIE_SIZE 100
+#define STATUS_NUM 3
+#define STR_TO_RECOGNIZE 28
+#define END 7
+#define MAX_STR_SIZE 8
+#define OFFSET 1
+
+#define GRADE_DEBUG printf("Direct grade estimate for BLACK: %lld\n",grade_estimate(BLACK));printf("Direct grade estimate for WHITE: %lld\n",grade_estimate(WHITE));
+
+#define SET0(a) memset(a,0,sizeof(a))
+
+#define PLAYER_IN_LINE player_side==1?1:0
 
 typedef struct {
     long long grade;
@@ -33,6 +45,10 @@ typedef struct {
     long double grade_estimate;
 } drop_choice;
 
-
+typedef struct {
+    int trans[3];
+    int grade;
+    int fail;
+} trie;
 
 #endif //GOBANG_ICLD_H

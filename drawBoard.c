@@ -3,10 +3,10 @@
 //
 
 #include "drawBoard.h"
-#include "icld.h"
 
 extern boardStatus status;
 extern boardStatus dfs_status;
+extern drop_record record[BOARD_SIZE * BOARD_SIZE + 5];
 
 char drawing_board[BOARD_SIZE][BOARD_SIZE * CHAR_SIZE * 2] = {
         "┏━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┳━┓",
@@ -54,6 +54,20 @@ void output_board() {
         }
         printf("%s\n", drawing_board[i]);
     }
+
+#ifdef PLYAER_SIDE_DEBUG
+    printf("Last player: ");
+    switch (record[status.steps].player) {
+        case WHITE:
+            printf("white\n");
+            break;
+        case BLACK:
+            printf("black\n");
+            break;
+        default:
+            printf("No one\n");
+    }
+#endif
 }
 
 void dfs_output_board() {

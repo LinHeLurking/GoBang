@@ -14,7 +14,6 @@ extern boardStatus dfs_status;
 
 void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_player_side) {
     *num = 0;
-
     for (int i = 0; i < BOARD_SIZE; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
             if (dfs_status.board[i][j] == VOID) {
@@ -22,20 +21,24 @@ void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_playe
                 long long opponent_original_grade_estimate = pos_estimate(i, j, 0 - search_player_side);
                 drop_choice1[*num].i = i;
                 drop_choice1[*num].j = j;
+
                 dfs_add_piece(i, j, search_player_side);
+
                 long long my_new_grade_estimate = pos_estimate(i, j, search_player_side);
                 long long opponent_new_grade_estimate = pos_estimate(i, j, 0 - search_player_side);
                 long long my_delta = (my_new_grade_estimate - my_original_grade_estimate) * search_player_side;
                 long long opponent_delta =
                         (opponent_new_grade_estimate - opponent_original_grade_estimate) * (0 - search_player_side);
                 drop_choice1[*num].grade_estimate = my_delta - 1.1 * opponent_delta;
+
                 dfs_add_piece(i, j, VOID);
+
                 ++(*num);
             }
         }
     }
     choice_sort(drop_choice1, *num);
-    switch (dfs_status.white_steps + dfs_status.black_steps) {
+    switch (dfs_status.steps) {
         case 1:
             *num = 9;
             break;
@@ -43,7 +46,7 @@ void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_playe
             *num = 16;
             break;
         default:
-            *num = int_min(*num, 60);
+            *num = int_min(*num, 50);
             break;
     }
 }

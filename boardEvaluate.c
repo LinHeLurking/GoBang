@@ -5,16 +5,11 @@
 #include "boardEvaluate.h"
 
 
-#define TRIE_SIZE 100
-#define STATUS_NUM 3
-#define STR_TO_RECOGNIZE 28
-#define END 7
-#define MAX_STR_SIZE 8
-#define OFFSET 1
-
-
 extern boardStatus status;
 extern boardStatus dfs_status;
+extern drop_record record[BOARD_SIZE * BOARD_SIZE + 5];
+//extern trie tr[TRIE_SIZE];
+
 
 //1==white wins -1== black wins 0==no one wins
 int winner_check() {
@@ -87,216 +82,18 @@ int winner_check() {
 }
 
 
-/*  evaluate the grade of this status board using AC auto-machine
- *  0111110 -> 100000
- *  011110 -> 10000
- *  01110 -> 1000
- *  0110 -> 100
- *  010 -> 10
- *
- *  01111-1/-111110 -> 1000
- *  0111-1/-11110 -> 100
- *  011-1/-1110 -> 10
- *
- * */
-
-int grade[STR_TO_RECOGNIZE] = {100000, 10000, 1000, 100, 10, 100000, 100000, 1100, 1100, 100, 100, 10, 10, -100000,
-                               -10000, -1000, -100, -10, -100000, -100000, -1100, -1100, -100, -100, -10, -10, 100000,
-                               -100000};
-//cautions!! if you change this array, the grade[] also needs changing
-int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
-        //WHITE: 0 <= index < 11 BLACK: 11 <= index < STR_TO_RECOGNIZE
-
-        //alive
-        //white
-        {VOID,  WHITE, WHITE, WHITE, WHITE, WHITE, VOID,  END},//100000
-        {VOID,  WHITE, WHITE, WHITE, WHITE, VOID,  END},//10000
-        {VOID,  WHITE, WHITE, WHITE, VOID,  END},//1000
-        {VOID,  WHITE, WHITE, VOID,  END},//100
-        {VOID,  WHITE, VOID,  END},//10
-        //half alive
-        //white
-        {BLACK, WHITE, WHITE, WHITE, WHITE, WHITE, VOID,  END},//100000
-        {VOID,  WHITE, WHITE, WHITE, WHITE, WHITE, BLACK, END},//100000
-        {BLACK, WHITE, WHITE, WHITE, WHITE, VOID,  END},//1100
-        {VOID,  WHITE, WHITE, WHITE, WHITE, BLACK, END},//1100
-        {BLACK, WHITE, WHITE, WHITE, VOID,  END},//100
-        {VOID,  WHITE, WHITE, WHITE, BLACK, END},//100
-        {BLACK, WHITE, WHITE, VOID,  END},//10
-        {VOID,  WHITE, WHITE, BLACK, END},//10
-
-        //alive
-        //black
-        {VOID,  BLACK, BLACK, BLACK, BLACK, BLACK, VOID,  END},//-100000
-        {VOID,  BLACK, BLACK, BLACK, BLACK, VOID,  END},//-10000
-        {VOID,  BLACK, BLACK, BLACK, VOID,  END},//-1000
-        {VOID,  BLACK, BLACK, VOID,  END},//-100
-        {VOID,  BLACK, VOID,  END},//-10
-        //half alive
-        //black
-        {WHITE, BLACK, BLACK, BLACK, BLACK, BLACK, VOID,  END},//-100000
-        {VOID,  BLACK, BLACK, BLACK, BLACK, BLACK, WHITE, END},//-100000
-        {WHITE, BLACK, BLACK, BLACK, BLACK, VOID,  END},//-1100
-        {VOID,  BLACK, BLACK, BLACK, BLACK, WHITE, END},//-1100
-        {WHITE, BLACK, BLACK, BLACK, VOID,  END},//-100
-        {VOID,  BLACK, BLACK, BLACK, WHITE, END},//-100
-        {WHITE, BLACK, BLACK, VOID,  END},//-10
-        {VOID,  BLACK, BLACK, WHITE, END},//-10
-
-        //totally dead five
-        {BLACK, WHITE, WHITE, WHITE, WHITE, WHITE, END},//100000
-        {WHITE, BLACK, BLACK, BLACK, BLACK, BLACK, WHITE, END}//-100000
-
-};
-
-
-trie tr[TRIE_SIZE];
-
-int root = 0;
-int count = 0;
-
-void AC_init() {
-    root = count = 0;
-    for (int i = 0; i < TRIE_SIZE; ++i) {
-        tr[i].grade = 0;
-        tr[i].fail = -1;
-        for (int j = 0; j < STATUS_NUM; ++j) {
-            tr[i].trans[j] = -1;
-        }
-    }
-}
-
-void insert(int *s, int grade) {
-    int p = root;
-    for (int *c = s; *c != END; ++c) {
-        int tmp = (*c);
-        if (tr[p].trans[tmp + OFFSET] == -1) {
-            tr[p].trans[tmp + OFFSET] = ++count;
-        }
-        p = tr[p].trans[tmp + OFFSET];
-        if ((*(c + 1)) == END)
-            tr[p].grade = grade;
-    }
-}
-
-
-void build_AC_fail() {
-    int AC_list[TRIE_SIZE];
-    memset(AC_list, 0, sizeof(AC_list));
-    int head = 0, tail = 0;
-    AC_list[tail++] = root;
-    while (head < tail) {
-        int cur = AC_list[head++];
-        for (int i = 0; i < STATUS_NUM; ++i) {
-            if (tr[cur].trans[i] != -1) {
-                if (cur == root) { tr[tr[cur].trans[i]].fail = root; }
-                else {
-                    int p = tr[cur].fail;
-                    while (p != -1) {
-                        if (tr[p].trans[i] != -1) {
-                            tr[tr[cur].trans[i]].fail = tr[p].trans[i];
-                            break;
-                        }
-                        p = tr[p].fail;
-                    }
-                    if (p == -1) { tr[tr[cur].trans[i]].fail = root; }
-                }
-                AC_list[tail++] = tr[cur].trans[i];
-            }
-        }
-    }
-}
-
-void AC_build() {
-    AC_init();
-    for (int i = 0; i < STR_TO_RECOGNIZE; ++i) {
-        insert(pattern[i], grade[i]);
-    }
-    build_AC_fail();
-}
-
-
-
-
 int pos_estimate(int i, int j, int player_side) {
-    int grade = 0;
-    int cur = 0;
-    for (int k = -1; k <= BOARD_SIZE; ++k) {
-        int ch = k == -1 || k == BOARD_SIZE ? 0 - player_side : dfs_status.board[i][k];
-        while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
-            cur = tr[cur].fail;
-        }
-        cur = tr[cur].trans[ch + OFFSET];
-        cur = cur == -1 ? 0 : cur;
-        int tmp = cur;
-        while (tmp != 0 && tr[tmp].grade != 0) {
-            if ((player_side == WHITE && tr[tmp].grade > 0) || (player_side == BLACK && tr[tmp].grade < 0)) {
-                grade += tr[tmp].grade;
-            }
-            tmp = tr[tmp].fail;
-        }
-    }
-
-    cur = 0;
-    for (int k = -1; k <= BOARD_SIZE; ++k) {
-        int ch = k == -1 || k == BOARD_SIZE ? 0 - player_side : dfs_status.board[k][j];
-        while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
-            cur = tr[cur].fail;
-        }
-        cur = tr[cur].trans[ch + OFFSET];
-        cur = cur == -1 ? 0 : cur;
-        int tmp = cur;
-        while (tmp != 0 && tr[tmp].grade != 0) {
-            if ((player_side == WHITE && tr[tmp].grade > 0) || (player_side == BLACK && tr[tmp].grade < 0)) {
-                grade += tr[tmp].grade;
-            }
-            tmp = tr[tmp].fail;
-        }
-    }
-
-    cur = 0;
-    int sum = i + j;
-    for (int k = -1; k <= BOARD_SIZE; ++k) {
-        int ch = k == -1 || k == min(sum + 1, BOARD_SIZE) ? 0 - player_side
-                                                          : dfs_status.oblique_lines_1[sum][k];
-        while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
-            cur = tr[cur].fail;
-        }
-        cur = tr[cur].trans[ch + OFFSET];
-        cur = cur == -1 ? 0 : cur;
-        int tmp = cur;
-        while (tmp != 0 && tr[tmp].grade != 0) {
-            if ((player_side == WHITE && tr[tmp].grade > 0) || (player_side == BLACK && tr[tmp].grade < 0)) {
-                grade += tr[tmp].grade;
-            }
-            tmp = tr[tmp].fail;
-        }
-    }
-
-    cur = 0;
-    int delta = i - j;
-    for (int k = -1; k <= BOARD_SIZE; ++k) {
-        int ch = delta + k == -1 || k == BOARD_SIZE ? 0 - player_side : dfs_status.oblique_lines_2[
-                delta + BOARD_SIZE][k];
-        while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
-            cur = tr[cur].fail;
-        }
-        cur = tr[cur].trans[ch + OFFSET];
-        cur = cur == -1 ? 0 : cur;
-        int tmp = cur;
-        while (tmp != 0 && tr[tmp].grade != 0) {
-            if ((player_side == WHITE && tr[tmp].grade > 0) || (player_side == BLACK && tr[tmp].grade < 0)) {
-                grade += tr[tmp].grade;
-            }
-            tmp = tr[tmp].fail;
-        }
-    }
-    return grade;
+    int _grade = 0;
+    _grade += dfs_status.row_grade[PLAYER_IN_LINE][i] + dfs_status.col_grade[PLAYER_IN_LINE][j];
+    _grade += dfs_status.oblique_sum_grade[PLAYER_IN_LINE][i + j] +
+              dfs_status.oblique_delta_grade[PLAYER_IN_LINE][i - j + BOARD_SIZE];
+    return _grade;
 }
 
 
-int grade_estimate(int player_side) {
-    //TODO: this function needs modified to a incremental method!(using pos_estimate)
+long long grade_estimate(int player_side) {
+
+    /*
     //grades in nodes of trie is for WHITE if they are larger than 0, and vice versa.
     int grade = 0;
     //loop for row
@@ -345,7 +142,7 @@ int grade_estimate(int player_side) {
         int cur = 0;
         for (int j = -1; j <= BOARD_SIZE; ++j) {
             int ch = j == -1 || j == min(sum + 1, BOARD_SIZE) ? 0 - player_side
-                                                              : dfs_status.oblique_lines_1[sum][j];
+                                                              : dfs_status.oblique_line_sum[sum][j];
             while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
                 cur = tr[cur].fail;
             }
@@ -363,7 +160,7 @@ int grade_estimate(int player_side) {
     for (int delta = -14; delta < BOARD_SIZE; ++delta) {
         int cur = 0;
         for (int j = -1; j <= BOARD_SIZE; ++j) {
-            int ch = delta + j == -1 || j == BOARD_SIZE ? 0 - player_side : dfs_status.oblique_lines_2[
+            int ch = delta + j == -1 || j == BOARD_SIZE ? 0 - player_side : dfs_status.oblique_line_delta[
                     delta + BOARD_SIZE][j];
             while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
                 cur = tr[cur].fail;
@@ -380,8 +177,24 @@ int grade_estimate(int player_side) {
         }
     }
     return grade;
-}
+     */
 
+    long long _grade = 0;
+    //_grade = dfs_status.total_grade[PLAYER_IN_LINE];
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        _grade += dfs_status.row_grade[PLAYER_IN_LINE][i];
+    }
+    for (int j = 0; j < BOARD_SIZE; ++j) {
+        _grade += dfs_status.col_grade[PLAYER_IN_LINE][j];
+    }
+    for (int sum = 0; sum < 2 * BOARD_SIZE; ++sum) {
+        _grade += dfs_status.oblique_sum_grade[PLAYER_IN_LINE][sum];
+    }
+    for (int delta = -14; delta < BOARD_SIZE; ++delta) {
+        _grade += dfs_status.oblique_delta_grade[PLAYER_IN_LINE][delta + BOARD_SIZE];
+    }
+    return _grade;
+}
 
 
 #undef TRIE_SIZE
