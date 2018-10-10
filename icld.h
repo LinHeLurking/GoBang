@@ -30,7 +30,7 @@ typedef struct {
     long long grade;
     int i, j;
     //this is used for searching
-    long long grade_estimate;
+    long double grade_estimate;
 } drop_choice;
 
 

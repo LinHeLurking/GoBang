@@ -28,14 +28,24 @@ void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_playe
                 long long my_delta = (my_new_grade_estimate - my_original_grade_estimate) * search_player_side;
                 long long opponent_delta =
                         (opponent_new_grade_estimate - opponent_original_grade_estimate) * (0 - search_player_side);
-                drop_choice1[*num].grade_estimate = my_delta - opponent_delta;
+                drop_choice1[*num].grade_estimate = my_delta - 1.1 * opponent_delta;
                 dfs_add_piece(i, j, VOID);
                 ++(*num);
             }
         }
     }
     choice_sort(drop_choice1, *num);
-    *num = int_min(*num, 100);
+    switch (dfs_status.white_steps + dfs_status.black_steps) {
+        case 1:
+            *num = 9;
+            break;
+        case 2:
+            *num = 16;
+            break;
+        default:
+            *num = int_min(*num, 60);
+            break;
+    }
 }
 
 #ifdef PRUNE_DEBUG
@@ -80,7 +90,10 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
             if (beta < alpha) {
 #ifdef PRUNE_DEBUG
                 ++prune_cnt;
-                if (!(prune_cnt % 1000))printf("prune_cnt: %d\n", prune_cnt);
+                if (!(prune_cnt % 1000)) {
+                    printf("prune_cnt: %d\n", prune_cnt);
+                    printf("dfs depth: %d\n", DFS_DEPTH - search_depth);
+                }
 #endif
                 return result;
             }
@@ -107,7 +120,10 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
             if (beta < alpha) {
 #ifdef PRUNE_DEBUG
                 ++prune_cnt;
-                if (!(prune_cnt % 1000))printf("prune_cnt: %d\n", prune_cnt);
+                if (!(prune_cnt % 1000)) {
+                    printf("prune_cnt: %d\n", prune_cnt);
+                    printf("dfs depth: %d\n", DFS_DEPTH - search_depth);
+                }
 #endif
                 return result;
             }

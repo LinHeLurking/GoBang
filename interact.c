@@ -81,7 +81,7 @@ void human_vs_computer() {
 
 #ifdef DEBUG
         printf("The grade estimate:\nBLACK: %d\nWHITE: %d\n", grade_estimate(BLACK), grade_estimate(WHITE));
-        printf("dfs grade: %d\n", choice.grade);
+        printf("dfs grade: %lld\n", choice.grade);
 #endif
 #ifdef PRUNE_DEBUG
         prune_cnt = 0;
