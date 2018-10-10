@@ -216,8 +216,6 @@ void AC_build() {
 }
 
 
-
-
 int pos_estimate(int i, int j, int player_side) {
     int grade = 0;
     int cur = 0;
@@ -257,8 +255,8 @@ int pos_estimate(int i, int j, int player_side) {
     cur = 0;
     int sum = i + j;
     for (int k = -1; k <= BOARD_SIZE; ++k) {
-        int ch = k == -1 || k == min(sum + 1, BOARD_SIZE) ? 0 - player_side
-                                                          : dfs_status.oblique_lines_1[sum][k];
+        int ch = k == int_max(-1, sum - 15) || k == min(sum + 1, BOARD_SIZE) ? 0 - player_side
+                                                                             : dfs_status.oblique_lines_1[sum][k];
         while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
             cur = tr[cur].fail;
         }
@@ -344,8 +342,9 @@ int grade_estimate(int player_side) {
     for (int sum = 0; sum < 2 * BOARD_SIZE; ++sum) {
         int cur = 0;
         for (int j = -1; j <= BOARD_SIZE; ++j) {
-            int ch = j == -1 || j == min(sum + 1, BOARD_SIZE) ? 0 - player_side
-                                                              : dfs_status.oblique_lines_1[sum][j];
+            //int_max(-1, sum - 15)
+            int ch = j == int_max(-1, sum - 15) || j == int_min(sum + 1, BOARD_SIZE) ? 0 - player_side
+                                                                                     : dfs_status.oblique_lines_1[sum][j];
             while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
                 cur = tr[cur].fail;
             }
@@ -363,8 +362,9 @@ int grade_estimate(int player_side) {
     for (int delta = -14; delta < BOARD_SIZE; ++delta) {
         int cur = 0;
         for (int j = -1; j <= BOARD_SIZE; ++j) {
-            int ch = delta + j == -1 || j == BOARD_SIZE ? 0 - player_side : dfs_status.oblique_lines_2[
-                    delta + BOARD_SIZE][j];
+            int ch = j == int_max(-1, -1 - delta) || j == int_min(15 - delta, BOARD_SIZE) ? 0 - player_side
+                                                                                          : dfs_status.oblique_lines_2[
+                             delta + BOARD_SIZE][j];
             while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
                 cur = tr[cur].fail;
             }
@@ -381,7 +381,6 @@ int grade_estimate(int player_side) {
     }
     return grade;
 }
-
 
 
 #undef TRIE_SIZE
