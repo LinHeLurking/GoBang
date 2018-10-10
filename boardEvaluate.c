@@ -343,7 +343,7 @@ int grade_estimate(int player_side) {
         int cur = 0;
         for (int j = -1; j <= BOARD_SIZE; ++j) {
             //int_max(-1, sum - 15)
-            int ch = j == int_max(-1, sum - 15) || j == int_min(sum + 1, BOARD_SIZE) ? 0 - player_side
+            int ch = j == int_max(-1, sum - BOARD_SIZE) || j == int_min(sum + 1, BOARD_SIZE) ? 0 - player_side
                                                                                      : dfs_status.oblique_lines_1[sum][j];
             while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
                 cur = tr[cur].fail;
@@ -362,7 +362,7 @@ int grade_estimate(int player_side) {
     for (int delta = -14; delta < BOARD_SIZE; ++delta) {
         int cur = 0;
         for (int j = -1; j <= BOARD_SIZE; ++j) {
-            int ch = j == int_max(-1, -1 - delta) || j == int_min(15 - delta, BOARD_SIZE) ? 0 - player_side
+            int ch = j == int_max(-1, -1 - delta) || j == int_min(BOARD_SIZE - delta, BOARD_SIZE) ? 0 - player_side
                                                                                           : dfs_status.oblique_lines_2[
                              delta + BOARD_SIZE][j];
             while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
