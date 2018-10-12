@@ -29,7 +29,7 @@ void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_playe
                 long long my_delta = (my_new_grade_estimate - my_original_grade_estimate) * search_player_side;
                 long long opponent_delta =
                         (opponent_new_grade_estimate - opponent_original_grade_estimate) * (0 - search_player_side);
-                drop_choice1[*num].grade_estimate = my_delta - 1.1 * opponent_delta;
+                drop_choice1[*num].grade_estimate = my_delta - 1.06 * opponent_delta;
 
                 dfs_add_piece(i, j, VOID);
 

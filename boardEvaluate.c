@@ -77,7 +77,6 @@ int winner_check() {
                 return -1;
         }
     }
-
     return 0;
 }
 
@@ -180,7 +179,9 @@ long long grade_estimate(int player_side) {
      */
 
     long long _grade = 0;
-    //_grade = dfs_status.total_grade[PLAYER_IN_LINE];
+    _grade = dfs_status.total_grade[PLAYER_IN_LINE];
+
+    /*
     for (int i = 0; i < BOARD_SIZE; ++i) {
         _grade += dfs_status.row_grade[PLAYER_IN_LINE][i];
     }
@@ -193,6 +194,14 @@ long long grade_estimate(int player_side) {
     for (int delta = -14; delta < BOARD_SIZE; ++delta) {
         _grade += dfs_status.oblique_delta_grade[PLAYER_IN_LINE][delta + BOARD_SIZE];
     }
+    */
+
+#ifdef ESTIMATE_METHOD_DEBUG
+    if (dfs_status.total_grade[PLAYER_IN_LINE] != _grade) {
+        printf("Not equal!!\n");
+    }
+#endif
+
     return _grade;
 }
 
