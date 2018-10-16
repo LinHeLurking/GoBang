@@ -3,6 +3,7 @@
 //
 
 #include "statusSearch.h"
+//TODO: zorbrist!!
 
 extern boardStatus status;
 extern boardStatus dfs_status;
@@ -115,7 +116,6 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
             tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
             if (tmp.grade < result.grade) {
-                ++prune_cnt;
                 result = tmp;
             }
             dfs_add_piece(tmp.i, tmp.j, VOID);
