@@ -14,7 +14,10 @@
 boardStatus status;
 boardStatus dfs_status;
 drop_record record[BOARD_SIZE * BOARD_SIZE + 5];
-extern trie tr[TRIE_SIZE];;
+extern trie tr[TRIE_SIZE];
+extern unsigned long long hash_key[BOARD_SIZE][BOARD_SIZE];
+extern int cache_grade[2][CACHE_SIZE];
+extern int cache_grade_found_depth[2][CACHE_SIZE];
 
 void __status_init(boardStatus *boardStatus1) {
     SET0(boardStatus1->board);
@@ -146,6 +149,19 @@ void update_grade(int i, int j) {
     update_line_grade_col(j, BLACK);
     update_line_grade_oblique_sum(i + j, BLACK);
     update_line_grade_oblique_delta(i - j, BLACK);
+
+}
+
+unsigned long long get_board_hash() {
+    unsigned long long h = 0;
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            if (dfs_status.board[i][j]) {
+                h ^= hash_key[i][j];
+            }
+        }
+    }
+    return h;
 }
 
 
@@ -154,34 +170,38 @@ void update_grade(int i, int j) {
  *  return 1 -> successful
  * */
 
-int add_piece(int i, int j, int piece_color) {
+int add_piece(int i, int j, int player_side) {
     if (status.board[i][j] != VOID)
         return -1;
-    status.board[i][j] = piece_color;
-    status.oblique_line_sum[i + j][j] = piece_color;
-    status.oblique_line_delta[i - j + BOARD_SIZE][j] = piece_color;
+    status.board[i][j] = player_side;
+    status.oblique_line_sum[i + j][j] = player_side;
+    status.oblique_line_delta[i - j + BOARD_SIZE][j] = player_side;
     status.steps++;
-    return dfs_add_piece(i, j, piece_color);
+    return dfs_add_piece(i, j, player_side);
 }
 
 /*  return -1 if that position is occupied
  *  return 1 -> successful
  * */
-int dfs_add_piece(int i, int j, int piece_color) {
-    if (dfs_status.board[i][j] != VOID && piece_color != VOID)
+int dfs_add_piece(int i, int j, int player_side) {
+    if (dfs_status.board[i][j] != VOID && player_side != VOID)
         return -1;
-    dfs_status.board[i][j] = piece_color;
-    dfs_status.oblique_line_sum[i + j][j] = piece_color;
-    dfs_status.oblique_line_delta[i - j + BOARD_SIZE][j] = piece_color;
-    if (piece_color == VOID) {
+    dfs_status.board[i][j] = player_side;
+    dfs_status.oblique_line_sum[i + j][j] = player_side;
+    dfs_status.oblique_line_delta[i - j + BOARD_SIZE][j] = player_side;
+    if (player_side == VOID) {
         dfs_status.steps--;
     } else {
         dfs_status.steps++;
         record[dfs_status.steps].i = i;
         record[dfs_status.steps].j = j;
-        record[dfs_status.steps].player = piece_color;
+        record[dfs_status.steps].player = player_side;
     }
+
+    //hash_key[i][j] ^= get_board_hash();
+
     update_grade(i, j);
+
     return 1;
 }
 

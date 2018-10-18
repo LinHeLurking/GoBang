@@ -11,6 +11,7 @@ extern drop_record record[BOARD_SIZE * BOARD_SIZE + 5];
 //extern trie tr[TRIE_SIZE];
 
 
+
 //1==white wins -1== black wins 0==no one wins
 int winner_check() {
     int continuous5[5] = {};
@@ -178,6 +179,7 @@ long long grade_estimate(int player_side) {
     }
     return grade;
      */
+
 
     long long _grade = 0;
     //_grade = dfs_status.total_grade[PLAYER_IN_LINE];

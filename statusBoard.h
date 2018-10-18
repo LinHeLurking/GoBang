@@ -1,12 +1,13 @@
 //
 // Created by Nine_yota on 2018-09-29.
 //
-#include "icld.h"
-#include "AC_Automachine.h"
+
 
 #ifndef GOBANG_STATUSBOARD_H
 #define GOBANG_STATUSBOARD_H
-
+#include "icld.h"
+#include "AC_Automachine.h"
+#include "Zoribrist_hash.h"
 typedef struct {
     //these are used to record the board status
     int board[BOARD_SIZE][BOARD_SIZE];
@@ -47,5 +48,6 @@ void update_grade(int i, int j);
 
 void status_init();
 
+unsigned long long get_board_hash();
 
 #endif //GOBANG_STATUSBOARD_H

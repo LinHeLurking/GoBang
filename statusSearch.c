@@ -6,6 +6,9 @@
 
 extern boardStatus status;
 extern boardStatus dfs_status;
+extern unsigned long long hash_key[BOARD_SIZE][BOARD_SIZE];
+extern int cache_grade[2][CACHE_SIZE];
+extern int cache_grade_found_depth[2][CACHE_SIZE];
 
 /*
  *  DFS starts here
