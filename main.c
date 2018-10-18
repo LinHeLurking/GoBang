@@ -55,20 +55,11 @@ void test() {
     GRADE_DEBUG
 }
 
-void math_test() {
-    int a[10] = {123, 1235, 123, 78456, 2345, 4586, 235, 345678, 1234, 23456};
-    int_sort(a, 10);
-    for (int i = 0; i < 10; ++i) {
-        printf("%d  ", a[i]);
-    }
-    printf("\n");
-}
 
 int main() {
     init();
     play();
     //test();
-    //math_test();
 
     return 0;
 }

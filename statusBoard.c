@@ -27,8 +27,7 @@ void __status_init(boardStatus *boardStatus1) {
     SET0(boardStatus1->col_grade);
     SET0(boardStatus1->oblique_sum_grade);
     SET0(boardStatus1->oblique_delta_grade);
-    //SET0(boardStatus1->total_grade);
-
+    SET0(boardStatus1->total_grade);
     boardStatus1->last_i = boardStatus1->last_j = -1;
     boardStatus1->steps = 0;
 }
@@ -57,8 +56,8 @@ void update_line_grade_row(int row_index, int player_side) {
             tmp = tr[tmp].fail;
         }
     }
-    //dfs_status.total_grade[PLAYER_IN_LINE] -= dfs_status.row_grade[PLAYER_IN_LINE][row_index];
-    //dfs_status.total_grade[PLAYER_IN_LINE] += _grade;
+    dfs_status.total_grade[PLAYER_IN_LINE] -= dfs_status.row_grade[PLAYER_IN_LINE][row_index];
+    dfs_status.total_grade[PLAYER_IN_LINE] += _grade;
 
     dfs_status.row_grade[PLAYER_IN_LINE][row_index] = _grade;
 }
@@ -81,8 +80,8 @@ void update_line_grade_col(int col_index, int player_side) {
             tmp = tr[tmp].fail;
         }
     }
-    //dfs_status.total_grade[PLAYER_IN_LINE] -= dfs_status.col_grade[PLAYER_IN_LINE][col_index];
-    //dfs_status.total_grade[PLAYER_IN_LINE] += _grade;
+    dfs_status.total_grade[PLAYER_IN_LINE] -= dfs_status.col_grade[PLAYER_IN_LINE][col_index];
+    dfs_status.total_grade[PLAYER_IN_LINE] += _grade;
 
     dfs_status.col_grade[PLAYER_IN_LINE][col_index] = _grade;
 }
@@ -106,8 +105,8 @@ void update_line_grade_oblique_sum(int oblique_sum_index, int player_side) {
             tmp = tr[tmp].fail;
         }
     }
-    //dfs_status.total_grade[PLAYER_IN_LINE] -= dfs_status.oblique_sum_grade[PLAYER_IN_LINE][oblique_sum_index];
-    //dfs_status.total_grade[PLAYER_IN_LINE] += _grade;
+    dfs_status.total_grade[PLAYER_IN_LINE] -= dfs_status.oblique_sum_grade[PLAYER_IN_LINE][oblique_sum_index];
+    dfs_status.total_grade[PLAYER_IN_LINE] += _grade;
 
     dfs_status.oblique_sum_grade[PLAYER_IN_LINE][oblique_sum_index] = _grade;
 }
@@ -132,8 +131,8 @@ void update_line_grade_oblique_delta(int oblique_delta_index, int player_side) {
             tmp = tr[tmp].fail;
         }
     }
-    //dfs_status.total_grade[PLAYER_IN_LINE] -= dfs_status.oblique_delta_grade[PLAYER_IN_LINE][oblique_delta_index];
-    //dfs_status.total_grade[PLAYER_IN_LINE] += _grade;
+    dfs_status.total_grade[PLAYER_IN_LINE] -= dfs_status.oblique_delta_grade[PLAYER_IN_LINE][oblique_delta_index+BOARD_SIZE];
+    dfs_status.total_grade[PLAYER_IN_LINE] += _grade;
 
     dfs_status.oblique_delta_grade[PLAYER_IN_LINE][oblique_delta_index + BOARD_SIZE] = _grade;
 
@@ -204,4 +203,3 @@ int dfs_add_piece(int i, int j, int player_side) {
 
     return 1;
 }
-

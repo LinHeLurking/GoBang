@@ -3,6 +3,7 @@
 //
 
 #include "statusSearch.h"
+//TODO: zorbrist!!
 
 extern boardStatus status;
 extern boardStatus dfs_status;
@@ -32,7 +33,7 @@ void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_playe
                 long long my_delta = (my_new_grade_estimate - my_original_grade_estimate) * search_player_side;
                 long long opponent_delta =
                         (opponent_new_grade_estimate - opponent_original_grade_estimate) * (0 - search_player_side);
-                drop_choice1[*num].grade_estimate = my_delta - 1.1 * opponent_delta;
+                drop_choice1[*num].grade_estimate = my_delta - 1.06 * opponent_delta;
 
                 dfs_add_piece(i, j, VOID);
 
@@ -118,7 +119,6 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
             tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
             if (tmp.grade < result.grade) {
-                ++prune_cnt;
                 result = tmp;
             }
             dfs_add_piece(tmp.i, tmp.j, VOID);

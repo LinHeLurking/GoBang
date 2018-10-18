@@ -75,8 +75,6 @@ void human_vs_computer() {
 
         output_board();
 
-
-
         if (st == -1) {
             printf("Search error!\n");
             exit(-1);
