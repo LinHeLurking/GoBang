@@ -16,7 +16,7 @@ void hash_init() {
         for (int j = 0; j < BOARD_SIZE; ++j) {
             hash_key[i][j] = 0;
             for (int k = 0; k < 4; ++k) {
-                unsigned long long tmp = (unsigned long long) rand() % (1 << 16);
+                unsigned long long tmp = (unsigned long long) rand() % (1 << 16);;
                 hash_key[i][j] += tmp;
                 hash_key[i][j] <<= 16;
             }
