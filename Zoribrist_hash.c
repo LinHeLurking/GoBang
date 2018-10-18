@@ -9,8 +9,8 @@ int cache_grade[2][CACHE_SIZE];
 int cache_grade_found_depth[2][CACHE_SIZE];
 
 void hash_init() {
-    memset(cache_grade, 0, sizeof(cache_grade));
-    memset(cache_grade_found_depth, 0, sizeof(cache_grade_found_depth));
+    SET0(cache_grade);
+    SET0(cache_grade_found_depth);
     srand((unsigned int) time(NULL));
     for (int i = 0; i < BOARD_SIZE; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
