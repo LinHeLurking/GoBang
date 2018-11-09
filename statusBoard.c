@@ -213,6 +213,7 @@ int dfs_add_piece(int i, int j, int player_side) {
         }
     }else{
         update_grade(i, j);
+        //TODO: update the hash key here!!
         for(int player=0;player<=1;++player){
             cache_total_grade[player][hash%CACHE_SIZE]=dfs_status.total_grade[player];
             cache_row_grade[player][hash%CACHE_SIZE]=dfs_status.row_grade[player][i];
