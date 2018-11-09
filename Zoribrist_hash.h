@@ -7,7 +7,6 @@
 
 #include "icld.h"
 
-
 void hash_init();
 
 #endif //GOBANG_ZORIBRIST_HASH_H

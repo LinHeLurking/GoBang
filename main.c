@@ -60,6 +60,5 @@ int main() {
     init();
     play();
     //test();
-
     return 0;
 }

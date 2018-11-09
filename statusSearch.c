@@ -8,8 +8,7 @@
 extern boardStatus status;
 extern boardStatus dfs_status;
 extern unsigned long long hash_key[BOARD_SIZE][BOARD_SIZE];
-extern int cache_grade[2][CACHE_SIZE];
-extern int cache_grade_found_depth[2][CACHE_SIZE];
+
 
 /*
  *  DFS starts here
@@ -33,7 +32,7 @@ void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_playe
                 long long my_delta = (my_new_grade_estimate - my_original_grade_estimate) * search_player_side;
                 long long opponent_delta =
                         (opponent_new_grade_estimate - opponent_original_grade_estimate) * (0 - search_player_side);
-                drop_choice1[*num].grade_estimate = my_delta - 1.06 * opponent_delta;
+                drop_choice1[*num].grade_estimate = my_delta - 1.1 * opponent_delta;
 
                 dfs_add_piece(i, j, VOID);
 
@@ -43,12 +42,14 @@ void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_playe
     }
     choice_sort(drop_choice1, *num);
     switch (dfs_status.steps) {
+
         case 1:
             *num = 9;
             break;
         case 2:
             *num = 16;
             break;
+
         default:
             *num = int_min(*num, 50);
             break;
