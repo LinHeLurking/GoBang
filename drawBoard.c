@@ -55,7 +55,7 @@ void output_board() {
         printf("%s\n", drawing_board[i]);
     }
 
-#ifdef PLYAER_SIDE_DEBUG
+#ifdef PLAYER_SIDE_DEBUG
     printf("Last player: ");
     switch (record[status.steps].player) {
         case WHITE:

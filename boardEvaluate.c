@@ -7,7 +7,7 @@
 
 extern boardStatus status;
 extern boardStatus dfs_status;
-//extern trie tr[TRIE_SIZE];
+extern trie tr[TRIE_SIZE];
 
 
 
@@ -92,9 +92,9 @@ int pos_estimate(int i, int j, int player_side) {
 
 long long grade_estimate(int player_side) {
 
-    /*
+
     //grades in nodes of trie is for WHITE if they are larger than 0, and vice versa.
-    int grade = 0;
+    long long grade = 0;
     //loop for row
     for (int i = 0; i < BOARD_SIZE; ++i) {
         int cur = 0;
@@ -175,12 +175,13 @@ long long grade_estimate(int player_side) {
             }
         }
     }
-    return grade;
-     */
+    //return grade;
+
 
 
     long long _grade = 0;
     _grade = dfs_status.total_grade[PLAYER_IN_LINE];
+
 
     /*
     for (int i = 0; i < BOARD_SIZE; ++i) {
@@ -198,7 +199,7 @@ long long grade_estimate(int player_side) {
     */
 
 #ifdef ESTIMATE_METHOD_DEBUG
-    if (dfs_status.total_grade[PLAYER_IN_LINE] != _grade) {
+    if (grade != _grade) {
         printf("Not equal!!\n");
     }
 #endif

@@ -48,6 +48,5 @@ void update_grade(int i, int j);
 
 void status_init();
 
-unsigned long long get_board_hash();
 
 #endif //GOBANG_STATUSBOARD_H

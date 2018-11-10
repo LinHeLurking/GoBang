@@ -42,14 +42,12 @@ void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_playe
     }
     choice_sort(drop_choice1, *num);
     switch (dfs_status.steps) {
-
         case 1:
             *num = 9;
             break;
         case 2:
             *num = 16;
             break;
-
         default:
             *num = int_min(*num, 50);
             break;

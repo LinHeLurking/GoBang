@@ -21,12 +21,15 @@
 #define HUMAN_VS_COMPUTER 1
 #define DFS_DEPTH 4
 #define INF 20000000000007
-#define CACHE_SIZE 10000
+#define CACHE_SIZE 100000
+#define HASH (hash%CACHE_SIZE)
 
 #define DEBUG
 //#define DFS_BOARD_DEBUG
 #define PRUNE_DEBUG
-#define PLYAER_SIDE_DEBUG
+#define PLAYER_SIDE_DEBUG
+//#define HASH_DEBUG
+#define ESTIMATE_METHOD_DEBUG
 
 #define TRIE_SIZE 100
 #define STATUS_NUM 3

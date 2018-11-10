@@ -20,6 +20,7 @@ extern long long cache_row_grade[2][CACHE_SIZE];
 extern long long cache_oblique_sum_grade[2][CACHE_SIZE];
 extern long long cache_oblique_delta_grade[2][CACHE_SIZE];
 extern int cache_record_step[CACHE_SIZE];
+extern unsigned long long hash;
 
 void __status_init(boardStatus *boardStatus1) {
     SET0(boardStatus1->board);
@@ -41,7 +42,7 @@ void status_init() {
 
 
 void update_line_grade_row(int row_index, int player_side) {
-    int _grade = 0;
+    long long _grade = 0;
     int cur = 0;
     for (int k = -1; k <= BOARD_SIZE; ++k) {
         int ch = k == -1 || k == BOARD_SIZE ? 0 - player_side : dfs_status.board[row_index][k];
@@ -66,7 +67,7 @@ void update_line_grade_row(int row_index, int player_side) {
 
 void update_line_grade_col(int col_index, int player_side) {
     int cur = 0;
-    int _grade = 0;
+    long long _grade = 0;
     for (int k = -1; k <= BOARD_SIZE; ++k) {
         int ch = k == -1 || k == BOARD_SIZE ? 0 - player_side : dfs_status.board[k][col_index];
         while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
@@ -90,7 +91,7 @@ void update_line_grade_col(int col_index, int player_side) {
 
 void update_line_grade_oblique_sum(int oblique_sum_index, int player_side) {
     int cur = 0;
-    int _grade = 0;
+    long long _grade = 0;
     for (int k = -1; k <= BOARD_SIZE; ++k) {
         int ch = k == int_max(-1, oblique_sum_index - BOARD_SIZE) || k == int_min(oblique_sum_index + 1, BOARD_SIZE) ?
                  0 - player_side : dfs_status.oblique_line_sum[oblique_sum_index][k];
@@ -115,7 +116,7 @@ void update_line_grade_oblique_sum(int oblique_sum_index, int player_side) {
 
 void update_line_grade_oblique_delta(int oblique_delta_index, int player_side) {
     int cur = 0;
-    int _grade = 0;
+    long long _grade = 0;
     for (int k = -1; k <= BOARD_SIZE; ++k) {
         int ch =
                 k == int_max(-1, -1 - oblique_delta_index) || k == int_min(BOARD_SIZE - oblique_delta_index, BOARD_SIZE)
@@ -133,7 +134,8 @@ void update_line_grade_oblique_delta(int oblique_delta_index, int player_side) {
             tmp = tr[tmp].fail;
         }
     }
-    dfs_status.total_grade[PLAYER_IN_LINE] -= dfs_status.oblique_delta_grade[PLAYER_IN_LINE][oblique_delta_index+BOARD_SIZE];
+    dfs_status.total_grade[PLAYER_IN_LINE] -= dfs_status.oblique_delta_grade[PLAYER_IN_LINE][oblique_delta_index +
+                                                                                             BOARD_SIZE];
     dfs_status.total_grade[PLAYER_IN_LINE] += _grade;
 
     dfs_status.oblique_delta_grade[PLAYER_IN_LINE][oblique_delta_index + BOARD_SIZE] = _grade;
@@ -150,21 +152,7 @@ void update_grade(int i, int j) {
     update_line_grade_col(j, BLACK);
     update_line_grade_oblique_sum(i + j, BLACK);
     update_line_grade_oblique_delta(i - j, BLACK);
-
 }
-
-unsigned long long get_board_hash() {
-    unsigned long long h = 0;
-    for (int i = 0; i < BOARD_SIZE; ++i) {
-        for (int j = 0; j < BOARD_SIZE; ++j) {
-            if (dfs_status.board[i][j]) {
-                h ^= hash_key[i][j];
-            }
-        }
-    }
-    return h;
-}
-
 
 /*  return -1 if that position is occupied
  *  return 0 if pc==0, which means there's nothing to do
@@ -199,30 +187,39 @@ int dfs_add_piece(int i, int j, int player_side) {
         record[dfs_status.steps].player = player_side;
     }
 
-
     //if this status has been evaluated and exists in hash table, then take the grade from the hash table
     //otherwise update_grade
-    unsigned long long hash=get_board_hash();
-    if(cache_total_grade[PLAYER_IN_LINE][hash%CACHE_SIZE] && cache_record_step[hash%CACHE_SIZE]==dfs_status.steps){
-        for(int player=0;player<=1;++player){
-            dfs_status.total_grade[player]=cache_total_grade[player][hash%CACHE_SIZE];
-            dfs_status.row_grade[player][i]=cache_row_grade[player][hash%CACHE_SIZE];
-            dfs_status.col_grade[player][j]=cache_col_grade[player][hash%CACHE_SIZE];
-            dfs_status.oblique_sum_grade[player][i+j]=cache_oblique_sum_grade[player][hash%CACHE_SIZE];
-            dfs_status.oblique_delta_grade[player][i-j+BOARD_SIZE]=cache_oblique_delta_grade[player][hash%CACHE_SIZE];
+
+    hash ^= hash_key[i][j];
+
+    if (cache_total_grade[PLAYER_IN_LINE][HASH] && cache_record_step[HASH] == dfs_status.steps) {
+
+#ifdef HASH_DEBUG
+        printf("current HASH: %llu\ncurrent step: %d\ncurrent cache grade for WHITE:%lld\ncurrent cache grade for BLACK:%lld\n",
+               HASH, dfs_status.steps, cache_total_grade[0][HASH], cache_total_grade[1][HASH]);
+
+        printf("input any char to continue:\n");
+        char tmp;
+        scanf("%c", &tmp);
+#endif
+
+        for (int player = 0; player <= 1; ++player) {
+            dfs_status.total_grade[player] = cache_total_grade[player][HASH];
+            dfs_status.row_grade[player][i] = cache_row_grade[player][HASH];
+            dfs_status.col_grade[player][j] = cache_col_grade[player][HASH];
+            dfs_status.oblique_sum_grade[player][i + j] = cache_oblique_sum_grade[player][HASH];
+            dfs_status.oblique_delta_grade[player][i - j + BOARD_SIZE] = cache_oblique_delta_grade[player][HASH];
         }
-    }else{
+    } else {
         update_grade(i, j);
-        //TODO: update the hash key here!!
-        for(int player=0;player<=1;++player){
-            cache_total_grade[player][hash%CACHE_SIZE]=dfs_status.total_grade[player];
-            cache_row_grade[player][hash%CACHE_SIZE]=dfs_status.row_grade[player][i];
-            cache_col_grade[player][hash%CACHE_SIZE]=dfs_status.col_grade[player][j];
-            cache_oblique_sum_grade[player][hash%CACHE_SIZE]=dfs_status.oblique_sum_grade[player][i+j];
-            cache_oblique_delta_grade[player][hash%CACHE_SIZE]=dfs_status.oblique_delta_grade[player][i-j+BOARD_SIZE];
-            cache_record_step[hash%CACHE_SIZE]=dfs_status.steps;
+        for (int player = 0; player <= 1; ++player) {
+            cache_total_grade[player][HASH] = dfs_status.total_grade[player];
+            cache_row_grade[player][HASH] = dfs_status.row_grade[player][i];
+            cache_col_grade[player][HASH] = dfs_status.col_grade[player][j];
+            cache_oblique_sum_grade[player][HASH] = dfs_status.oblique_sum_grade[player][i + j];
+            cache_oblique_delta_grade[player][HASH] = dfs_status.oblique_delta_grade[player][i - j + BOARD_SIZE];
+            cache_record_step[HASH] = dfs_status.steps;
         }
     }
-
     return 1;
 }
