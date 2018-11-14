@@ -52,7 +52,7 @@ void test() {
         default:
             printf("no one wins\n");
     }
-    GRADE_DEBUG
+
 }
 
 

@@ -13,14 +13,14 @@ boardStatus status;
 boardStatus dfs_status;
 drop_record record[BOARD_SIZE * BOARD_SIZE + 5];
 extern trie tr[TRIE_SIZE];
-extern unsigned long long hash_key[BOARD_SIZE][BOARD_SIZE];
+extern unsigned int hash_key[BOARD_SIZE][BOARD_SIZE];
 extern long long cache_total_grade[2][CACHE_SIZE];
 extern long long cache_col_grade[2][CACHE_SIZE];
 extern long long cache_row_grade[2][CACHE_SIZE];
 extern long long cache_oblique_sum_grade[2][CACHE_SIZE];
 extern long long cache_oblique_delta_grade[2][CACHE_SIZE];
 extern int cache_record_step[CACHE_SIZE];
-extern unsigned long long hash;
+extern unsigned int hash;
 
 void __status_init(boardStatus *boardStatus1) {
     SET0(boardStatus1->board);
@@ -194,6 +194,8 @@ int dfs_add_piece(int i, int j, int player_side) {
 
     if (cache_total_grade[PLAYER_IN_LINE][HASH] && cache_record_step[HASH] == dfs_status.steps) {
 
+        //TODO: if this branch is executed, there would be bugs. the grade update via cache is not correct!!!
+
 #ifdef HASH_DEBUG
         printf("current HASH: %llu\ncurrent step: %d\ncurrent cache grade for WHITE:%lld\ncurrent cache grade for BLACK:%lld\n",
                HASH, dfs_status.steps, cache_total_grade[0][HASH], cache_total_grade[1][HASH]);
@@ -218,8 +220,8 @@ int dfs_add_piece(int i, int j, int player_side) {
             cache_col_grade[player][HASH] = dfs_status.col_grade[player][j];
             cache_oblique_sum_grade[player][HASH] = dfs_status.oblique_sum_grade[player][i + j];
             cache_oblique_delta_grade[player][HASH] = dfs_status.oblique_delta_grade[player][i - j + BOARD_SIZE];
-            cache_record_step[HASH] = dfs_status.steps;
         }
+        cache_record_step[HASH] = dfs_status.steps;
     }
     return 1;
 }

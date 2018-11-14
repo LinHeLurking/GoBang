@@ -10,7 +10,6 @@ extern boardStatus dfs_status;
 extern trie tr[TRIE_SIZE];
 
 
-
 //1==white wins -1== black wins 0==no one wins
 int winner_check() {
     int continuous5[5] = {};
@@ -183,28 +182,33 @@ long long grade_estimate(int player_side) {
     _grade = dfs_status.total_grade[PLAYER_IN_LINE];
 
 
-    /*
+    long long __grade = 0;
     for (int i = 0; i < BOARD_SIZE; ++i) {
-        _grade += dfs_status.row_grade[PLAYER_IN_LINE][i];
+        __grade += dfs_status.row_grade[PLAYER_IN_LINE][i];
     }
     for (int j = 0; j < BOARD_SIZE; ++j) {
-        _grade += dfs_status.col_grade[PLAYER_IN_LINE][j];
+        __grade += dfs_status.col_grade[PLAYER_IN_LINE][j];
     }
     for (int sum = 0; sum < 2 * BOARD_SIZE; ++sum) {
-        _grade += dfs_status.oblique_sum_grade[PLAYER_IN_LINE][sum];
+        __grade += dfs_status.oblique_sum_grade[PLAYER_IN_LINE][sum];
     }
     for (int delta = -14; delta < BOARD_SIZE; ++delta) {
-        _grade += dfs_status.oblique_delta_grade[PLAYER_IN_LINE][delta + BOARD_SIZE];
+        __grade += dfs_status.oblique_delta_grade[PLAYER_IN_LINE][delta + BOARD_SIZE];
     }
-    */
+
 
 #ifdef ESTIMATE_METHOD_DEBUG
-    if (grade != _grade) {
+    if (grade != _grade || grade != __grade) {
         printf("Not equal!!\n");
+        printf("current step(s): %d\n", dfs_status.steps);
+        printf("cache grade: %lld\ndirect grade: %lld\n", grade, _grade);
+        printf("addd __grade: %lld\n", __grade);
+        char tmp;
+        scanf("%c", &tmp);
     }
 #endif
 
-    return _grade;
+    return grade;
 }
 
 

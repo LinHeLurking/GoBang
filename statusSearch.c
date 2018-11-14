@@ -3,7 +3,6 @@
 //
 
 #include "statusSearch.h"
-//TODO: zorbrist!!
 
 extern boardStatus status;
 extern boardStatus dfs_status;
