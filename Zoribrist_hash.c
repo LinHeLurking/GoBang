@@ -4,7 +4,7 @@
 
 #include "Zoribrist_hash.h"
 
-unsigned int hash_key[BOARD_SIZE][BOARD_SIZE];
+unsigned int hash_key[2][BOARD_SIZE][BOARD_SIZE];
 long long cache_total_grade[2][CACHE_SIZE];
 long long cache_col_grade[2][CACHE_SIZE];
 long long cache_row_grade[2][CACHE_SIZE];
@@ -21,12 +21,14 @@ void hash_init() {
     SET0(cache_oblique_delta_grade);
     memset(cache_record_step, -1, sizeof(cache_record_step));
     srand((unsigned int) time(NULL));
-    for (int i = 0; i < BOARD_SIZE; ++i) {
-        for (int j = 0; j < BOARD_SIZE; ++j) {
-            hash_key[i][j] = 0;
-            for (int k = 0; k < 4; ++k) {
-                hash_key[i][j] += rand() % (1U << 8U);
-                hash_key[i][j] <<= 8U;
+    for (int l = 0; l < 2; ++l) {
+        for (int i = 0; i < BOARD_SIZE; ++i) {
+            for (int j = 0; j < BOARD_SIZE; ++j) {
+                hash_key[l][i][j] = 0;
+                for (int k = 0; k < 4; ++k) {
+                    hash_key[l][i][j] += (unsigned int) rand() % (1U << 8U);
+                    hash_key[l][i][j] <<= 8U;
+                }
             }
         }
     }
@@ -40,14 +42,14 @@ void hash_init() {
         }
         printf("\n");
     }
+    printf("\n");
+
 #endif
     hash = 0;
     for (int k = 0; k < 4; ++k) {
-        hash += (unsigned long long) rand() % (1U << 8U);
+        hash += (unsigned int) rand() % (1U << 8U);
         hash <<= 8U;
     }
-
-
     hash_check();
 }
 
@@ -55,21 +57,35 @@ void hash_check() {
     //TODO: found hash collision here!!!
 
     int cnt[CACHE_SIZE];
-    memset(cnt, 0, sizeof(cnt));
-    for (int i = 0; i < BOARD_SIZE; ++i) {
-        for (int j = 0; j < BOARD_SIZE; ++j) {
-            ++cnt[hash_key[i][j] % CACHE_SIZE];
-        }
-    }
+    int collision_i[BOARD_SIZE], collision_j[BOARD_SIZE];
 
-    int non_zero = 0;
-    for (int i = 0; i < CACHE_SIZE; ++i) {
-        if (cnt[i]) {
-            printf("%d ", cnt[i]);
-            if (!(++non_zero % BOARD_SIZE)) {
-                printf("\n");
+    for (int l = 0; l < 2; ++l) {
+        int index = 0;
+        int collision = 0;
+        SET0(collision_i);
+        SET0(collision_j);
+        SET0(cnt);
+        for (int i = 0; i < BOARD_SIZE; ++i) {
+            for (int j = 0; j < BOARD_SIZE; ++j) {
+                ++cnt[hash_key[l][i][j] % CACHE_SIZE];
+                if (cnt[hash_key[l][i][j] % CACHE_SIZE] > 1) {
+                    ++collision;
+                    collision_i[index] = i;
+                    collision_j[index] = j;
+                    ++index;
+                }
+            }
+        }
+
+        while (collision) {
+            for (int i = 0; i < index; ++i) {
+                unsigned int key = hash_key[l][collision_i[i]][collision_j[i]];
+                while (cnt[key % CACHE_SIZE]) {
+                    key = (key + 17) % CACHE_SIZE;
+                }
+                --cnt[key];
+                --collision;
             }
         }
     }
-    printf("\n");
 }

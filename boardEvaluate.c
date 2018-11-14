@@ -92,6 +92,7 @@ int pos_estimate(int i, int j, int player_side) {
 long long grade_estimate(int player_side) {
 
 
+    /*
     //grades in nodes of trie is for WHITE if they are larger than 0, and vice versa.
     long long grade = 0;
     //loop for row
@@ -176,12 +177,14 @@ long long grade_estimate(int player_side) {
     }
     //return grade;
 
+     */
 
 
     long long _grade = 0;
     _grade = dfs_status.total_grade[PLAYER_IN_LINE];
 
 
+    /*
     long long __grade = 0;
     for (int i = 0; i < BOARD_SIZE; ++i) {
         __grade += dfs_status.row_grade[PLAYER_IN_LINE][i];
@@ -195,6 +198,7 @@ long long grade_estimate(int player_side) {
     for (int delta = -14; delta < BOARD_SIZE; ++delta) {
         __grade += dfs_status.oblique_delta_grade[PLAYER_IN_LINE][delta + BOARD_SIZE];
     }
+     */
 
 
 #ifdef ESTIMATE_METHOD_DEBUG
@@ -208,7 +212,7 @@ long long grade_estimate(int player_side) {
     }
 #endif
 
-    return grade;
+    return _grade;
 }
 
 

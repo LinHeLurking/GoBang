@@ -13,7 +13,7 @@ boardStatus status;
 boardStatus dfs_status;
 drop_record record[BOARD_SIZE * BOARD_SIZE + 5];
 extern trie tr[TRIE_SIZE];
-extern unsigned int hash_key[BOARD_SIZE][BOARD_SIZE];
+extern unsigned int hash_key[2][BOARD_SIZE][BOARD_SIZE];
 extern long long cache_total_grade[2][CACHE_SIZE];
 extern long long cache_col_grade[2][CACHE_SIZE];
 extern long long cache_row_grade[2][CACHE_SIZE];
@@ -190,11 +190,17 @@ int dfs_add_piece(int i, int j, int player_side) {
     //if this status has been evaluated and exists in hash table, then take the grade from the hash table
     //otherwise update_grade
 
-    hash ^= hash_key[i][j];
+    hash ^= hash_key[PLAYER_IN_LINE][i][j];
 
     if (cache_total_grade[PLAYER_IN_LINE][HASH] && cache_record_step[HASH] == dfs_status.steps) {
 
         //TODO: if this branch is executed, there would be bugs. the grade update via cache is not correct!!!
+
+        //NOTE: maybe the hash should be divided into two part, one for one player.
+        //yes this is right!
+
+
+        //but it seems that after adding hash features, the level of this program decrease....QAQ
 
 #ifdef HASH_DEBUG
         printf("current HASH: %llu\ncurrent step: %d\ncurrent cache grade for WHITE:%lld\ncurrent cache grade for BLACK:%lld\n",
