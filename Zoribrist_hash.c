@@ -21,13 +21,13 @@ void hash_init() {
     SET0(cache_oblique_delta_grade);
     memset(cache_record_step, -1, sizeof(cache_record_step));
     srand((unsigned int) time(NULL));
-    for (int l = 0; l < 2; ++l) {
+    for (int m = 0; m < 2; ++m) {
         for (int i = 0; i < BOARD_SIZE; ++i) {
             for (int j = 0; j < BOARD_SIZE; ++j) {
-                hash_key[l][i][j] = 0;
+                hash_key[m][i][j] = 0;
                 for (int k = 0; k < 4; ++k) {
-                    hash_key[l][i][j] += (unsigned int) rand() % (1U << 8U);
-                    hash_key[l][i][j] <<= 8U;
+                    hash_key[m][i][j] += (unsigned int) rand() % (1U << 8U);
+                    hash_key[m][i][j] <<= 8U;
                 }
             }
         }
@@ -78,12 +78,12 @@ void hash_check() {
         }
 
         while (collision) {
-            for (int i = 0; i < index; ++i) {
-                unsigned int key = hash_key[l][collision_i[i]][collision_j[i]];
+            for (int k = 0; k < index; ++k) {
+                unsigned int key = hash_key[l][collision_i[k]][collision_j[k]];
                 while (cnt[key % CACHE_SIZE]) {
-                    key = (key + 17) % CACHE_SIZE;
+                    key = (key + 23);
                 }
-                --cnt[key];
+                --cnt[key % CACHE_SIZE];
                 --collision;
             }
         }

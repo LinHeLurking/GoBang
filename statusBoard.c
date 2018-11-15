@@ -192,15 +192,15 @@ int dfs_add_piece(int i, int j, int player_side) {
 
     hash ^= hash_key[PLAYER_IN_LINE][i][j];
 
-    if (cache_total_grade[PLAYER_IN_LINE][HASH] && cache_record_step[HASH] == dfs_status.steps) {
-
-        //TODO: if this branch is executed, there would be bugs. the grade update via cache is not correct!!!
+    if (cache_total_grade[PLAYER_IN_LINE][HASH] && cache_record_step[HASH] == dfs_status.steps && player_side != VOID) {
 
         //NOTE: maybe the hash should be divided into two part, one for one player.
         //yes this is right!
 
 
         //but it seems that after adding hash features, the level of this program decrease....QAQ
+        //now it is fixed~  QwQ
+        //but sometimes the program drops weirdly????
 
 #ifdef HASH_DEBUG
         printf("current HASH: %llu\ncurrent step: %d\ncurrent cache grade for WHITE:%lld\ncurrent cache grade for BLACK:%lld\n",
@@ -210,7 +210,6 @@ int dfs_add_piece(int i, int j, int player_side) {
         char tmp;
         scanf("%c", &tmp);
 #endif
-
         for (int player = 0; player <= 1; ++player) {
             dfs_status.total_grade[player] = cache_total_grade[player][HASH];
             dfs_status.row_grade[player][i] = cache_row_grade[player][HASH];
