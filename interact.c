@@ -16,11 +16,12 @@ char player_side[3][10] = {
 void play() {
     printf("Welcome to Amadeus GoBang game!\nPlease input the code of corresponding mode:\n");
     int mode = -1;
-    char tmp;
+    char tmp[10];
     while (mode == -1) {
         printf("Human vs. human: 0\nHuman vs. computer: 1\n");
-        scanf("%c", &tmp);
-        mode = tmp - '0';
+        scanf("%s", tmp);
+        if (tmp[0] == 'q' && tmp[1] == 'u' && tmp[2] == 'i' && tmp[3] == 't')exit(0);
+        mode = tmp[0] - '0';
         switch (mode) {
             case HUMAN_VS_HUMAN:
                 human_vs_human();

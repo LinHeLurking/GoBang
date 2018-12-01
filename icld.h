@@ -33,7 +33,7 @@
 
 #define TRIE_SIZE 100
 #define STATUS_NUM 3
-#define STR_TO_RECOGNIZE 28
+#define STR_TO_RECOGNIZE 36
 #define END 7
 #define MAX_STR_SIZE 8
 #define OFFSET 1
