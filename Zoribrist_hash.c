@@ -81,7 +81,14 @@ void hash_check() {
             for (int k = 0; k < index; ++k) {
                 unsigned int key = hash_key[l][collision_i[k]][collision_j[k]];
                 while (cnt[key % CACHE_SIZE]) {
-                    key = (key + 23);
+                    --cnt[key%CACHE_SIZE];
+
+                    key = 0;
+                    for (int m = 0; m < 4; ++m) {
+                        key += (unsigned int) rand() % (1U << 8U);
+                        key <<= 8U;
+                    }
+
                 }
                 --cnt[key % CACHE_SIZE];
                 --collision;

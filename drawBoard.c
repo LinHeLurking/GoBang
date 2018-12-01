@@ -62,7 +62,7 @@ void output_board() {
         printf("%s\n", drawing_board[i]);
     }
 
-    printf("   ");
+    printf("  ");
     for (int i = 1; i <= BOARD_SIZE; ++i) {
         printf("%c ", 'A' - 1 + i);
     }
