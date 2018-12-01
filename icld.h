@@ -26,8 +26,8 @@
 
 #define DEBUG
 //#define DFS_BOARD_DEBUG
-#define PRUNE_DEBUG
-#define PLAYER_SIDE_DEBUG
+//#define PRUNE_DEBUG
+//#define PLAYER_SIDE_DEBUG
 //#define HASH_DEBUG
 //#define ESTIMATE_METHOD_DEBUG
 

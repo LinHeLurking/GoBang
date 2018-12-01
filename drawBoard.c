@@ -31,15 +31,22 @@ char black_piece[] = "○";
 
 
 void output_board() {
-    printf(" ");
+    /*
     for (int i = 1; i <= BOARD_SIZE; ++i) {
         printf("%d", i);
         if (i < 10)
             printf(" ");
     }
     printf("\n");
+     */
+
     for (int i = 0; i < BOARD_SIZE; ++i) {
+        /*
         printf("%c", 'A' + i);
+         */
+
+        printf("%d%s", 15 - i, i > 5 ? " " : "");
+
         for (int j = 0; j < BOARD_SIZE; ++j) {
             //CHAR_SIZE-1: avoid copying the end symbol of string.
             if (status.board[i][j] == 1) {
@@ -54,6 +61,12 @@ void output_board() {
         }
         printf("%s\n", drawing_board[i]);
     }
+
+    printf("   ");
+    for (int i = 1; i <= BOARD_SIZE; ++i) {
+        printf("%c ", 'A' - 1 + i);
+    }
+    printf("\n");
 
 #ifdef PLAYER_SIDE_DEBUG
     printf("Last player: ");

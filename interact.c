@@ -142,17 +142,20 @@ int read_pos(int *i, int *j) {
     *i = *j = -1;
     while (true) {
         scanf("%s", input);
+        if (input[0] == 'q' && input[1] == 'u' && input[2] == 'i' && input[3] == 't') {
+            exit(0);
+        }
         for (int m = 0; m < 10; ++m) {
             if (input[m] >= '0' && input[m] <= '9') {
-                *j = ((*j) == -1 ? 0 : *j) * 10 + input[m] - '0';
+                *i = ((*i) == -1 ? 0 : *i) * 10 + input[m] - '0';
             }
-            if (input[m] >= 'A' && input[m] <= 'O') {
-                *i = input[m] - 'A';
+            if (*j == -1) {
+                if (input[m] >= 'A' && input[m] <= 'O')*j = input[m] - 'A';
+                else if (input[m] >= 'a' && input[m] <= 'o')*j = input[m] - 'a';
             }
-
         }
-        if (*i >= 0 && *i <= BOARD_SIZE && *j >= 1 && *j <= BOARD_SIZE) {
-            *j -= 1;
+        if (*i >= 1 && *i <= BOARD_SIZE && *j >= 0 && *j < BOARD_SIZE) {
+            *i = 15 - *i;
             break;
         } else {
             printf("Invalid position, input again!\n");
