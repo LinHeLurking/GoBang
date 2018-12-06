@@ -13,7 +13,7 @@ boardStatus status;
 boardStatus dfs_status;
 drop_record record[BOARD_SIZE * BOARD_SIZE + 5];
 extern trie tr[TRIE_SIZE];
-extern unsigned int hash_key[2][BOARD_SIZE][BOARD_SIZE];
+extern unsigned long long hash_key[2][BOARD_SIZE][BOARD_SIZE];
 extern long long cache_total_grade[2][CACHE_SIZE];
 extern long long cache_col_grade[2][CACHE_SIZE];
 extern long long cache_row_grade[2][CACHE_SIZE];
@@ -38,6 +38,7 @@ void __status_init(boardStatus *boardStatus1) {
 void status_init() {
     __status_init(&status);
     __status_init(&dfs_status);
+    record[0].i = record[0].j = -1;
 }
 
 
@@ -190,9 +191,13 @@ int dfs_add_piece(int i, int j, int player_side) {
     //if this status has been evaluated and exists in hash table, then take the grade from the hash table
     //otherwise update_grade
 
+
+
+#ifdef USE_HASH
     hash ^= hash_key[PLAYER_IN_LINE][i][j];
 
-    if (cache_total_grade[PLAYER_IN_LINE][HASH] && cache_record_step[HASH] == dfs_status.steps && player_side != VOID) {
+    if (cache_total_grade[PLAYER_IN_LINE][HASH] && cache_record_step[HASH] == dfs_status.steps &&
+        player_side != VOID) {
 
         //NOTE: maybe the hash should be divided into two part, one for one player.
         //yes this is right!
@@ -228,5 +233,10 @@ int dfs_add_piece(int i, int j, int player_side) {
         }
         cache_record_step[HASH] = dfs_status.steps;
     }
+#endif
+
+#ifndef USE_HASH
+    update_grade(i, j);
+#endif
     return 1;
 }

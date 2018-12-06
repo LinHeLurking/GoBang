@@ -24,7 +24,10 @@
 #define CACHE_SIZE 500000
 #define HASH (hash%CACHE_SIZE)
 
-#define DEBUG
+
+//#define DEBUG_DRAW
+//#define VERSION_COMPARE
+//#define USE_HASH
 //#define DFS_BOARD_DEBUG
 //#define PRUNE_DEBUG
 //#define PLAYER_SIDE_DEBUG

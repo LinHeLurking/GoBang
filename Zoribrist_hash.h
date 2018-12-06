@@ -9,6 +9,5 @@
 
 void hash_init();
 
-void hash_check();
 
 #endif //GOBANG_ZORIBRIST_HASH_H

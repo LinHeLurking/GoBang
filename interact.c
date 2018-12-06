@@ -8,20 +8,26 @@
 
 
 char player_side[3][10] = {
-        " black",
-        " ",
-        " white"
+        "black",
+        "",
+        "white"
 };
 
 void play() {
+#ifndef VERSION_COMPARE
     printf("Welcome to Amadeus GoBang game!\nPlease input the code of corresponding mode:\n");
+#endif
     int mode = -1;
-    char tmp[10];
+    char tmp;
     while (mode == -1) {
+#ifndef VERSION_COMPARE
         printf("Human vs. human: 0\nHuman vs. computer: 1\n");
-        scanf("%s", tmp);
-        if (tmp[0] == 'q' && tmp[1] == 'u' && tmp[2] == 'i' && tmp[3] == 't')exit(0);
-        mode = tmp[0] - '0';
+#endif
+        scanf("%c", &tmp);
+        //printf("tmp:%c", tmp);
+        if (tmp == 'q')exit(0);
+        mode = tmp - '0';
+        //printf("mode:%d", mode);
         switch (mode) {
             case HUMAN_VS_HUMAN:
                 human_vs_human();
@@ -31,8 +37,9 @@ void play() {
                 break;
             default:
                 mode = -1;
-                printf("Wrong code! input the right one!\n");
+                printf("Wrong code(%d)! input the right one!\n", tmp);
         }
+
     }
 }
 
@@ -40,13 +47,31 @@ void play() {
 void human_vs_computer() {
     int human_player = BLACK;
     int computer_player = WHITE;
+#ifndef VERSION_COMPARE
+    printf("Human first or computer first?\nHuman first: 1\nComputer first: 2\n");
+#endif
+    int order_check;
+    scanf("%d", &order_check);
+    if (order_check == 2) {
+        human_player = WHITE;
+        computer_player = BLACK;
+        add_piece(7, 7, computer_player);
+    }
+
+#ifndef VERSION_COMPARE
     output_board();
+#endif
+
 #ifdef PRUNE_DEBUG
     extern int prune_cnt;
 #endif
 
     while (true) {
-        printf("Round for %s, input the position you want to place the piece\n", player_side[human_player + OFFSET]);
+#ifndef VERSION_COMPARE
+        printf("\n\nRound for %s, input the position you want to place the piece\n",
+               player_side[human_player + OFFSET]);
+#endif
+
         int i, j;
         read_pos(&i, &j);
         int st = -1;
@@ -60,28 +85,39 @@ void human_vs_computer() {
             }
             st = add_piece(i, j, human_player);
         }
-        //output_board();
         int win_status = winner_check();
         if (win_status == WHITE) {
-            output_board();
+            //output_board();
             printf("The player of%s won.\n", player_side[WHITE + OFFSET]);
             break;
         } else if (win_status == BLACK) {
-            output_board();
+            //output_board();
             printf("The player of%s won.\n", player_side[BLACK + OFFSET]);
             break;
         }
         drop_choice choice = alpha_beta_dfs(computer_player, DFS_DEPTH, 0 - INF, INF);
         st = add_piece(choice.i, choice.j, computer_player);
 
+#ifndef VERSION_COMPARE
         output_board();
+#ifndef USE_HASH
+        printf("(without hash)\n");
+#endif
+#endif
+
+
+#ifdef VERSION_COMPARE
+        //todo:: write into file
+        printf("%c%d\n", choice.j + 'A', 15 - choice.i);
+#endif
+
 
         if (st == -1) {
             printf("Search error!\n");
             exit(-1);
         }
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
         printf("The grade estimate:\nBLACK: %lld\nWHITE: %lld\n", grade_estimate(BLACK), grade_estimate(WHITE));
         printf("dfs grade: %lld\n", choice.grade);
 #endif
@@ -106,7 +142,7 @@ void human_vs_human() {
     int player = BLACK;
     while (true) {
         output_board();
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
         printf("The grade estimate:\nBLACK: %lld\nWHITE: %lld\n", grade_estimate(BLACK), grade_estimate(WHITE));
 #endif
         printf("Round for %s, input the position you want to place the piece\n", player_side[player + OFFSET]);
@@ -126,11 +162,11 @@ void human_vs_human() {
 
         int win_status = winner_check();
         if (win_status == WHITE) {
-            output_board();
+            //output_board();
             printf("The player of%s won.\n", player_side[WHITE + OFFSET]);
             break;
         } else if (win_status == BLACK) {
-            output_board();
+            //output_board();
             printf("The player of%s won.\n", player_side[BLACK + OFFSET]);
             break;
         }
@@ -141,6 +177,7 @@ void human_vs_human() {
 int read_pos(int *i, int *j) {
     char input[10] = {};
     *i = *j = -1;
+#ifndef VERSION_COMPARE
     while (true) {
         scanf("%s", input);
         if (input[0] == 'q' && input[1] == 'u' && input[2] == 'i' && input[3] == 't') {
@@ -159,12 +196,20 @@ int read_pos(int *i, int *j) {
             *i = 15 - *i;
             break;
         } else {
+            printf("i:%d j:%d", (*i), (*j));
+
             printf("Invalid position, input again!\n");
+
             *i = *j = -1;
             memset(input, 0, sizeof(input));
             continue;
         }
     }
+#endif
+
+#ifdef VERSION_COMPARE
+    //todo:: read position from file
+#endif
     return 0;
 }
 
