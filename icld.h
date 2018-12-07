@@ -23,10 +23,13 @@
 #define INF 20000000000007
 #define CACHE_SIZE 500000
 #define HASH (hash%CACHE_SIZE)
+#define BUFFER_SIZE 1000
+#define COMPUTER_FIRST 2
+#define HUMAN_FIRST 1
 
 
 //#define DEBUG_DRAW
-//#define VERSION_COMPARE
+#define VERSION_COMPARE
 //#define USE_HASH
 //#define DFS_BOARD_DEBUG
 //#define PRUNE_DEBUG
