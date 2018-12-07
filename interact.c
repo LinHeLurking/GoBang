@@ -31,17 +31,6 @@ void play() {
         //printf("mode:%d", mode);
 #endif
 #ifdef VERSION_COMPARE
-        FILE *pin;
-#ifdef USE_HASH
-        pin = fopen("./_with.in", "r");
-#endif
-#ifndef USE_HASH
-        pin = fopen("./_without.in","r");
-#endif
-        if (pin == NULL) {
-            printf("ERROR! NO INPUT FILE\n");
-            exit(3);
-        }
         mode = HUMAN_VS_COMPUTER;
 #endif
         switch (mode) {
@@ -103,10 +92,16 @@ void human_vs_computer() {
         int cnt = 0;
         while (st == -1) {
             if (cnt++ != 0) {
+                i = j = -1;
+#ifndef VERSION_COMPARE
                 printf("There is already a piece in this place!\n");
                 printf("Round for %s, input the position you want to place the piece\n",
                        player_side[human_player + OFFSET]);
-                read_pos(&i, &j);
+#endif
+                while (i == -1 && j == -1) {
+                    read_pos(&i, &j);
+                }
+                //printf("position:    %d %d\n", i, j);
             }
             st = add_piece(i, j, human_player);
         }
@@ -226,7 +221,7 @@ int read_pos(int *i, int *j) {
     pin = fopen("./_with.in", "r");
 #endif
 #ifndef USE_HASH
-    pin = fopen("./_without.in","r");
+    pin = fopen("./_without.in", "r");
 #endif
     if (pin == NULL) {
         printf("ERROR! NO INPUT FILE\n");
