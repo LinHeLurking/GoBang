@@ -33,9 +33,6 @@ char black_piece[2][4] = {{"○"},
 
 
 void output_board() {
-#ifdef VERSION_COMPARE
-    FILE *pout;
-#ifndef USE_HASH
     for (int i = 0; i < BOARD_SIZE; ++i) {
         printf("%d%s", 15 - i, i > 5 ? " " : "");
 
@@ -65,28 +62,9 @@ void output_board() {
     }
     printf("\n");
 
-    pout = fopen("./_with.in","a");
-#endif
-    //this part is for using hash
-    //if you do use hash, the output to the one that don't use hash
-#ifdef USE_HASH
-    pout = fopen("./_without.in", "a");
-#endif
 
-    if (pout == NULL) {
-        printf("ERROR! WRONG OUTPUT FILE\n");
-        exit(3);
-    }
-
-    if (dfs_status.steps > 0)
-        fprintf(pout, "%d %c%d\n", status.steps, record[status.steps].j + 'A', 15 - record[status.steps].i);
-    fclose(pout);
-#endif
-
-#ifndef VERSION_COMPARE
-    if(dfs_status.steps>0)
+    if(status.steps>0)
         printf("%d %c%d\n", status.steps, record[status.steps].j + 'A', 15 - record[status.steps].i);
-#endif
 
 #ifndef USE_HASH
     printf("(without hash)\n");

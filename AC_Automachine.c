@@ -21,9 +21,11 @@ trie tr[TRIE_SIZE];
  *
  * */
 
-int grade[STR_TO_RECOGNIZE] = {100000, 10000, 1000, 100, 10, 100000, 100000, 1100, 1100, 100, 100, 10, 10, -100000,
-                               -10000, -1000, -100, -10, -100000, -100000, -1100, -1100, -100, -100, -10, -10, 100000,
-                               -100000, -1000, -1000, 1000, 1000, -10000, -10000, 10000, 10000};
+#define FIVE_GRADE 100000
+
+int grade[STR_TO_RECOGNIZE] = {FIVE_GRADE, 10000, 1000, 100, 10, FIVE_GRADE, FIVE_GRADE, 1100, 1100, 100, 100, 10, 10,
+                               -FIVE_GRADE, -10000, -1000, -100, -10, -100000, -100000, -1100, -1100, -100, -100, -10,
+                               -10, FIVE_GRADE, -FIVE_GRADE, -1000, -1000, 1000, 1000, -10000, -10000, 10000, 10000};
 //cautions!! if you change this array, the grade[] also needs changing
 int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
         //WHITE: 0 <= index < 11 BLACK: 11 <= index < STR_TO_RECOGNIZE
@@ -144,3 +146,5 @@ void AC_build() {
     }
     build_AC_fail();
 }
+
+#undef FIVE_GRADE

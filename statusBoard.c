@@ -20,7 +20,7 @@ extern long long cache_row_grade[2][CACHE_SIZE];
 extern long long cache_oblique_sum_grade[2][CACHE_SIZE];
 extern long long cache_oblique_delta_grade[2][CACHE_SIZE];
 extern int cache_record_step[CACHE_SIZE];
-extern unsigned int hash;
+extern unsigned long long hash;
 
 void __status_init(boardStatus *boardStatus1) {
     SET0(boardStatus1->board);

@@ -28,8 +28,7 @@
 #define HUMAN_FIRST 1
 
 
-//#define DEBUG_DRAW
-#define VERSION_COMPARE
+#define DEBUG_DRAW
 //#define USE_HASH
 //#define DFS_BOARD_DEBUG
 //#define PRUNE_DEBUG

@@ -16,23 +16,19 @@ char player_side[3][10] = {
 };
 
 void play() {
-#ifndef VERSION_COMPARE
+
     printf("Welcome to Amadeus GoBang game!\nPlease input the code of corresponding mode:\n");
-#endif
+
     int mode = -1;
     char tmp;
     while (mode == -1) {
-#ifndef VERSION_COMPARE
+
         printf("Human vs. human: 0\nHuman vs. computer: 1\n");
         scanf("%c", &tmp);
         //printf("tmp:%c", tmp);
         if (tmp == 'q')exit(0);
         mode = tmp - '0';
         //printf("mode:%d", mode);
-#endif
-#ifdef VERSION_COMPARE
-        mode = HUMAN_VS_COMPUTER;
-#endif
         switch (mode) {
             case HUMAN_VS_HUMAN:
                 human_vs_human();
@@ -53,38 +49,28 @@ void human_vs_computer() {
     int human_player = BLACK;
     int computer_player = WHITE;
     int order_check;
-#ifndef VERSION_COMPARE
+
     printf("Human first or computer first?\nHuman first: 1\nComputer first: 2\n");
     scanf("%d", &order_check);
-#endif
-
-#ifdef USE_HASH
-    order_check = COMPUTER_FIRST;
-#endif
-#ifndef USE_HASH
-    order_check = HUMAN_FIRST;
-#endif
-
-
     if (order_check == COMPUTER_FIRST) {
         human_player = WHITE;
         computer_player = BLACK;
         add_piece(7, 7, computer_player);
     }
 
-#ifndef VERSION_COMPARE
+
     output_board();
-#endif
+
 
 #ifdef PRUNE_DEBUG
     extern int prune_cnt;
 #endif
 
     while (true) {
-#ifndef VERSION_COMPARE
+
         printf("\n\nRound for %s, input the position you want to place the piece\n",
                player_side[human_player + OFFSET]);
-#endif
+
 
         int i, j;
         read_pos(&i, &j);
@@ -93,17 +79,18 @@ void human_vs_computer() {
         while (st == -1) {
             if (cnt++ != 0) {
                 i = j = -1;
-#ifndef VERSION_COMPARE
+
                 printf("There is already a piece in this place!\n");
                 printf("Round for %s, input the position you want to place the piece\n",
                        player_side[human_player + OFFSET]);
-#endif
-                while (i == -1 && j == -1) {
+
+                while (!(i>='0'&&i<='0'+BOARD_SIZE&&j>='0'&&j<='0'+BOARD_SIZE)) {
                     read_pos(&i, &j);
                 }
                 //printf("position:    %d %d\n", i, j);
             }
             st = add_piece(i, j, human_player);
+
         }
         int win_status = winner_check();
         if (win_status == WHITE) {
@@ -184,7 +171,6 @@ void human_vs_human() {
 int read_pos(int *i, int *j) {
     char input[10] = {};
     *i = *j = -1;
-#ifndef VERSION_COMPARE
     while (true) {
         scanf("%s", input);
         if (input[0] == 'q' && input[1] == 'u' && input[2] == 'i' && input[3] == 't') {
@@ -212,50 +198,6 @@ int read_pos(int *i, int *j) {
             continue;
         }
     }
-#endif
-
-#ifdef VERSION_COMPARE
-    //todo:: read position from file
-    FILE *pin;
-#ifdef USE_HASH
-    pin = fopen("./_with.in", "r");
-#endif
-#ifndef USE_HASH
-    pin = fopen("./_without.in", "r");
-#endif
-    if (pin == NULL) {
-        printf("ERROR! NO INPUT FILE\n");
-        exit(3);
-    }
-    char buf[BUFFER_SIZE];
-    while (fscanf(pin, "%s", buf) != EOF) {
-        if (buf[0] - '0' == status.steps + 1) {
-            fscanf(pin, "%s", input);
-            for (int m = 0; m < 10; ++m) {
-                if (input[m] >= '0' && input[m] <= '9') {
-                    *i = ((*i) == -1 ? 0 : *i) * 10 + input[m] - '0';
-                }
-                if (*j == -1) {
-                    if (input[m] >= 'A' && input[m] <= 'O')*j = input[m] - 'A';
-                    else if (input[m] >= 'a' && input[m] <= 'o')*j = input[m] - 'a';
-                }
-            }
-            if (*i >= 1 && *i <= BOARD_SIZE && *j >= 0 && *j < BOARD_SIZE) {
-                *i = 15 - *i;
-                break;
-            } else {
-                printf("i:%d j:%d", (*i), (*j));
-
-                printf("Invalid position, input again!\n");
-
-                *i = *j = -1;
-                memset(input, 0, sizeof(input));
-                continue;
-            }
-        }
-    }
-    fclose(pin);
-#endif
     return 0;
 }
 
