@@ -25,9 +25,12 @@ trie tr[TRIE_SIZE];
 
 int grade[STR_TO_RECOGNIZE] = {FIVE_GRADE, 10000, 1000, 100, 10, FIVE_GRADE, FIVE_GRADE, 1100, 1100, 100, 100, 10, 10,
                                -FIVE_GRADE, -10000, -1000, -100, -10, -100000, -100000, -1100, -1100, -100, -100, -10,
-                               -10, FIVE_GRADE, -FIVE_GRADE, -1000, -1000, 1000, 1000, -10000, -10000, 10000, 10000};
+                               -10, FIVE_GRADE, -FIVE_GRADE, -10000, -10000, 10000, 10000, -5000, -5000, 5000, 5000};
 //cautions!! if you change this array, the grade[] also needs changing
 int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
+
+        //todo:: patters and their estimate grades need optimised
+
         //WHITE: 0 <= index < 11 BLACK: 11 <= index < STR_TO_RECOGNIZE
 
         //alive
@@ -71,15 +74,15 @@ int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
         {WHITE, BLACK, BLACK, BLACK, BLACK, BLACK, WHITE, END},//-100000
 
         //special continue
-        {VOID,  BLACK, BLACK, BLACK, VOID,  BLACK, VOID,  END},//-1100+100=-1000
-        {VOID,  BLACK, VOID,  BLACK, BLACK, BLACK, VOID,  END},//-1000
-        {VOID,  WHITE, WHITE, WHITE, VOID,  WHITE, VOID,  END},//1100-100=1000
-        {VOID,  WHITE, VOID,  WHITE, WHITE, WHITE, VOID,  END},//1100-100=1000
+        {BLACK, BLACK, BLACK, VOID,  BLACK, END},//-10000
+        {BLACK, VOID,  BLACK, BLACK, BLACK, END},//-10000
+        {WHITE, WHITE, WHITE, VOID,  WHITE, END},//10000
+        {WHITE, VOID,  WHITE, WHITE, WHITE, END},//10000
 
-        {BLACK, BLACK, BLACK, VOID,  BLACK, BLACK, END},//-10000
-        {BLACK, BLACK, VOID,  BLACK, BLACK, BLACK, END},//-10000
-        {WHITE, WHITE, WHITE, VOID,  WHITE, WHITE, END},//10000
-        {WHITE, WHITE, VOID,  WHITE, WHITE, WHITE, END}//10000
+        {BLACK, BLACK, BLACK, VOID,  BLACK, BLACK, END},//-5000
+        {WHITE, BLACK, BLACK, VOID,  BLACK, BLACK, BLACK, END},//-5000
+        {WHITE, WHITE, WHITE, VOID,  WHITE, WHITE, END},//5000
+        {WHITE, WHITE, VOID,  WHITE, WHITE, WHITE, END}//5000
 
 };
 
