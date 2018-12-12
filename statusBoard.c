@@ -31,7 +31,6 @@ void __status_init(boardStatus *boardStatus1) {
     SET0(boardStatus1->oblique_sum_grade);
     SET0(boardStatus1->oblique_delta_grade);
     SET0(boardStatus1->total_grade);
-    boardStatus1->last_i = boardStatus1->last_j = -1;
     boardStatus1->steps = 0;
 }
 
@@ -42,7 +41,7 @@ void status_init() {
 }
 
 
-void update_line_grade_row(int row_index, int player_side) {
+inline void update_line_grade_row(int row_index, int player_side) {
     long long _grade = 0;
     int cur = 0;
     for (int k = -1; k <= BOARD_SIZE; ++k) {
@@ -66,7 +65,7 @@ void update_line_grade_row(int row_index, int player_side) {
     dfs_status.row_grade[PLAYER_IN_LINE][row_index] = _grade;
 }
 
-void update_line_grade_col(int col_index, int player_side) {
+inline void update_line_grade_col(int col_index, int player_side) {
     int cur = 0;
     long long _grade = 0;
     for (int k = -1; k <= BOARD_SIZE; ++k) {
@@ -90,7 +89,7 @@ void update_line_grade_col(int col_index, int player_side) {
     dfs_status.col_grade[PLAYER_IN_LINE][col_index] = _grade;
 }
 
-void update_line_grade_oblique_sum(int oblique_sum_index, int player_side) {
+inline void update_line_grade_oblique_sum(int oblique_sum_index, int player_side) {
     int cur = 0;
     long long _grade = 0;
     for (int k = -1; k <= BOARD_SIZE; ++k) {
@@ -115,7 +114,7 @@ void update_line_grade_oblique_sum(int oblique_sum_index, int player_side) {
     dfs_status.oblique_sum_grade[PLAYER_IN_LINE][oblique_sum_index] = _grade;
 }
 
-void update_line_grade_oblique_delta(int oblique_delta_index, int player_side) {
+inline void update_line_grade_oblique_delta(int oblique_delta_index, int player_side) {
     int cur = 0;
     long long _grade = 0;
     for (int k = -1; k <= BOARD_SIZE; ++k) {

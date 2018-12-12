@@ -80,12 +80,10 @@ int winner_check() {
 }
 
 
-int pos_estimate(int i, int j, int player_side) {
-    int _grade = 0;
-    _grade += dfs_status.row_grade[PLAYER_IN_LINE][i] + dfs_status.col_grade[PLAYER_IN_LINE][j];
-    _grade += dfs_status.oblique_sum_grade[PLAYER_IN_LINE][i + j] +
-              dfs_status.oblique_delta_grade[PLAYER_IN_LINE][i - j + BOARD_SIZE];
-    return _grade;
+inline long long pos_estimate(int i, int j, int player_side) {
+    return dfs_status.row_grade[PLAYER_IN_LINE][i] + dfs_status.col_grade[PLAYER_IN_LINE][j] +
+           dfs_status.oblique_sum_grade[PLAYER_IN_LINE][i + j] +
+           dfs_status.oblique_delta_grade[PLAYER_IN_LINE][i - j + BOARD_SIZE];
 }
 
 

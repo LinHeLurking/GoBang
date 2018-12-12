@@ -10,7 +10,7 @@
 #include "drawBoard.h"
 #include "Zoribrist_hash.h"
 
-int pos_estimate(int i, int j, int player_side);
+long long pos_estimate(int i, int j, int player_side);
 
 int winner_check();
 

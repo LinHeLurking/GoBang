@@ -23,8 +23,6 @@ typedef struct {
     long long total_grade[2];
 
     //these are used to record the last place and the total steps
-    int last_player;
-    int last_i, last_j;
     int steps;
 } boardStatus;
 

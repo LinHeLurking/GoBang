@@ -14,16 +14,20 @@ int int_min(int x,int y);
 
 int int_max(int x,int y);
 
-void choice_sort(drop_choice *a, int len);
+void choice_sort(drop_choice *a, int len, int player_side);
 
 void int_sort(int *a, int len);
 
 void int_min_heapfy(int *a, int stat, int end);
 
+void min_heapfy(drop_choice *a, int start, int end);
+
+void max_heapfy(drop_choice *a, int start, int end);
+
 
 #define swap(a, b, type) type tmp=*(a); *(a)=*(b); *(b)=tmp;
 
-#define abs(x) x<0?0-(x):x
+#define abs(x) x<0?(0-(x)):x
 
 
 #endif //GOBANG_MATHFUNC_H

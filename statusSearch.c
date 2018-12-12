@@ -14,11 +14,18 @@ extern unsigned long long hash_key[BOARD_SIZE][BOARD_SIZE];
  * */
 #define MAX_POS 225
 
-void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_player_side) {
+inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_player_side) {
     *num = 0;
+
     for (int i = 0; i < BOARD_SIZE; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
             if (dfs_status.board[i][j] == VOID) {
+                //skip useless points as many as possible
+                if (dfs_status.steps < 6) {
+                    if (!has_neighbor(i, j, 1))continue;
+                } else if (!has_neighbor(i, j, 2)) continue;
+
+
                 long long my_original_grade_estimate = pos_estimate(i, j, search_player_side);
                 long long opponent_original_grade_estimate = pos_estimate(i, j, 0 - search_player_side);
                 drop_choice1[*num].i = i;
@@ -39,12 +46,12 @@ void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_playe
             }
         }
     }
-    choice_sort(drop_choice1, *num);
+    choice_sort(drop_choice1, *num, search_player_side);
     switch (dfs_status.steps) {
-        case 1:
+        case 2:
             *num = 9;
             break;
-        case 2:
+        case 3:
             *num = 16;
             break;
         default:
@@ -134,5 +141,18 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
         }
         return result;
     }
+}
+
+int has_neighbor(int i, int j, int wid) {
+    for (int _i = i - wid; _i <= i + wid; ++_i) {
+        if (_i < 0 || _i >= BOARD_SIZE)continue;
+        for (int _j = j - wid; _j <= j + wid; ++_j) {
+            if (_j < 0 || _j >= BOARD_SIZE)continue;
+            if (dfs_status.board[_i][_j] != VOID) {
+                return 1;
+            }
+        }
+    }
+    return 0;
 }
 

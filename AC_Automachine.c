@@ -21,68 +21,82 @@ trie tr[TRIE_SIZE];
  *
  * */
 
-#define FIVE_GRADE 100000
+#define FIVE_GRADE 10000000
+#define CONTINUOUS_FOUR 100000
+#define CONTINUOUS_THREE 1000
+#define CONTINUOUS_TWO 100
+#define CONTINUOUS_ONE 10
 
-int grade[STR_TO_RECOGNIZE] = {FIVE_GRADE, 10000, 1000, 100, 10, FIVE_GRADE, FIVE_GRADE, 1100, 1100, 100, 100, 10, 10,
-                               -FIVE_GRADE, -10000, -1000, -100, -10, -100000, -100000, -1100, -1100, -100, -100, -10,
-                               -10, FIVE_GRADE, -FIVE_GRADE, -10000, -10000, 10000, 10000, -5000, -5000, 5000, 5000};
+#define HALF_FOUR 10000
+#define HALF_THREE 100
+#define HALF_TWO 2
+
+#define SPLIT_ALIVE_FOUR 7000
+#define SPLIT_ALIVE_FIVE 10000
+
+int grade[STR_TO_RECOGNIZE] = {FIVE_GRADE, CONTINUOUS_FOUR, CONTINUOUS_THREE, CONTINUOUS_TWO, CONTINUOUS_ONE,
+                               FIVE_GRADE, FIVE_GRADE, HALF_FOUR, HALF_FOUR, HALF_THREE, HALF_THREE, HALF_TWO, HALF_TWO,
+                               -FIVE_GRADE, -CONTINUOUS_FOUR, -CONTINUOUS_THREE, -CONTINUOUS_TWO, -CONTINUOUS_ONE,
+                               -FIVE_GRADE, -FIVE_GRADE, -HALF_FOUR, -HALF_FOUR, -HALF_THREE, -HALF_THREE, -HALF_TWO,
+                               -HALF_TWO, FIVE_GRADE, -FIVE_GRADE, -SPLIT_ALIVE_FOUR, -SPLIT_ALIVE_FOUR,
+                               SPLIT_ALIVE_FOUR, SPLIT_ALIVE_FOUR, -SPLIT_ALIVE_FIVE, -SPLIT_ALIVE_FIVE,
+                               SPLIT_ALIVE_FIVE, SPLIT_ALIVE_FIVE};
 //cautions!! if you change this array, the grade[] also needs changing
 int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
 
         //todo:: patters and their estimate grades need optimised
 
-        //WHITE: 0 <= index < 11 BLACK: 11 <= index < STR_TO_RECOGNIZE
 
         //alive
         //white
-        {VOID,  WHITE, WHITE, WHITE, WHITE, WHITE, VOID,  END},//100000
-        {VOID,  WHITE, WHITE, WHITE, WHITE, VOID,  END},//10000
-        {VOID,  WHITE, WHITE, WHITE, VOID,  END},//1000
-        {VOID,  WHITE, WHITE, VOID,  END},//100
-        {VOID,  WHITE, VOID,  END},//10
+        {VOID,  WHITE, WHITE, WHITE, WHITE, WHITE, VOID,  END},//
+        {VOID,  WHITE, WHITE, WHITE, WHITE, VOID,  END},//
+        {VOID,  WHITE, WHITE, WHITE, VOID,  END},//
+        {VOID,  WHITE, WHITE, VOID,  END},//
+        {VOID,  WHITE, VOID,  END},//
         //half alive
         //white
-        {BLACK, WHITE, WHITE, WHITE, WHITE, WHITE, VOID,  END},//100000
-        {VOID,  WHITE, WHITE, WHITE, WHITE, WHITE, BLACK, END},//100000
-        {BLACK, WHITE, WHITE, WHITE, WHITE, VOID,  END},//1100
-        {VOID,  WHITE, WHITE, WHITE, WHITE, BLACK, END},//1100
-        {BLACK, WHITE, WHITE, WHITE, VOID,  END},//100
-        {VOID,  WHITE, WHITE, WHITE, BLACK, END},//100
-        {BLACK, WHITE, WHITE, VOID,  END},//10
-        {VOID,  WHITE, WHITE, BLACK, END},//10
+        {BLACK, WHITE, WHITE, WHITE, WHITE, WHITE, VOID,  END},//
+        {VOID,  WHITE, WHITE, WHITE, WHITE, WHITE, BLACK, END},//
+        {BLACK, WHITE, WHITE, WHITE, WHITE, VOID,  END},//
+        {VOID,  WHITE, WHITE, WHITE, WHITE, BLACK, END},//
+        {BLACK, WHITE, WHITE, WHITE, VOID,  END},//
+        {VOID,  WHITE, WHITE, WHITE, BLACK, END},//
+        {BLACK, WHITE, WHITE, VOID,  END},//
+        {VOID,  WHITE, WHITE, BLACK, END},//
 
         //alive
         //black
-        {VOID,  BLACK, BLACK, BLACK, BLACK, BLACK, VOID,  END},//-100000
-        {VOID,  BLACK, BLACK, BLACK, BLACK, VOID,  END},//-10000
-        {VOID,  BLACK, BLACK, BLACK, VOID,  END},//-1000
-        {VOID,  BLACK, BLACK, VOID,  END},//-100
-        {VOID,  BLACK, VOID,  END},//-10
+        {VOID,  BLACK, BLACK, BLACK, BLACK, BLACK, VOID,  END},//
+        {VOID,  BLACK, BLACK, BLACK, BLACK, VOID,  END},//
+        {VOID,  BLACK, BLACK, BLACK, VOID,  END},//
+        {VOID,  BLACK, BLACK, VOID,  END},//
+        {VOID,  BLACK, VOID,  END},//
         //half alive
         //black
-        {WHITE, BLACK, BLACK, BLACK, BLACK, BLACK, VOID,  END},//-100000
-        {VOID,  BLACK, BLACK, BLACK, BLACK, BLACK, WHITE, END},//-100000
-        {WHITE, BLACK, BLACK, BLACK, BLACK, VOID,  END},//-1100
-        {VOID,  BLACK, BLACK, BLACK, BLACK, WHITE, END},//-1100
-        {WHITE, BLACK, BLACK, BLACK, VOID,  END},//-100
-        {VOID,  BLACK, BLACK, BLACK, WHITE, END},//-100
-        {WHITE, BLACK, BLACK, VOID,  END},//-10
-        {VOID,  BLACK, BLACK, WHITE, END},//-10
+        {WHITE, BLACK, BLACK, BLACK, BLACK, BLACK, VOID,  END},//
+        {VOID,  BLACK, BLACK, BLACK, BLACK, BLACK, WHITE, END},//
+        {WHITE, BLACK, BLACK, BLACK, BLACK, VOID,  END},//
+        {VOID,  BLACK, BLACK, BLACK, BLACK, WHITE, END},//
+        {WHITE, BLACK, BLACK, BLACK, VOID,  END},//
+        {VOID,  BLACK, BLACK, BLACK, WHITE, END},//
+        {WHITE, BLACK, BLACK, VOID,  END},//
+        {VOID,  BLACK, BLACK, WHITE, END},//
 
         //totally dead five
-        {BLACK, WHITE, WHITE, WHITE, WHITE, WHITE, END},//100000
-        {WHITE, BLACK, BLACK, BLACK, BLACK, BLACK, WHITE, END},//-100000
+        {BLACK, WHITE, WHITE, WHITE, WHITE, WHITE, END},//
+        {WHITE, BLACK, BLACK, BLACK, BLACK, BLACK, WHITE, END},//
 
         //special continue
-        {BLACK, BLACK, BLACK, VOID,  BLACK, END},//-10000
-        {BLACK, VOID,  BLACK, BLACK, BLACK, END},//-10000
-        {WHITE, WHITE, WHITE, VOID,  WHITE, END},//10000
-        {WHITE, VOID,  WHITE, WHITE, WHITE, END},//10000
+        {BLACK, BLACK, BLACK, VOID,  BLACK, END},//
+        {BLACK, VOID,  BLACK, BLACK, BLACK, END},//
+        {WHITE, WHITE, WHITE, VOID,  WHITE, END},//
+        {WHITE, VOID,  WHITE, WHITE, WHITE, END},//
 
-        {BLACK, BLACK, BLACK, VOID,  BLACK, BLACK, END},//-5000
-        {WHITE, BLACK, BLACK, VOID,  BLACK, BLACK, BLACK, END},//-5000
-        {WHITE, WHITE, WHITE, VOID,  WHITE, WHITE, END},//5000
-        {WHITE, WHITE, VOID,  WHITE, WHITE, WHITE, END}//5000
+        {BLACK, BLACK, BLACK, VOID,  BLACK, BLACK, END},//
+        {BLACK, BLACK, VOID,  BLACK, BLACK, BLACK, END},//
+        {WHITE, WHITE, WHITE, VOID,  WHITE, WHITE, END},//
+        {WHITE, WHITE, VOID,  WHITE, WHITE, WHITE, END}//
 
 };
 
@@ -151,3 +165,12 @@ void AC_build() {
 }
 
 #undef FIVE_GRADE
+#undef CONTINUOUS_ONE
+#undef CONTINUOUS_TWO
+#undef CONTINUOUS_THREE
+#undef CONTINUOUS_FOUR
+#undef HALF_TWO
+#undef HALF_THREE
+#undef HALF_FOUR
+#undef SPLIT_ALIVE_FIVE
+#undef SPLIT_ALIVE_FOUR
