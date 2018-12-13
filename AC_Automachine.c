@@ -8,44 +8,44 @@
 trie tr[TRIE_SIZE];
 
 
-/*  evaluate the grade of this status board using AC auto-machine
- *  0111110 -> 100000
- *  011110 -> 10000
- *  01110 -> 1000
- *  0110 -> 100
- *  010 -> 10
- *
- *  01111-1/-111110 -> 1000
- *  0111-1/-11110 -> 100
- *  011-1/-1110 -> 10
- *
- * */
+// evaluate the grade of this status board using AC auto-machine
 
-#define FIVE_GRADE 10000000
-#define CONTINUOUS_FOUR 100000
+// values may need changing or the program would be too greedy. QAQ
+#define FIVE_GRADE 40000
+#define CONTINUOUS_FOUR 10000
 #define CONTINUOUS_THREE 1000
-#define CONTINUOUS_TWO 100
+#define CONTINUOUS_TWO 200
 #define CONTINUOUS_ONE 10
 
-#define HALF_FOUR 10000
-#define HALF_THREE 100
-#define HALF_TWO 2
+#define HALF_FOUR 5000
+#define HALF_THREE 300
+#define HALF_TWO 50
 
-#define SPLIT_ALIVE_FOUR 7000
-#define SPLIT_ALIVE_FIVE 10000
+#define SPLIT_ALIVE_THREE 200
+#define SPLIT_ALIVE_FOUR 4000
 
-int grade[STR_TO_RECOGNIZE] = {FIVE_GRADE, CONTINUOUS_FOUR, CONTINUOUS_THREE, CONTINUOUS_TWO, CONTINUOUS_ONE,
-                               FIVE_GRADE, FIVE_GRADE, HALF_FOUR, HALF_FOUR, HALF_THREE, HALF_THREE, HALF_TWO, HALF_TWO,
-                               -FIVE_GRADE, -CONTINUOUS_FOUR, -CONTINUOUS_THREE, -CONTINUOUS_TWO, -CONTINUOUS_ONE,
-                               -FIVE_GRADE, -FIVE_GRADE, -HALF_FOUR, -HALF_FOUR, -HALF_THREE, -HALF_THREE, -HALF_TWO,
-                               -HALF_TWO, FIVE_GRADE, -FIVE_GRADE, -SPLIT_ALIVE_FOUR, -SPLIT_ALIVE_FOUR,
-                               SPLIT_ALIVE_FOUR, SPLIT_ALIVE_FOUR, -SPLIT_ALIVE_FIVE, -SPLIT_ALIVE_FIVE,
-                               SPLIT_ALIVE_FIVE, SPLIT_ALIVE_FIVE};
+
+int grade[PATTERNS] = {
+        //alive white
+        FIVE_GRADE, CONTINUOUS_FOUR, CONTINUOUS_THREE, CONTINUOUS_TWO, CONTINUOUS_ONE,
+        //half alive white
+        FIVE_GRADE, FIVE_GRADE, HALF_FOUR, HALF_FOUR, HALF_THREE, HALF_THREE, HALF_TWO, HALF_TWO,
+        //alive black
+        -FIVE_GRADE, -CONTINUOUS_FOUR, -CONTINUOUS_THREE, -CONTINUOUS_TWO, -CONTINUOUS_ONE,
+        //half alive black
+        -FIVE_GRADE, -FIVE_GRADE, -HALF_FOUR, -HALF_FOUR, -HALF_THREE, -HALF_THREE, -HALF_TWO, -HALF_TWO,
+
+        //dead five
+        FIVE_GRADE, -FIVE_GRADE,
+
+        //split alive four
+        -SPLIT_ALIVE_FOUR, -SPLIT_ALIVE_FOUR, -SPLIT_ALIVE_FOUR, SPLIT_ALIVE_FOUR, SPLIT_ALIVE_FOUR, SPLIT_ALIVE_FOUR,
+
+        //split alive three
+        -SPLIT_ALIVE_THREE, -SPLIT_ALIVE_THREE, SPLIT_ALIVE_THREE, SPLIT_ALIVE_THREE
+};
 //cautions!! if you change this array, the grade[] also needs changing
-int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
-
-        //todo:: patters and their estimate grades need optimised
-
+int pattern[PATTERNS][MAX_PATTERN_LEN] = {
 
         //alive
         //white
@@ -87,17 +87,20 @@ int pattern[STR_TO_RECOGNIZE][MAX_STR_SIZE] = {
         {BLACK, WHITE, WHITE, WHITE, WHITE, WHITE, END},//
         {WHITE, BLACK, BLACK, BLACK, BLACK, BLACK, WHITE, END},//
 
-        //special continue
+        //split
+        //alive four
         {BLACK, BLACK, BLACK, VOID,  BLACK, END},//
+        {BLACK, BLACK, VOID,  BLACK, BLACK, END},//
         {BLACK, VOID,  BLACK, BLACK, BLACK, END},//
         {WHITE, WHITE, WHITE, VOID,  WHITE, END},//
+        {WHITE, WHITE, VOID,  WHITE, WHITE, END},//
         {WHITE, VOID,  WHITE, WHITE, WHITE, END},//
 
-        {BLACK, BLACK, BLACK, VOID,  BLACK, BLACK, END},//
-        {BLACK, BLACK, VOID,  BLACK, BLACK, BLACK, END},//
-        {WHITE, WHITE, WHITE, VOID,  WHITE, WHITE, END},//
-        {WHITE, WHITE, VOID,  WHITE, WHITE, WHITE, END}//
-
+        // alive three
+        {VOID,  BLACK, VOID,  BLACK, BLACK, VOID,  END},//
+        {VOID,  BLACK, BLACK, VOID,  BLACK, VOID,  END},//
+        {VOID,  WHITE, VOID,  WHITE, WHITE, VOID,  END},//
+        {VOID,  WHITE, WHITE, VOID,  WHITE, VOID,  END}//
 };
 
 
@@ -158,7 +161,7 @@ void build_AC_fail() {
 
 void AC_build() {
     AC_init();
-    for (int i = 0; i < STR_TO_RECOGNIZE; ++i) {
+    for (int i = 0; i < PATTERNS; ++i) {
         insert(pattern[i], grade[i]);
     }
     build_AC_fail();
@@ -172,5 +175,5 @@ void AC_build() {
 #undef HALF_TWO
 #undef HALF_THREE
 #undef HALF_FOUR
-#undef SPLIT_ALIVE_FIVE
 #undef SPLIT_ALIVE_FOUR
+#undef SPLIT_ALIVE_THREE

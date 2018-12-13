@@ -166,7 +166,18 @@ int add_piece(int i, int j, int player_side) {
     status.oblique_line_sum[i + j][j] = player_side;
     status.oblique_line_delta[i - j + BOARD_SIZE][j] = player_side;
     status.steps++;
-    return dfs_add_piece(i, j, player_side);
+    int check_code = dfs_add_piece(i, j, player_side);
+
+    record[status.steps].i = i;
+    record[status.steps].j = j;
+    record[status.steps].player = player_side;
+
+
+#ifdef RECORD_DEBUG
+    printf("steps: %d\n", status.steps);
+    printf("i: %d\tj: %d\n", record[status.steps].i, record[status.steps].j);
+#endif
+    return check_code;
 }
 
 /*  return -1 if that position is occupied
@@ -182,9 +193,6 @@ int dfs_add_piece(int i, int j, int player_side) {
         dfs_status.steps--;
     } else {
         dfs_status.steps++;
-        record[dfs_status.steps].i = i;
-        record[dfs_status.steps].j = j;
-        record[dfs_status.steps].player = player_side;
     }
 
     //if this status has been evaluated and exists in hash table, then take the grade from the hash table

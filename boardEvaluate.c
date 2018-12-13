@@ -215,7 +215,7 @@ long long grade_estimate(int player_side) {
 
 
 #undef TRIE_SIZE
-#undef STR_TO_RECOGNIZE
+#undef PATTERNS
 #undef END
-#undef MAX_STR_SIZE
+#undef MAX_PATTERN_LEN
 #undef OFFSET

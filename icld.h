@@ -19,7 +19,7 @@
 #define VOID 0
 #define HUMAN_VS_HUMAN 0
 #define HUMAN_VS_COMPUTER 1
-#define DFS_DEPTH 5
+#define DFS_DEPTH 4
 #define INF 20000000000007
 #define CACHE_SIZE 500000
 #define HASH (hash%CACHE_SIZE)
@@ -35,12 +35,14 @@
 //#define PLAYER_SIDE_DEBUG
 //#define HASH_DEBUG
 //#define ESTIMATE_METHOD_DEBUG
+//#define RECORD_DEBUG
 
-#define TRIE_SIZE 100
+#define TRIE_SIZE 1000
 #define STATUS_NUM 3
-#define STR_TO_RECOGNIZE 36
+//CAUTIONS!!! this PATTERNS must be exactly the same as the number of patterns
+#define PATTERNS 38
 #define END 7
-#define MAX_STR_SIZE 20
+#define MAX_PATTERN_LEN 20
 #define OFFSET 1
 
 #define GRADE_DEBUG printf("Direct grade estimate for BLACK: %lld\n",grade_estimate(BLACK));printf("Direct grade estimate for WHITE: %lld\n",grade_estimate(WHITE));

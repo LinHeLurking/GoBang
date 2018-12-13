@@ -26,8 +26,8 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
                 } else if (!has_neighbor(i, j, 2)) continue;
 
 
-                long long my_original_grade_estimate = pos_estimate(i, j, search_player_side);
-                long long opponent_original_grade_estimate = pos_estimate(i, j, 0 - search_player_side);
+                //long long my_original_grade_estimate = pos_estimate(i, j, search_player_side);
+                //long long opponent_original_grade_estimate = pos_estimate(i, j, 0 - search_player_side);
                 drop_choice1[*num].i = i;
                 drop_choice1[*num].j = j;
 
@@ -35,10 +35,11 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
 
                 long long my_new_grade_estimate = pos_estimate(i, j, search_player_side);
                 long long opponent_new_grade_estimate = pos_estimate(i, j, 0 - search_player_side);
-                long long my_delta = (my_new_grade_estimate - my_original_grade_estimate) * search_player_side;
-                long long opponent_delta =
-                        (opponent_new_grade_estimate - opponent_original_grade_estimate) * (0 - search_player_side);
-                drop_choice1[*num].grade_estimate = my_delta - 1.1 * opponent_delta;
+                //long long my_delta = (my_new_grade_estimate - my_original_grade_estimate) * search_player_side;
+                //long long opponent_delta =
+                //        (opponent_new_grade_estimate - opponent_original_grade_estimate) * (0 - search_player_side);
+                //drop_choice1[*num].grade_estimate = my_delta - 1.1 * opponent_delta;
+                drop_choice1[*num].grade_estimate = my_new_grade_estimate + opponent_new_grade_estimate;
 
                 dfs_add_piece(i, j, VOID);
 
