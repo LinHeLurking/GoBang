@@ -142,7 +142,7 @@ inline void update_line_grade_oblique_delta(int oblique_delta_index, int player_
 
 }
 
-void update_grade(int i, int j) {
+inline void update_grade(int i, int j) {
     update_line_grade_row(i, WHITE);
     update_line_grade_col(j, WHITE);
     update_line_grade_oblique_sum(i + j, WHITE);
@@ -165,13 +165,15 @@ int add_piece(int i, int j, int player_side) {
     status.board[i][j] = player_side;
     status.oblique_line_sum[i + j][j] = player_side;
     status.oblique_line_delta[i - j + BOARD_SIZE][j] = player_side;
-    status.steps++;
+
     int check_code = dfs_add_piece(i, j, player_side);
 
-    record[status.steps].i = i;
-    record[status.steps].j = j;
-    record[status.steps].player = player_side;
-
+    if (check_code != -1) {
+        status.steps++;
+        record[status.steps].i = i;
+        record[status.steps].j = j;
+        record[status.steps].player = player_side;
+    }
 
 #ifdef RECORD_DEBUG
     printf("steps: %d\n", status.steps);

@@ -33,8 +33,8 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
 
                 dfs_add_piece(i, j, search_player_side);
 
-                long long my_new_grade_estimate = pos_estimate(i, j, search_player_side);
-                long long opponent_new_grade_estimate = pos_estimate(i, j, 0 - search_player_side);
+                long long my_new_grade_estimate = grade_estimate(search_player_side);
+                long long opponent_new_grade_estimate = grade_estimate(0 - search_player_side);
                 //long long my_delta = (my_new_grade_estimate - my_original_grade_estimate) * search_player_side;
                 //long long opponent_delta =
                 //        (opponent_new_grade_estimate - opponent_original_grade_estimate) * (0 - search_player_side);
@@ -149,7 +149,7 @@ int has_neighbor(int i, int j, int wid) {
         if (_i < 0 || _i >= BOARD_SIZE)continue;
         for (int _j = j - wid; _j <= j + wid; ++_j) {
             if (_j < 0 || _j >= BOARD_SIZE)continue;
-            if (dfs_status.board[_i][_j] != VOID) {
+            if (dfs_status.board[_i][_j] != VOID && _i != i && _j != j) {
                 return 1;
             }
         }

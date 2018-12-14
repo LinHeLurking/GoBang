@@ -11,18 +11,18 @@ trie tr[TRIE_SIZE];
 // evaluate the grade of this status board using AC auto-machine
 
 // values may need changing or the program would be too greedy. QAQ
-#define FIVE_GRADE 40000
-#define CONTINUOUS_FOUR 10000
+#define FIVE_GRADE 1000000
+#define CONTINUOUS_FOUR 100000
 #define CONTINUOUS_THREE 1000
-#define CONTINUOUS_TWO 200
+#define CONTINUOUS_TWO 100
 #define CONTINUOUS_ONE 10
 
-#define HALF_FOUR 5000
-#define HALF_THREE 300
+#define HALF_FOUR 50000
+#define HALF_THREE 500
 #define HALF_TWO 50
 
-#define SPLIT_ALIVE_THREE 200
-#define SPLIT_ALIVE_FOUR 4000
+#define SPLIT_ALIVE_THREE 850
+#define SPLIT_ALIVE_FOUR 35000
 
 
 int grade[PATTERNS] = {
