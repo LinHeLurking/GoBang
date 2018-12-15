@@ -34,8 +34,8 @@
 #define PRUNE_DEBUG
 //#define PLAYER_SIDE_DEBUG
 //#define HASH_DEBUG
-//#define ESTIMATE_METHOD_DEBUG
 //#define RECORD_DEBUG
+#define BAN_DEBUG
 
 #define TRIE_SIZE 1000
 #define STATUS_NUM 3
@@ -43,7 +43,7 @@
 #define PATTERNS 38
 #define END 7
 #define MAX_PATTERN_LEN 20
-#define OFFSET 1
+#define COLOR_OFFSET 1
 
 #define GRADE_DEBUG printf("Direct grade estimate for BLACK: %lld\n",grade_estimate(BLACK));printf("Direct grade estimate for WHITE: %lld\n",grade_estimate(WHITE));
 

@@ -11,6 +11,7 @@ trie tr[TRIE_SIZE];
 // evaluate the grade of this status board using AC auto-machine
 
 // values may need changing or the program would be too greedy. QAQ
+/*
 #define FIVE_GRADE 1000000
 #define CONTINUOUS_FOUR 100000
 #define CONTINUOUS_THREE 1000
@@ -23,6 +24,7 @@ trie tr[TRIE_SIZE];
 
 #define SPLIT_ALIVE_THREE 850
 #define SPLIT_ALIVE_FOUR 35000
+ */
 
 
 int grade[PATTERNS] = {
@@ -122,10 +124,10 @@ void insert(int *s, int grade) {
     int p = root;
     for (int *c = s; *c != END; ++c) {
         int tmp = (*c);
-        if (tr[p].trans[tmp + OFFSET] == -1) {
-            tr[p].trans[tmp + OFFSET] = ++count;
+        if (tr[p].trans[tmp + COLOR_OFFSET] == -1) {
+            tr[p].trans[tmp + COLOR_OFFSET] = ++count;
         }
-        p = tr[p].trans[tmp + OFFSET];
+        p = tr[p].trans[tmp + COLOR_OFFSET];
         if ((*(c + 1)) == END)
             tr[p].grade = grade;
     }
@@ -166,14 +168,3 @@ void AC_build() {
     }
     build_AC_fail();
 }
-
-#undef FIVE_GRADE
-#undef CONTINUOUS_ONE
-#undef CONTINUOUS_TWO
-#undef CONTINUOUS_THREE
-#undef CONTINUOUS_FOUR
-#undef HALF_TWO
-#undef HALF_THREE
-#undef HALF_FOUR
-#undef SPLIT_ALIVE_FOUR
-#undef SPLIT_ALIVE_THREE

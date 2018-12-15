@@ -3,7 +3,6 @@
 //
 
 #include "statusBoard.h"
-#include "mathFunc.h"
 
 //status_board[i][j] -> oblique_line_sum[i+j][j]
 
@@ -12,6 +11,8 @@
 boardStatus status;
 boardStatus dfs_status;
 drop_record record[BOARD_SIZE * BOARD_SIZE + 5];
+int ban_cnt[5];
+
 extern trie tr[TRIE_SIZE];
 extern unsigned long long hash_key[2][BOARD_SIZE][BOARD_SIZE];
 extern long long cache_total_grade[2][CACHE_SIZE];
@@ -40,21 +41,34 @@ void status_init() {
     record[0].i = record[0].j = -1;
 }
 
+//todo: this is a sample.
+inline int grade_unique(long long grade) {
+    if (grade == -CONTINUOUS_THREE || grade == -SPLIT_ALIVE_THREE) {
+        return 3;
+    } else if (grade == -CONTINUOUS_FOUR || grade == -SPLIT_ALIVE_FOUR) {
+        return 4;
+    } else return -1;
+}
+
 
 inline void update_line_grade_row(int row_index, int player_side) {
     long long _grade = 0;
     int cur = 0;
     for (int k = -1; k <= BOARD_SIZE; ++k) {
         int ch = k == -1 || k == BOARD_SIZE ? 0 - player_side : dfs_status.board[row_index][k];
-        while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
+        while (tr[cur].trans[ch + COLOR_OFFSET] == -1 && cur != 0) {
             cur = tr[cur].fail;
         }
-        cur = tr[cur].trans[ch + OFFSET];
+        cur = tr[cur].trans[ch + COLOR_OFFSET];
         cur = cur == -1 ? 0 : cur;
         int tmp = cur;
         while (tmp != 0 && tr[tmp].grade != 0) {
             if ((player_side == WHITE && tr[tmp].grade > 0) || (player_side == BLACK && tr[tmp].grade < 0)) {
                 _grade += tr[tmp].grade;
+#ifdef BAN_DEBUG
+                if (player_side == BLACK && grade_unique(tr[tmp].grade) != -1)
+                    printf("found a %d\n", grade_unique(tr[tmp].grade));
+#endif
             }
             tmp = tr[tmp].fail;
         }
@@ -70,15 +84,19 @@ inline void update_line_grade_col(int col_index, int player_side) {
     long long _grade = 0;
     for (int k = -1; k <= BOARD_SIZE; ++k) {
         int ch = k == -1 || k == BOARD_SIZE ? 0 - player_side : dfs_status.board[k][col_index];
-        while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
+        while (tr[cur].trans[ch + COLOR_OFFSET] == -1 && cur != 0) {
             cur = tr[cur].fail;
         }
-        cur = tr[cur].trans[ch + OFFSET];
+        cur = tr[cur].trans[ch + COLOR_OFFSET];
         cur = cur == -1 ? 0 : cur;
         int tmp = cur;
         while (tmp != 0 && tr[tmp].grade != 0) {
             if ((player_side == WHITE && tr[tmp].grade > 0) || (player_side == BLACK && tr[tmp].grade < 0)) {
                 _grade += tr[tmp].grade;
+#ifdef BAN_DEBUG
+                if (player_side == BLACK && grade_unique(tr[tmp].grade) != -1)
+                    printf("found a %d\n", grade_unique(tr[tmp].grade));
+#endif
             }
             tmp = tr[tmp].fail;
         }
@@ -95,15 +113,19 @@ inline void update_line_grade_oblique_sum(int oblique_sum_index, int player_side
     for (int k = -1; k <= BOARD_SIZE; ++k) {
         int ch = k == int_max(-1, oblique_sum_index - BOARD_SIZE) || k == int_min(oblique_sum_index + 1, BOARD_SIZE) ?
                  0 - player_side : dfs_status.oblique_line_sum[oblique_sum_index][k];
-        while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
+        while (tr[cur].trans[ch + COLOR_OFFSET] == -1 && cur != 0) {
             cur = tr[cur].fail;
         }
-        cur = tr[cur].trans[ch + OFFSET];
+        cur = tr[cur].trans[ch + COLOR_OFFSET];
         cur = cur == -1 ? 0 : cur;
         int tmp = cur;
         while (tmp != 0 && tr[tmp].grade != 0) {
             if ((player_side == WHITE && tr[tmp].grade > 0) || (player_side == BLACK && tr[tmp].grade < 0)) {
                 _grade += tr[tmp].grade;
+#ifdef BAN_DEBUG
+                if (player_side == BLACK && grade_unique(tr[tmp].grade) != -1)
+                    printf("found a %d\n", grade_unique(tr[tmp].grade));
+#endif
             }
             tmp = tr[tmp].fail;
         }
@@ -121,15 +143,19 @@ inline void update_line_grade_oblique_delta(int oblique_delta_index, int player_
         int ch =
                 k == int_max(-1, -1 - oblique_delta_index) || k == int_min(BOARD_SIZE - oblique_delta_index, BOARD_SIZE)
                 ? 0 - player_side : dfs_status.oblique_line_delta[oblique_delta_index + BOARD_SIZE][k];
-        while (tr[cur].trans[ch + OFFSET] == -1 && cur != 0) {
+        while (tr[cur].trans[ch + COLOR_OFFSET] == -1 && cur != 0) {
             cur = tr[cur].fail;
         }
-        cur = tr[cur].trans[ch + OFFSET];
+        cur = tr[cur].trans[ch + COLOR_OFFSET];
         cur = cur == -1 ? 0 : cur;
         int tmp = cur;
         while (tmp != 0 && tr[tmp].grade != 0) {
             if ((player_side == WHITE && tr[tmp].grade > 0) || (player_side == BLACK && tr[tmp].grade < 0)) {
                 _grade += tr[tmp].grade;
+#ifdef BAN_DEBUG
+                if (player_side == BLACK && grade_unique(tr[tmp].grade) != -1)
+                    printf("found a %d\n", grade_unique(tr[tmp].grade));
+#endif
             }
             tmp = tr[tmp].fail;
         }

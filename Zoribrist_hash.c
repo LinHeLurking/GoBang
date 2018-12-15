@@ -57,7 +57,6 @@ void hash_init() {
     SET0(cache_oblique_sum_grade);
     SET0(cache_oblique_delta_grade);
     memset(cache_record_step, -1, sizeof(cache_record_step));
-    //TODO: high quality random number needed!!!
 
 #ifdef HASH_DEBUG
     for (int i = 0; i < BOARD_SIZE; ++i) {

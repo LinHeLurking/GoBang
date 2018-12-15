@@ -144,7 +144,7 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
     }
 }
 
-int has_neighbor(int i, int j, int wid) {
+inline int has_neighbor(int i, int j, int wid) {
     for (int _i = i - wid; _i <= i + wid; ++_i) {
         if (_i < 0 || _i >= BOARD_SIZE)continue;
         for (int _j = j - wid; _j <= j + wid; ++_j) {

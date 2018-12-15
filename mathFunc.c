@@ -66,7 +66,6 @@ inline void max_heapfy(drop_choice *a, int start, int end) {
     }
 }
 
-//todo: this sort is wrong!!!
 inline void choice_sort(drop_choice *a, int len, int player_side) {
     if (player_side == WHITE) {
         for (int i = len / 2 - 1; i >= 0; --i) {

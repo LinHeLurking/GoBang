@@ -8,6 +8,7 @@
 #include "icld.h"
 #include "AC_Automachine.h"
 #include "Zoribrist_hash.h"
+#include "mathFunc.h"
 typedef struct {
     //these are used to record the board status
     int board[BOARD_SIZE][BOARD_SIZE];
@@ -45,6 +46,8 @@ void update_line_grade_oblique_delta(int oblique_delta_index, int player_side);
 void update_grade(int i, int j);
 
 void status_init();
+
+int grade_unique(long long grade);
 
 
 #endif //GOBANG_STATUSBOARD_H

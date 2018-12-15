@@ -4,7 +4,7 @@
 
 #include "interact.h"
 
-#define OFFSET 1
+#define COLOR_OFFSET 1
 
 extern boardStatus status;
 
@@ -69,7 +69,7 @@ void human_vs_computer() {
     while (true) {
 
         printf("\n\nRound for %s, input the position you want to place the piece\n",
-               player_side[human_player + OFFSET]);
+               player_side[human_player + COLOR_OFFSET]);
 
 
         int i, j;
@@ -82,7 +82,7 @@ void human_vs_computer() {
 
                 printf("There is already a piece in this place!\n");
                 printf("Round for %s, input the position you want to place the piece\n",
-                       player_side[human_player + OFFSET]);
+                       player_side[human_player + COLOR_OFFSET]);
 
                 while (!(i>='0'&&i<='0'+BOARD_SIZE&&j>='0'&&j<='0'+BOARD_SIZE)) {
                     read_pos(&i, &j);
@@ -95,11 +95,11 @@ void human_vs_computer() {
         int win_status = winner_check();
         if (win_status == WHITE) {
             //output_board();
-            printf("The player of%s won.\n", player_side[WHITE + OFFSET]);
+            printf("The player of%s won.\n", player_side[WHITE + COLOR_OFFSET]);
             break;
         } else if (win_status == BLACK) {
             //output_board();
-            printf("The player of%s won.\n", player_side[BLACK + OFFSET]);
+            printf("The player of%s won.\n", player_side[BLACK + COLOR_OFFSET]);
             break;
         }
         drop_choice choice = alpha_beta_dfs(computer_player, DFS_DEPTH, 0 - INF, INF);
@@ -123,11 +123,11 @@ void human_vs_computer() {
         win_status = winner_check();
         if (win_status == WHITE) {
             output_board();
-            printf("The player of%s won.\n", player_side[WHITE + OFFSET]);
+            printf("The player of%s won.\n", player_side[WHITE + COLOR_OFFSET]);
             break;
         } else if (win_status == BLACK) {
             output_board();
-            printf("The player of%s won.\n", player_side[BLACK + OFFSET]);
+            printf("The player of%s won.\n", player_side[BLACK + COLOR_OFFSET]);
             break;
         }
     }
@@ -140,7 +140,7 @@ void human_vs_human() {
 #ifdef DEBUG_DRAW
         printf("The grade estimate:\nBLACK: %lld\nWHITE: %lld\n", grade_estimate(BLACK), grade_estimate(WHITE));
 #endif
-        printf("Round for %s, input the position you want to place the piece\n", player_side[player + OFFSET]);
+        printf("Round for %s, input the position you want to place the piece\n", player_side[player + COLOR_OFFSET]);
         int i, j;
         read_pos(&i, &j);
         int st = -1;
@@ -148,7 +148,7 @@ void human_vs_human() {
         while (st == -1) {
             if (cnt++ != 0) {
                 printf("There is already a piece in this place!\n");
-                printf("Round for %s, input the position you want to place the piece\n", player_side[player + OFFSET]);
+                printf("Round for %s, input the position you want to place the piece\n", player_side[player + COLOR_OFFSET]);
                 read_pos(&i, &j);
             }
             st = add_piece(i, j, player);
@@ -157,11 +157,11 @@ void human_vs_human() {
         int win_status = winner_check();
         if (win_status == WHITE) {
             //output_board();
-            printf("The player of%s won.\n", player_side[WHITE + OFFSET]);
+            printf("The player of %s won.\n", player_side[WHITE + COLOR_OFFSET]);
             break;
         } else if (win_status == BLACK) {
             //output_board();
-            printf("The player of%s won.\n", player_side[BLACK + OFFSET]);
+            printf("The player of %s won.\n", player_side[BLACK + COLOR_OFFSET]);
             break;
         }
         player = 0 - player;
@@ -201,4 +201,4 @@ int read_pos(int *i, int *j) {
     return 0;
 }
 
-#undef OFFSET
+#undef COLOR_OFFSET
