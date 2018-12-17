@@ -23,7 +23,7 @@ trie tr[TRIE_SIZE];
 #define HALF_TWO 50
 
 #define SPLIT_ALIVE_THREE 850
-#define SPLIT_ALIVE_FOUR 35000
+#define SPLIT_ALIVE_FOUR_WITHOUT3 35000
  */
 
 
@@ -40,11 +40,18 @@ int grade[PATTERNS] = {
         //dead five
         FIVE_GRADE, -FIVE_GRADE,
 
-        //split alive four
-        -SPLIT_ALIVE_FOUR, -SPLIT_ALIVE_FOUR, -SPLIT_ALIVE_FOUR, SPLIT_ALIVE_FOUR, SPLIT_ALIVE_FOUR, SPLIT_ALIVE_FOUR,
+        //split alive four( without 3)
+        -SPLIT_ALIVE_FOUR_WITHOUT3, -SPLIT_ALIVE_FOUR_WITHOUT3, -SPLIT_ALIVE_FOUR_WITHOUT3,
+        SPLIT_ALIVE_FOUR_WITHOUT3, SPLIT_ALIVE_FOUR_WITHOUT3, SPLIT_ALIVE_FOUR_WITHOUT3,
+
+        //split 4 with 3
+        -SPLIT_ALIVE_FOUR_WITH3, -SPLIT_ALIVE_FOUR_WITH3, SPLIT_ALIVE_FOUR_WITH3, SPLIT_ALIVE_FOUR_WITH3,
 
         //split alive three
-        -SPLIT_ALIVE_THREE, -SPLIT_ALIVE_THREE, SPLIT_ALIVE_THREE, SPLIT_ALIVE_THREE
+        -SPLIT_ALIVE_THREE, -SPLIT_ALIVE_THREE, SPLIT_ALIVE_THREE, SPLIT_ALIVE_THREE,
+
+        //long continuous
+        -LONG_CONTINUOUS
 };
 //cautions!! if you change this array, the grade[] also needs changing
 int pattern[PATTERNS][MAX_PATTERN_LEN] = {
@@ -90,19 +97,28 @@ int pattern[PATTERNS][MAX_PATTERN_LEN] = {
         {WHITE, BLACK, BLACK, BLACK, BLACK, BLACK, WHITE, END},//
 
         //split
-        //alive four
-        {BLACK, BLACK, BLACK, VOID,  BLACK, END},//
+        //alive four( without 3)
+        {WHITE, BLACK, BLACK, BLACK, VOID,  BLACK, END},//
         {BLACK, BLACK, VOID,  BLACK, BLACK, END},//
-        {BLACK, VOID,  BLACK, BLACK, BLACK, END},//
-        {WHITE, WHITE, WHITE, VOID,  WHITE, END},//
+        {BLACK, VOID,  BLACK, BLACK, BLACK, WHITE, END},//
+        {BLACK, WHITE, WHITE, WHITE, VOID,  WHITE, END},//
         {WHITE, WHITE, VOID,  WHITE, WHITE, END},//
-        {WHITE, VOID,  WHITE, WHITE, WHITE, END},//
+        {WHITE, VOID,  WHITE, WHITE, WHITE, BLACK, END},//
+
+        //split alive with 3
+        {VOID,  BLACK, BLACK, BLACK, VOID,  BLACK, END},
+        {BLACK, VOID,  BLACK, BLACK, BLACK, VOID,  END},
+        {VOID,  WHITE, WHITE, WHITE, VOID,  WHITE, END},
+        {WHITE, VOID,  WHITE, WHITE, WHITE, VOID,  END},
 
         // alive three
         {VOID,  BLACK, VOID,  BLACK, BLACK, VOID,  END},//
         {VOID,  BLACK, BLACK, VOID,  BLACK, VOID,  END},//
         {VOID,  WHITE, VOID,  WHITE, WHITE, VOID,  END},//
-        {VOID,  WHITE, WHITE, VOID,  WHITE, VOID,  END}//
+        {VOID,  WHITE, WHITE, VOID,  WHITE, VOID,  END},//
+
+        //long continue
+        {BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, END}
 };
 
 

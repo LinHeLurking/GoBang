@@ -25,6 +25,7 @@ typedef struct {
 
     //these are used to record the last place and the total steps
     int steps;
+
 } boardStatus;
 
 typedef struct {
@@ -47,7 +48,7 @@ void update_grade(int i, int j);
 
 void status_init();
 
-int grade_unique(long long grade);
+void grade_unique(long long grade);
 
 
 #endif //GOBANG_STATUSBOARD_H

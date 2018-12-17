@@ -21,9 +21,13 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
         for (int j = 0; j < BOARD_SIZE; ++j) {
             if (dfs_status.board[i][j] == VOID) {
                 //skip useless points as many as possible
-                if (dfs_status.steps < 6) {
-                    if (!has_neighbor(i, j, 1))continue;
-                } else if (!has_neighbor(i, j, 2)) continue;
+                if (dfs_status.steps < 2) {
+                    if (!has_neighbor(i, j, 1, 1)) continue;
+                } else if (dfs_status.steps < 3) {
+                    if (!has_neighbor(i, j, 1, 2)) continue;
+                } else {
+                    if (!has_neighbor(i, j, 2, 1)) continue;
+                }
 
 
                 //long long my_original_grade_estimate = pos_estimate(i, j, search_player_side);
@@ -48,6 +52,8 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
         }
     }
     choice_sort(drop_choice1, *num, search_player_side);
+    *num = int_min(*num, 50);
+    /*
     switch (dfs_status.steps) {
         case 2:
             *num = 9;
@@ -59,6 +65,7 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
             *num = int_min(*num, 50);
             break;
     }
+     */
 }
 
 #ifdef PRUNE_DEBUG
@@ -144,15 +151,20 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
     }
 }
 
-inline int has_neighbor(int i, int j, int wid) {
+inline int has_neighbor(int i, int j, int wid, int cnt) {
+    int _cnt = 0;
     for (int _i = i - wid; _i <= i + wid; ++_i) {
         if (_i < 0 || _i >= BOARD_SIZE)continue;
         for (int _j = j - wid; _j <= j + wid; ++_j) {
             if (_j < 0 || _j >= BOARD_SIZE)continue;
-            if (dfs_status.board[_i][_j] != VOID && _i != i && _j != j) {
-                return 1;
+            if (dfs_status.board[_i][_j] != VOID) {
+                if (++_cnt >= cnt)return 1;
             }
         }
+    }
+
+    if (i == 6 && j == 7) {
+        printf("_cnt: %d\n", _cnt);
     }
     return 0;
 }

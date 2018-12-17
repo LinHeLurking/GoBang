@@ -14,6 +14,6 @@ void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_playe
 
 drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long alpha, long long beta);
 
-int has_neighbor(int i, int j, int wid);
+int has_neighbor(int i, int j, int wid, int cnt);
 
 #endif //GOBANG_STATUSSEARCH_H

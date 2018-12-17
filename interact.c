@@ -156,11 +156,11 @@ void human_vs_human() {
 
         int win_status = winner_check();
         if (win_status == WHITE) {
-            //output_board();
+            output_board();
             printf("The player of %s won.\n", player_side[WHITE + COLOR_OFFSET]);
             break;
         } else if (win_status == BLACK) {
-            //output_board();
+            output_board();
             printf("The player of %s won.\n", player_side[BLACK + COLOR_OFFSET]);
             break;
         }

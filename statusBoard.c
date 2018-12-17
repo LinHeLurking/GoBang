@@ -11,7 +11,7 @@
 boardStatus status;
 boardStatus dfs_status;
 drop_record record[BOARD_SIZE * BOARD_SIZE + 5];
-int ban_cnt[5];
+int ban_cnt[7];
 
 extern trie tr[TRIE_SIZE];
 extern unsigned long long hash_key[2][BOARD_SIZE][BOARD_SIZE];
@@ -21,6 +21,7 @@ extern long long cache_row_grade[2][CACHE_SIZE];
 extern long long cache_oblique_sum_grade[2][CACHE_SIZE];
 extern long long cache_oblique_delta_grade[2][CACHE_SIZE];
 extern int cache_record_step[CACHE_SIZE];
+extern unsigned long long real_hash[CACHE_SIZE];
 extern unsigned long long hash;
 
 void __status_init(boardStatus *boardStatus1) {
@@ -38,16 +39,33 @@ void __status_init(boardStatus *boardStatus1) {
 void status_init() {
     __status_init(&status);
     __status_init(&dfs_status);
+    SET0(ban_cnt);
     record[0].i = record[0].j = -1;
 }
 
-//todo: this is a sample.
-inline int grade_unique(long long grade) {
-    if (grade == -CONTINUOUS_THREE || grade == -SPLIT_ALIVE_THREE) {
-        return 3;
-    } else if (grade == -CONTINUOUS_FOUR || grade == -SPLIT_ALIVE_FOUR) {
-        return 4;
-    } else return -1;
+//todo: more tests needed
+inline void grade_unique(long long grade) {
+    switch (grade) {
+        case -SPLIT_ALIVE_FOUR_WITH3:
+            --ban_cnt[3];
+            ++ban_cnt[4];
+            break;
+        case -SPLIT_ALIVE_FOUR_WITHOUT3:
+            ++ban_cnt[4];
+            break;
+        case -SPLIT_ALIVE_THREE:
+            ++ban_cnt[3];
+            break;
+        case -CONTINUOUS_THREE:
+            ++ban_cnt[3];
+            break;
+        case -LONG_CONTINUOUS:
+            --ban_cnt[4];
+            ++ban_cnt[6];
+            break;
+        default:
+            break;
+    }
 }
 
 
@@ -63,11 +81,12 @@ inline void update_line_grade_row(int row_index, int player_side) {
         cur = cur == -1 ? 0 : cur;
         int tmp = cur;
         while (tmp != 0 && tr[tmp].grade != 0) {
-            if ((player_side == WHITE && tr[tmp].grade > 0) || (player_side == BLACK && tr[tmp].grade < 0)) {
+            if (player_side == WHITE && tr[tmp].grade > 0) {
+                _grade += tr[tmp].grade;
+            } else if (player_side == BLACK && tr[tmp].grade < 0) {
                 _grade += tr[tmp].grade;
 #ifdef BAN_DEBUG
-                if (player_side == BLACK && grade_unique(tr[tmp].grade) != -1)
-                    printf("found a %d\n", grade_unique(tr[tmp].grade));
+                grade_unique(tr[tmp].grade);
 #endif
             }
             tmp = tr[tmp].fail;
@@ -91,11 +110,12 @@ inline void update_line_grade_col(int col_index, int player_side) {
         cur = cur == -1 ? 0 : cur;
         int tmp = cur;
         while (tmp != 0 && tr[tmp].grade != 0) {
-            if ((player_side == WHITE && tr[tmp].grade > 0) || (player_side == BLACK && tr[tmp].grade < 0)) {
+            if (player_side == WHITE && tr[tmp].grade > 0) {
+                _grade += tr[tmp].grade;
+            } else if (player_side == BLACK && tr[tmp].grade < 0) {
                 _grade += tr[tmp].grade;
 #ifdef BAN_DEBUG
-                if (player_side == BLACK && grade_unique(tr[tmp].grade) != -1)
-                    printf("found a %d\n", grade_unique(tr[tmp].grade));
+                grade_unique(tr[tmp].grade);
 #endif
             }
             tmp = tr[tmp].fail;
@@ -120,11 +140,12 @@ inline void update_line_grade_oblique_sum(int oblique_sum_index, int player_side
         cur = cur == -1 ? 0 : cur;
         int tmp = cur;
         while (tmp != 0 && tr[tmp].grade != 0) {
-            if ((player_side == WHITE && tr[tmp].grade > 0) || (player_side == BLACK && tr[tmp].grade < 0)) {
+            if (player_side == WHITE && tr[tmp].grade > 0) {
+                _grade += tr[tmp].grade;
+            } else if (player_side == BLACK && tr[tmp].grade < 0) {
                 _grade += tr[tmp].grade;
 #ifdef BAN_DEBUG
-                if (player_side == BLACK && grade_unique(tr[tmp].grade) != -1)
-                    printf("found a %d\n", grade_unique(tr[tmp].grade));
+                grade_unique(tr[tmp].grade);
 #endif
             }
             tmp = tr[tmp].fail;
@@ -150,11 +171,12 @@ inline void update_line_grade_oblique_delta(int oblique_delta_index, int player_
         cur = cur == -1 ? 0 : cur;
         int tmp = cur;
         while (tmp != 0 && tr[tmp].grade != 0) {
-            if ((player_side == WHITE && tr[tmp].grade > 0) || (player_side == BLACK && tr[tmp].grade < 0)) {
+            if (player_side == WHITE && tr[tmp].grade > 0) {
+                _grade += tr[tmp].grade;
+            } else if (player_side == BLACK && tr[tmp].grade < 0) {
                 _grade += tr[tmp].grade;
 #ifdef BAN_DEBUG
-                if (player_side == BLACK && grade_unique(tr[tmp].grade) != -1)
-                    printf("found a %d\n", grade_unique(tr[tmp].grade));
+                grade_unique(tr[tmp].grade);
 #endif
             }
             tmp = tr[tmp].fail;
@@ -169,6 +191,9 @@ inline void update_line_grade_oblique_delta(int oblique_delta_index, int player_
 }
 
 inline void update_grade(int i, int j) {
+
+    SET0(ban_cnt);
+
     update_line_grade_row(i, WHITE);
     update_line_grade_col(j, WHITE);
     update_line_grade_oblique_sum(i + j, WHITE);
@@ -201,6 +226,17 @@ int add_piece(int i, int j, int player_side) {
         record[status.steps].player = player_side;
     }
 
+    //todo: more tests needed for ban checking
+    if (ban_cnt[3] >= 2) {
+        printf("!!\nban found: 3\n!!\n");
+    } else if (ban_cnt[4] >= 2) {
+        printf("!!\nban found: 4\n!!\n");
+    } else if (ban_cnt[6]) {
+        printf("!!\nban found: 6\n!!\n");
+    } else {
+        SET0(ban_cnt);
+    }
+
 #ifdef RECORD_DEBUG
     printf("steps: %d\n", status.steps);
     printf("i: %d\tj: %d\n", record[status.steps].i, record[status.steps].j);
@@ -227,28 +263,21 @@ int dfs_add_piece(int i, int j, int player_side) {
     //otherwise update_grade
 
 
-
+    //todo: hash needs more tests!
 #ifdef USE_HASH
     hash ^= hash_key[PLAYER_IN_LINE][i][j];
 
-    if (cache_total_grade[PLAYER_IN_LINE][HASH] && cache_record_step[HASH] == dfs_status.steps &&
-        player_side != VOID) {
-
-        //NOTE: maybe the hash should be divided into two part, one for one player.
-        //yes this is right!
-
+    if (cache_total_grade[PLAYER_IN_LINE][HASH] && real_hash[HASH] == hash &&
+        cache_record_step[HASH] == dfs_status.steps) {
 
         //but it seems that after adding hash features, the level of this program decrease....QAQ
-        //now it is fixed~  QwQ
-        //but sometimes the program drops weirdly????
+        //sometimes the program drops weirdly????
 
 #ifdef HASH_DEBUG
-        printf("current HASH: %llu\ncurrent step: %d\ncurrent cache grade for WHITE:%lld\ncurrent cache grade for BLACK:%lld\n",
-               HASH, dfs_status.steps, cache_total_grade[0][HASH], cache_total_grade[1][HASH]);
-
-        printf("input any char to continue:\n");
-        char tmp;
-        scanf("%c", &tmp);
+        printf("current HASH: %llu\n", HASH);
+        //printf("input any char to continue:\n");
+        //char tmp;
+        //scanf("%c", &tmp);
 #endif
         for (int player = 0; player <= 1; ++player) {
             dfs_status.total_grade[player] = cache_total_grade[player][HASH];

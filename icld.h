@@ -21,7 +21,7 @@
 #define HUMAN_VS_COMPUTER 1
 #define DFS_DEPTH 4
 #define INF 20000000000007
-#define CACHE_SIZE 500000
+#define CACHE_SIZE 10009897
 #define HASH (hash%CACHE_SIZE)
 #define BUFFER_SIZE 1000
 #define COMPUTER_FIRST 2
@@ -29,7 +29,7 @@
 
 
 #define DEBUG_DRAW
-//#define USE_HASH
+#define USE_HASH
 //#define DFS_BOARD_DEBUG
 #define PRUNE_DEBUG
 //#define PLAYER_SIDE_DEBUG
@@ -39,8 +39,7 @@
 
 #define TRIE_SIZE 1000
 #define STATUS_NUM 3
-//CAUTIONS!!! this PATTERNS must be exactly the same as the number of patterns
-#define PATTERNS 38
+
 #define END 7
 #define MAX_PATTERN_LEN 20
 #define COLOR_OFFSET 1
