@@ -6,7 +6,10 @@
 
 extern boardStatus status;
 extern boardStatus dfs_status;
-extern unsigned long long hash_key[BOARD_SIZE][BOARD_SIZE];
+extern long long cache_total_grade[CACHE_SIZE];
+extern int subtree_height[CACHE_SIZE];
+extern unsigned long long real_hash[CACHE_SIZE];
+extern unsigned long long hash;
 
 
 /*
@@ -78,8 +81,14 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
     drop_choice result;
     result.i = result.j = 0;
     result.grade = 0;
+    result.player = search_player_side;
 
-    if (search_depth == 0) {
+
+    //todo: now the hash works correctly but it never helps???
+    if (real_hash[HASH] == hash && subtree_height[HASH] >= search_depth) {
+        result.grade = cache_total_grade[HASH];
+        return result;
+    } else if (search_depth == 0) {
         result.grade = grade_estimate(search_player_side) + grade_estimate(0 - search_player_side);
         return result;
     }
@@ -89,6 +98,10 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
     //generate proper places to drop a piece
     generate_possible_pos(drop_choice1, &pos_num, search_player_side);
 
+
+    //you need to maintain a int sub_height, the grade is found on the top of a sub-tree of height sub_height.
+    //sub_height==0 means that the grade is obtained by directly estimating.
+
     //traverse the proper places
     if (search_player_side == WHITE) {
 #ifdef DFS_BOARD_DEBUG
@@ -97,28 +110,30 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
         GRADE_DEBUG
 #endif
         result.grade = 0 - INF;
+        drop_choice tmp;
         for (int k = 0; k < pos_num; ++k) {
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, WHITE);
-            drop_choice tmp;
+
             tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
             if (tmp.grade > result.grade) {
                 result = tmp;
             }
             dfs_add_piece(tmp.i, tmp.j, VOID);
-            alpha = max(alpha, result.grade);
+            alpha = long_long_max(alpha, result.grade);
             if (beta < alpha) {
 #ifdef PRUNE_DEBUG
                 ++prune_cnt;
                 if (!(prune_cnt % 1000)) {
                     printf("prune_cnt: %d\n", prune_cnt);
-                    printf("dfs depth: %d\n", DFS_DEPTH - search_depth);
+                    printf("dfs depth: %d\n", DFS_MAX_DEPTH - search_depth);
                 }
 #endif
-                return result;
+                //return result;
+                break;
             }
         }
-        return result;
+        //return result;
     } else {
 #ifdef DFS_BOARD_DEBUG
         printf("dfs board:\n");
@@ -126,29 +141,36 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
         GRADE_DEBUG
 #endif
         result.grade = INF;
+        drop_choice tmp;
         for (int k = 0; k < pos_num; ++k) {
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, BLACK);
-            drop_choice tmp;
+
             tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
             if (tmp.grade < result.grade) {
                 result = tmp;
             }
             dfs_add_piece(tmp.i, tmp.j, VOID);
-            beta = min(beta, result.grade);
+            beta = long_long_min(beta, result.grade);
             if (beta < alpha) {
 #ifdef PRUNE_DEBUG
                 ++prune_cnt;
                 if (!(prune_cnt % 1000)) {
                     printf("prune_cnt: %d\n", prune_cnt);
-                    printf("dfs depth: %d\n", DFS_DEPTH - search_depth);
+                    printf("dfs depth: %d\n", DFS_MAX_DEPTH - search_depth);
                 }
 #endif
-                return result;
+                //return result;
+                break;
             }
         }
-        return result;
+        //return result;
     }
+    if (real_hash[HASH] != hash || subtree_height[HASH] < search_depth) {
+        cache_total_grade[HASH] = result.grade;
+        subtree_height[HASH] = search_depth;
+    }
+    return result;
 }
 
 inline int has_neighbor(int i, int j, int wid, int cnt) {
@@ -161,10 +183,6 @@ inline int has_neighbor(int i, int j, int wid, int cnt) {
                 if (++_cnt >= cnt)return 1;
             }
         }
-    }
-
-    if (i == 6 && j == 7) {
-        printf("_cnt: %d\n", _cnt);
     }
     return 0;
 }

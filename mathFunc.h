@@ -6,9 +6,9 @@
 #ifndef GOBANG_MATHFUNC_H
 #define GOBANG_MATHFUNC_H
 
-long long max(long long x, long long y);
+long long long_long_max(long long x, long long y);
 
-long long min(long long x, long long y);
+long long long_long_min(long long x, long long y);
 
 int int_min(int x,int y);
 

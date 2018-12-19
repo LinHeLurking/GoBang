@@ -17,5 +17,14 @@ int winner_check();
 long long grade_estimate(int player_side);
 
 
+void update_line_grade_row(int row_index, int player_side);
+
+void update_line_grade_col(int col_index, int player_side);
+
+void update_line_grade_oblique_sum(int oblique_sum_index, int player_side);
+
+void update_line_grade_oblique_delta(int oblique_delta_index, int player_side);
+
+
 
 #endif //GOBANG_BOARDEVALUATE_H

@@ -5,14 +5,14 @@
 #include "mathFunc.h"
 
 
-inline long long min(long long x, long long y) {
+inline long long long_long_min(long long x, long long y) {
     if (x < y)
         return x;
     else
         return y;
 }
 
-inline long long max(long long x, long long y) {
+inline long long long_long_max(long long x, long long y) {
     if (x > y)
         return x;
     else

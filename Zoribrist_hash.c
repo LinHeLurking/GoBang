@@ -42,23 +42,15 @@ unsigned long long hash_key[2][BOARD_SIZE][BOARD_SIZE] = {
 };
 
 
-long long cache_total_grade[2][CACHE_SIZE];
-long long cache_col_grade[2][CACHE_SIZE];
-long long cache_row_grade[2][CACHE_SIZE];
-long long cache_oblique_sum_grade[2][CACHE_SIZE];
-long long cache_oblique_delta_grade[2][CACHE_SIZE];
-int cache_record_step[CACHE_SIZE];
+long long cache_total_grade[CACHE_SIZE];
+int subtree_height[CACHE_SIZE];
 unsigned long long real_hash[CACHE_SIZE];
 unsigned long long hash;
 
 void hash_init() {
     SET0(cache_total_grade);
-    SET0(cache_row_grade);
-    SET0(cache_col_grade);
-    SET0(cache_oblique_sum_grade);
-    SET0(cache_oblique_delta_grade);
     SET0(real_hash);
-    memset(cache_record_step, -1, sizeof(cache_record_step));
+    memset(subtree_height, -1, sizeof(subtree_height));
 
-    hash = 0;
+    hash = ~0UL;
 }

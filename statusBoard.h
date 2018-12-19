@@ -9,6 +9,7 @@
 #include "AC_Automachine.h"
 #include "Zoribrist_hash.h"
 #include "mathFunc.h"
+#include "boardEvaluate.h"
 typedef struct {
     //these are used to record the board status
     int board[BOARD_SIZE][BOARD_SIZE];
@@ -35,14 +36,6 @@ typedef struct {
 int add_piece(int i, int j, int piece_color);
 
 int dfs_add_piece(int i, int j, int piece_color);
-
-void update_line_grade_row(int row_index, int player_side);
-
-void update_line_grade_col(int col_index, int player_side);
-
-void update_line_grade_oblique_sum(int oblique_sum_index, int player_side);
-
-void update_line_grade_oblique_delta(int oblique_delta_index, int player_side);
 
 void update_grade(int i, int j);
 

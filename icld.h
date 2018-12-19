@@ -19,7 +19,7 @@
 #define VOID 0
 #define HUMAN_VS_HUMAN 0
 #define HUMAN_VS_COMPUTER 1
-#define DFS_DEPTH 4
+#define DFS_MAX_DEPTH 4
 #define INF 20000000000007
 #define CACHE_SIZE 10009897
 #define HASH (hash%CACHE_SIZE)
@@ -54,7 +54,8 @@ typedef struct {
     long long grade;
     int i, j;
     //this is used for searching
-    long double grade_estimate;
+    int player;
+    long long grade_estimate;
 } drop_choice;
 
 typedef struct {

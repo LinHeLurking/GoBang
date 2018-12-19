@@ -102,7 +102,7 @@ void human_vs_computer() {
             printf("The player of%s won.\n", player_side[BLACK + COLOR_OFFSET]);
             break;
         }
-        drop_choice choice = alpha_beta_dfs(computer_player, DFS_DEPTH, 0 - INF, INF);
+        drop_choice choice = alpha_beta_dfs(computer_player, DFS_MAX_DEPTH, 0 - INF, INF);
         st = add_piece(choice.i, choice.j, computer_player);
 
         output_board();
