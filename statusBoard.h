@@ -37,11 +37,11 @@ int add_piece(int i, int j, int piece_color);
 
 int dfs_add_piece(int i, int j, int piece_color);
 
-void update_grade(int i, int j);
+
 
 void status_init();
 
-void grade_unique(long long grade);
+
 
 
 #endif //GOBANG_STATUSBOARD_H

@@ -84,13 +84,11 @@ void human_vs_computer() {
                 printf("Round for %s, input the position you want to place the piece\n",
                        player_side[human_player + COLOR_OFFSET]);
 
-                while (!(i>='0'&&i<='0'+BOARD_SIZE&&j>='0'&&j<='0'+BOARD_SIZE)) {
+                while (!(i >= '0' && i <= '0' + BOARD_SIZE && j >= '0' && j <= '0' + BOARD_SIZE)) {
                     read_pos(&i, &j);
                 }
-                //printf("position:    %d %d\n", i, j);
             }
             st = add_piece(i, j, human_player);
-
         }
         int win_status = winner_check();
         if (win_status == WHITE) {
@@ -123,11 +121,11 @@ void human_vs_computer() {
         win_status = winner_check();
         if (win_status == WHITE) {
             output_board();
-            printf("The player of%s won.\n", player_side[WHITE + COLOR_OFFSET]);
+            printf("The player of %s won.\n", player_side[WHITE + COLOR_OFFSET]);
             break;
         } else if (win_status == BLACK) {
             output_board();
-            printf("The player of%s won.\n", player_side[BLACK + COLOR_OFFSET]);
+            printf("The player of %s won.\n", player_side[BLACK + COLOR_OFFSET]);
             break;
         }
     }
@@ -148,21 +146,26 @@ void human_vs_human() {
         while (st == -1) {
             if (cnt++ != 0) {
                 printf("There is already a piece in this place!\n");
-                printf("Round for %s, input the position you want to place the piece\n", player_side[player + COLOR_OFFSET]);
+                printf("Round for %s, input the position you want to place the piece\n",
+                       player_side[player + COLOR_OFFSET]);
                 read_pos(&i, &j);
             }
             st = add_piece(i, j, player);
+            if (st == 2) {
+                printf("Ban found! The player of white won.\n");
+                return;
+            }
         }
 
         int win_status = winner_check();
         if (win_status == WHITE) {
             output_board();
             printf("The player of %s won.\n", player_side[WHITE + COLOR_OFFSET]);
-            break;
+            return;
         } else if (win_status == BLACK) {
             output_board();
             printf("The player of %s won.\n", player_side[BLACK + COLOR_OFFSET]);
-            break;
+            return;
         }
         player = 0 - player;
     }

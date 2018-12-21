@@ -44,12 +44,14 @@ unsigned long long hash_key[2][BOARD_SIZE][BOARD_SIZE] = {
 
 long long cache_total_grade[CACHE_SIZE];
 int subtree_height[CACHE_SIZE];
+int found_at_step[CACHE_SIZE];
 unsigned long long real_hash[CACHE_SIZE];
 unsigned long long hash;
 
 void hash_init() {
     SET0(cache_total_grade);
     SET0(real_hash);
+    SET0(found_at_step);
     memset(subtree_height, -1, sizeof(subtree_height));
 
     hash = ~0UL;

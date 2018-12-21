@@ -31,7 +31,7 @@
 #define DEBUG_DRAW
 #define USE_HASH
 //#define DFS_BOARD_DEBUG
-#define PRUNE_DEBUG
+//#define PRUNE_DEBUG
 //#define PLAYER_SIDE_DEBUG
 //#define HASH_DEBUG
 //#define RECORD_DEBUG

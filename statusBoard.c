@@ -11,8 +11,8 @@
 boardStatus status;
 boardStatus dfs_status;
 drop_record record[BOARD_SIZE * BOARD_SIZE + 5];
-int ban_cnt[7];
 
+extern int ban_cnt[7];
 extern trie tr[TRIE_SIZE];
 extern unsigned long long hash_key[2][BOARD_SIZE][BOARD_SIZE];
 extern int subtree_height[CACHE_SIZE];
@@ -38,50 +38,11 @@ void status_init() {
     record[0].i = record[0].j = -1;
 }
 
-//todo: more tests needed
-inline void grade_unique(long long grade) {
-    switch (grade) {
-        case -SPLIT_ALIVE_FOUR_WITH3:
-            --ban_cnt[3];
-            ++ban_cnt[4];
-            break;
-        case -SPLIT_ALIVE_FOUR_WITHOUT3:
-            ++ban_cnt[4];
-            break;
-        case -SPLIT_ALIVE_THREE:
-            ++ban_cnt[3];
-            break;
-        case -CONTINUOUS_THREE:
-            ++ban_cnt[3];
-            break;
-        case -LONG_CONTINUOUS:
-            --ban_cnt[4];
-            ++ban_cnt[6];
-            break;
-        default:
-            break;
-    }
-}
-
-
-inline void update_grade(int i, int j) {
-
-    SET0(ban_cnt);
-
-    update_line_grade_row(i, WHITE);
-    update_line_grade_col(j, WHITE);
-    update_line_grade_oblique_sum(i + j, WHITE);
-    update_line_grade_oblique_delta(i - j, WHITE);
-
-    update_line_grade_row(i, BLACK);
-    update_line_grade_col(j, BLACK);
-    update_line_grade_oblique_sum(i + j, BLACK);
-    update_line_grade_oblique_delta(i - j, BLACK);
-}
 
 /*  return -1 if that position is occupied
  *  return 0 if pc==0, which means there's nothing to do
- *  return 1 -> successful
+ *  return 1 -> success without ban
+ *  return 2 -> success with ban
  * */
 
 int add_piece(int i, int j, int player_side) {
@@ -100,21 +61,11 @@ int add_piece(int i, int j, int player_side) {
         record[status.steps].player = player_side;
     }
 
-    //todo: more tests needed for ban checking
-    if (ban_cnt[3] >= 2) {
-        printf("!!\nban found: 3\n!!\n");
-    } else if (ban_cnt[4] >= 2) {
-        printf("!!\nban found: 4\n!!\n");
-    } else if (ban_cnt[6]) {
-        printf("!!\nban found: 6\n!!\n");
-    } else {
-        SET0(ban_cnt);
+    if (is_ban()) {
+        printf("ban found!\n");
+        check_code = 2;
     }
 
-#ifdef RECORD_DEBUG
-    printf("steps: %d\n", status.steps);
-    printf("i: %d\tj: %d\n", record[status.steps].i, record[status.steps].j);
-#endif
     return check_code;
 }
 
@@ -127,18 +78,14 @@ int dfs_add_piece(int i, int j, int player_side) {
     dfs_status.board[i][j] = player_side;
     dfs_status.oblique_line_sum[i + j][j] = player_side;
     dfs_status.oblique_line_delta[i - j + BOARD_SIZE][j] = player_side;
+
     if (player_side == VOID) {
         dfs_status.steps--;
-    } else {
+    }
+    hash ^= hash_key[dfs_status.steps & 1][i][j];
+    if (player_side != VOID) {
         dfs_status.steps++;
     }
-
-    //if this status has been evaluated and exists in hash table, then take the grade from the hash table
-    //otherwise update_grade
-
-
-    hash ^= hash_key[PLAYER_IN_LINE][i][j];
-
     /*
     if (real_hash[HASH] == hash) {
 

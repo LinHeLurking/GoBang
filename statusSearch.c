@@ -8,6 +8,7 @@ extern boardStatus status;
 extern boardStatus dfs_status;
 extern long long cache_total_grade[CACHE_SIZE];
 extern int subtree_height[CACHE_SIZE];
+extern int found_at_step[CACHE_SIZE];
 extern unsigned long long real_hash[CACHE_SIZE];
 extern unsigned long long hash;
 
@@ -31,44 +32,19 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
                 } else {
                     if (!has_neighbor(i, j, 2, 1)) continue;
                 }
-
-
-                //long long my_original_grade_estimate = pos_estimate(i, j, search_player_side);
-                //long long opponent_original_grade_estimate = pos_estimate(i, j, 0 - search_player_side);
                 drop_choice1[*num].i = i;
                 drop_choice1[*num].j = j;
-
                 dfs_add_piece(i, j, search_player_side);
-
                 long long my_new_grade_estimate = grade_estimate(search_player_side);
                 long long opponent_new_grade_estimate = grade_estimate(0 - search_player_side);
-                //long long my_delta = (my_new_grade_estimate - my_original_grade_estimate) * search_player_side;
-                //long long opponent_delta =
-                //        (opponent_new_grade_estimate - opponent_original_grade_estimate) * (0 - search_player_side);
-                //drop_choice1[*num].grade_estimate = my_delta - 1.1 * opponent_delta;
                 drop_choice1[*num].grade_estimate = my_new_grade_estimate + opponent_new_grade_estimate;
-
                 dfs_add_piece(i, j, VOID);
-
                 ++(*num);
             }
         }
     }
     choice_sort(drop_choice1, *num, search_player_side);
     *num = int_min(*num, 50);
-    /*
-    switch (dfs_status.steps) {
-        case 2:
-            *num = 9;
-            break;
-        case 3:
-            *num = 16;
-            break;
-        default:
-            *num = int_min(*num, 50);
-            break;
-    }
-     */
 }
 
 #ifdef PRUNE_DEBUG
@@ -99,9 +75,6 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
     generate_possible_pos(drop_choice1, &pos_num, search_player_side);
 
 
-    //you need to maintain a int sub_height, the grade is found on the top of a sub-tree of height sub_height.
-    //sub_height==0 means that the grade is obtained by directly estimating.
-
     //traverse the proper places
     if (search_player_side == WHITE) {
 #ifdef DFS_BOARD_DEBUG
@@ -119,7 +92,7 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
             if (tmp.grade > result.grade) {
                 result = tmp;
             }
-            dfs_add_piece(tmp.i, tmp.j, VOID);
+            dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, VOID);
             alpha = long_long_max(alpha, result.grade);
             if (beta < alpha) {
 #ifdef PRUNE_DEBUG
@@ -147,10 +120,14 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
 
             tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
+
+            if (is_ban())
+                tmp.grade = INF;
+
             if (tmp.grade < result.grade) {
                 result = tmp;
             }
-            dfs_add_piece(tmp.i, tmp.j, VOID);
+            dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, VOID);
             beta = long_long_min(beta, result.grade);
             if (beta < alpha) {
 #ifdef PRUNE_DEBUG
@@ -166,9 +143,12 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
         }
         //return result;
     }
-    if (real_hash[HASH] != hash || subtree_height[HASH] < search_depth) {
+    if (!real_hash[HASH] || (real_hash[HASH] == hash && subtree_height[HASH] < search_depth)) {
+        real_hash[HASH] = hash;
         cache_total_grade[HASH] = result.grade;
         subtree_height[HASH] = search_depth;
+        found_at_step[HASH] = dfs_status.steps;
+
     }
     return result;
 }

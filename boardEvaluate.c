@@ -8,7 +8,8 @@
 extern boardStatus status;
 extern boardStatus dfs_status;
 extern trie tr[TRIE_SIZE];
-
+// values in ban_cnt are only valid right after calling update_grade()
+int ban_cnt[7];
 
 //1==white wins -1== black wins 0==no one wins
 int winner_check() {
@@ -109,6 +110,7 @@ inline void update_line_grade_row(int row_index, int player_side) {
                 _grade += tr[tmp].grade;
             } else if (player_side == BLACK && tr[tmp].grade < 0) {
                 _grade += tr[tmp].grade;
+                pattern_parse(tr[tmp].grade);
             }
             tmp = tr[tmp].fail;
         }
@@ -135,6 +137,7 @@ inline void update_line_grade_col(int col_index, int player_side) {
                 _grade += tr[tmp].grade;
             } else if (player_side == BLACK && tr[tmp].grade < 0) {
                 _grade += tr[tmp].grade;
+                pattern_parse(tr[tmp].grade);
             }
             tmp = tr[tmp].fail;
         }
@@ -162,6 +165,7 @@ inline void update_line_grade_oblique_sum(int oblique_sum_index, int player_side
                 _grade += tr[tmp].grade;
             } else if (player_side == BLACK && tr[tmp].grade < 0) {
                 _grade += tr[tmp].grade;
+                pattern_parse(tr[tmp].grade);
             }
             tmp = tr[tmp].fail;
         }
@@ -190,6 +194,7 @@ inline void update_line_grade_oblique_delta(int oblique_delta_index, int player_
                 _grade += tr[tmp].grade;
             } else if (player_side == BLACK && tr[tmp].grade < 0) {
                 _grade += tr[tmp].grade;
+                pattern_parse(tr[tmp].grade);
             }
             tmp = tr[tmp].fail;
         }
@@ -202,6 +207,55 @@ inline void update_line_grade_oblique_delta(int oblique_delta_index, int player_
 
 }
 
+inline void update_grade(int i, int j) {
+
+    SET0(ban_cnt);
+
+    update_line_grade_row(i, WHITE);
+    update_line_grade_col(j, WHITE);
+    update_line_grade_oblique_sum(i + j, WHITE);
+    update_line_grade_oblique_delta(i - j, WHITE);
+
+    update_line_grade_row(i, BLACK);
+    update_line_grade_col(j, BLACK);
+    update_line_grade_oblique_sum(i + j, BLACK);
+    update_line_grade_oblique_delta(i - j, BLACK);
+}
+
+//todo: more tests needed
+inline void pattern_parse(long long grade) {
+    switch (grade) {
+        case -SPLIT_ALIVE_FOUR_WITH3:
+            --ban_cnt[3];
+            ++ban_cnt[4];
+            break;
+        case -SPLIT_ALIVE_FOUR_WITHOUT3:
+            ++ban_cnt[4];
+            break;
+        case -SPLIT_ALIVE_THREE:
+            ++ban_cnt[3];
+            break;
+        case -CONTINUOUS_THREE:
+            ++ban_cnt[3];
+            break;
+        case -LONG_CONTINUOUS:
+            --ban_cnt[4];
+            ++ban_cnt[6];
+            break;
+        default:
+            break;
+    }
+}
+
+int8_t is_ban() {
+    if (ban_cnt[6])
+        return 1;
+    if (ban_cnt[4] >= 2)
+        return 1;
+    if (ban_cnt[3] >= 2)
+        return 1;
+    return 0;
+}
 
 
 #undef TRIE_SIZE

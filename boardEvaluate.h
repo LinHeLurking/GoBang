@@ -25,6 +25,10 @@ void update_line_grade_oblique_sum(int oblique_sum_index, int player_side);
 
 void update_line_grade_oblique_delta(int oblique_delta_index, int player_side);
 
+void update_grade(int i, int j);
 
+void pattern_parse(long long grade);
+
+int8_t is_ban();
 
 #endif //GOBANG_BOARDEVALUATE_H
