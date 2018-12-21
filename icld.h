@@ -9,7 +9,8 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <time.h>
+#include <ctype.h>
+#include <stdint.h>
 
 #define BOARD_SIZE 15
 #define CHAR_SIZE 4
@@ -19,7 +20,7 @@
 #define VOID 0
 #define HUMAN_VS_HUMAN 0
 #define HUMAN_VS_COMPUTER 1
-#define DFS_MAX_DEPTH 4
+#define DFS_MAX_DEPTH 6
 #define INF 20000000000007
 #define CACHE_SIZE 10009897
 #define HASH (hash%CACHE_SIZE)
@@ -28,7 +29,7 @@
 #define HUMAN_FIRST 1
 
 
-#define DEBUG_DRAW
+//#define DEBUG_DRAW
 #define USE_HASH
 //#define DFS_BOARD_DEBUG
 //#define PRUNE_DEBUG

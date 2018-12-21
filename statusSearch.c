@@ -32,9 +32,21 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
                 } else {
                     if (!has_neighbor(i, j, 2, 1)) continue;
                 }
+
+                dfs_add_piece(i, j, search_player_side);
                 drop_choice1[*num].i = i;
                 drop_choice1[*num].j = j;
-                dfs_add_piece(i, j, search_player_side);
+
+                //if (pos_estimate(i, j, search_player_side) >= FIVE_GRADE)
+                //break;
+                //above is a bad example: if you need break, drop a void piece first!!!
+                //todo: more conjecture prune needed.
+
+                if (pos_estimate(i, j, search_player_side) >= FIVE_GRADE) {
+                    dfs_add_piece(i, j, VOID);
+                    break;
+                }
+
                 long long my_new_grade_estimate = grade_estimate(search_player_side);
                 long long opponent_new_grade_estimate = grade_estimate(0 - search_player_side);
                 drop_choice1[*num].grade_estimate = my_new_grade_estimate + opponent_new_grade_estimate;
@@ -55,25 +67,21 @@ int prune_cnt = 0;
 //alpha is the upper bound and beta is the lower bound.
 drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long alpha, long long beta) {
     drop_choice result;
-    result.i = result.j = 0;
-    result.grade = 0;
+    //result.i = result.j = 0;
+    //result.grade = 0;
     result.player = search_player_side;
 
-
-    //todo: now the hash works correctly but it never helps???
-    if (real_hash[HASH] == hash && subtree_height[HASH] >= search_depth) {
-        result.grade = cache_total_grade[HASH];
-        return result;
-    } else if (search_depth == 0) {
-        result.grade = grade_estimate(search_player_side) + grade_estimate(0 - search_player_side);
+    if (search_depth == 0) {
+        // it doesn't matter what the position is in the very bottom.
+        result.grade = grade_estimate(search_player_side) + grade_estimate(-search_player_side);
         return result;
     }
+
     drop_choice drop_choice1[MAX_POS];
     int pos_num = 0;
 
     //generate proper places to drop a piece
     generate_possible_pos(drop_choice1, &pos_num, search_player_side);
-
 
     //traverse the proper places
     if (search_player_side == WHITE) {
@@ -87,7 +95,12 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
         for (int k = 0; k < pos_num; ++k) {
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, WHITE);
 
-            tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
+            if (real_hash[HASH] == hash && subtree_height[HASH] >= search_depth) {
+                tmp.grade = cache_total_grade[HASH];
+            } else {
+                tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
+            }
+
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
             if (tmp.grade > result.grade) {
                 result = tmp;
@@ -118,11 +131,19 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
         for (int k = 0; k < pos_num; ++k) {
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, BLACK);
 
-            tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
+            if (is_ban()) {
+                //tmp.grade = INF;
+                dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, VOID);
+                continue;
+            }
+
+            if (real_hash[HASH] == hash && subtree_height[HASH] >= search_depth) {
+                tmp.grade = cache_total_grade[HASH];
+            } else {
+                tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
+            }
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
 
-            if (is_ban())
-                tmp.grade = INF;
 
             if (tmp.grade < result.grade) {
                 result = tmp;
@@ -143,12 +164,13 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
         }
         //return result;
     }
-    if (!real_hash[HASH] || (real_hash[HASH] == hash && subtree_height[HASH] < search_depth)) {
+    if (!real_hash[HASH] || (real_hash[HASH] == hash &&
+                             (subtree_height[HASH] < search_depth ||
+                              dfs_status.steps + search_depth > DFS_MAX_DEPTH + found_at_step[HASH]))) {
         real_hash[HASH] = hash;
         cache_total_grade[HASH] = result.grade;
         subtree_height[HASH] = search_depth;
         found_at_step[HASH] = dfs_status.steps;
-
     }
     return result;
 }
@@ -166,4 +188,5 @@ inline int has_neighbor(int i, int j, int wid, int cnt) {
     }
     return 0;
 }
+
 

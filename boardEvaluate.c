@@ -10,6 +10,7 @@ extern boardStatus dfs_status;
 extern trie tr[TRIE_SIZE];
 // values in ban_cnt are only valid right after calling update_grade()
 int ban_cnt[7];
+//todo: add type cnt here
 
 //1==white wins -1== black wins 0==no one wins
 int winner_check() {
@@ -247,7 +248,7 @@ inline void pattern_parse(long long grade) {
     }
 }
 
-int8_t is_ban() {
+uint8_t is_ban() {
     if (ban_cnt[6])
         return 1;
     if (ban_cnt[4] >= 2)

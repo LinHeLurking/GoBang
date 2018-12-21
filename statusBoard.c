@@ -59,11 +59,10 @@ int add_piece(int i, int j, int player_side) {
         record[status.steps].i = i;
         record[status.steps].j = j;
         record[status.steps].player = player_side;
-    }
-
-    if (is_ban()) {
-        printf("ban found!\n");
-        check_code = 2;
+        if (is_ban()) {
+            printf("ban found!\n");
+            check_code = 2;
+        }
     }
 
     return check_code;

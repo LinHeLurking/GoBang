@@ -29,6 +29,6 @@ void update_grade(int i, int j);
 
 void pattern_parse(long long grade);
 
-int8_t is_ban();
+uint8_t is_ban();
 
 #endif //GOBANG_BOARDEVALUATE_H

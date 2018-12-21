@@ -16,6 +16,7 @@ char player_side[3][10] = {
 };
 
 void play() {
+    system("clear");
 
     printf("Welcome to Amadeus GoBang game!\nPlease input the code of corresponding mode:\n");
 
@@ -70,6 +71,7 @@ void human_vs_computer() {
 
         printf("\n\nRound for %s, input the position you want to place the piece\n",
                player_side[human_player + COLOR_OFFSET]);
+        printf("Input 'quit'(without quotes) to quit this game\n");
 
 
         int i, j;
@@ -89,16 +91,21 @@ void human_vs_computer() {
                 }
             }
             st = add_piece(i, j, human_player);
+            if (st == 2) {
+                printf("Ban found! The player of white won.\n");
+                //output_board();
+                return;
+            }
         }
         int win_status = winner_check();
         if (win_status == WHITE) {
             //output_board();
             printf("The player of%s won.\n", player_side[WHITE + COLOR_OFFSET]);
-            break;
+            return;
         } else if (win_status == BLACK) {
             //output_board();
             printf("The player of%s won.\n", player_side[BLACK + COLOR_OFFSET]);
-            break;
+            return;
         }
         drop_choice choice = alpha_beta_dfs(computer_player, DFS_MAX_DEPTH, 0 - INF, INF);
         st = add_piece(choice.i, choice.j, computer_player);
@@ -107,7 +114,7 @@ void human_vs_computer() {
 
         if (st == -1) {
             printf("Search error!\n");
-            exit(-1);
+            //exit(-1);
         }
 
 #ifdef DEBUG_DRAW
@@ -139,6 +146,7 @@ void human_vs_human() {
         printf("The grade estimate:\nBLACK: %lld\nWHITE: %lld\n", grade_estimate(BLACK), grade_estimate(WHITE));
 #endif
         printf("Round for %s, input the position you want to place the piece\n", player_side[player + COLOR_OFFSET]);
+        printf("Input 'quit'(without quotes) to quit this game\n");
         int i, j;
         read_pos(&i, &j);
         int st = -1;
@@ -153,6 +161,7 @@ void human_vs_human() {
             st = add_piece(i, j, player);
             if (st == 2) {
                 printf("Ban found! The player of white won.\n");
+                output_board();
                 return;
             }
         }

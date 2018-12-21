@@ -33,11 +33,15 @@ char black_piece[2][4] = {{"○"},
 
 
 void output_board() {
+#ifndef DEBUG_DRAW
+    system("clear");
+#endif
+
     for (int i = 0; i < BOARD_SIZE; ++i) {
         printf("%d%s", 15 - i, i > 5 ? " " : "");
 
         for (int j = 0; j < BOARD_SIZE; ++j) {
-            //CHAR_SIZE-1: avoid copying the end symbol of string.
+            //CHAR_SIZE-1: avoid copying the end symbol of a string.
             int is_last2 = 0;
             if ((i == record[status.steps].i && j == record[status.steps].j) ||
                 (i == record[status.steps - 1].i && j == record[status.steps - 1].j)) {
@@ -114,6 +118,4 @@ void dfs_output_board() {
     for (int i = 1; i <= BOARD_SIZE; ++i) {
         printf("%c ", 'A' - 1 + i);
     }
-    printf("\ncurrent step(s): %d\n", status.steps);
-
 }
