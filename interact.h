@@ -2,13 +2,15 @@
 // Created by Nine_yota on 2018-09-29.
 //
 
+
+#ifndef GOBANG_INTERACT_H
+#define GOBANG_INTERACT_H
+
 #include "icld.h"
 #include "drawBoard.h"
 #include "statusBoard.h"
 #include "boardEvaluate.h"
 #include "statusSearch.h"
-#ifndef GOBANG_INTERACT_H
-#define GOBANG_INTERACT_H
 
 void play();
 

@@ -13,8 +13,6 @@
 typedef struct {
     //these are used to record the board status
     int board[BOARD_SIZE][BOARD_SIZE];
-    int oblique_line_sum[2 * BOARD_SIZE][BOARD_SIZE];
-    int oblique_line_delta[2 * BOARD_SIZE][BOARD_SIZE];
 
     //followings are arrays for DIRECT grade estimate
     //0 for black and 1 for white orz
@@ -37,11 +35,6 @@ int add_piece(int i, int j, int piece_color);
 
 int dfs_add_piece(int i, int j, int piece_color);
 
-
-
 void status_init();
-
-
-
 
 #endif //GOBANG_STATUSBOARD_H

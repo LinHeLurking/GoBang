@@ -20,7 +20,11 @@
 #define VOID 0
 #define HUMAN_VS_HUMAN 0
 #define HUMAN_VS_COMPUTER 1
-#define DFS_MAX_DEPTH 6
+
+#ifndef DFS_MAX_DEPTH
+#define DFS_MAX_DEPTH 4
+#endif
+
 #define INF 20000000000007
 #define CACHE_SIZE 10009897
 #define HASH (hash%CACHE_SIZE)
@@ -28,8 +32,7 @@
 #define COMPUTER_FIRST 2
 #define HUMAN_FIRST 1
 
-
-//#define DEBUG_DRAW
+#define DEBUG_DRAW
 #define USE_HASH
 //#define DFS_BOARD_DEBUG
 //#define PRUNE_DEBUG

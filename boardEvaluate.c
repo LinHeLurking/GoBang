@@ -152,9 +152,19 @@ inline void update_line_grade_col(int col_index, int player_side) {
 inline void update_line_grade_oblique_sum(int oblique_sum_index, int player_side) {
     int cur = 0;
     long long _grade = 0;
-    for (int k = -1; k <= BOARD_SIZE; ++k) {
-        int ch = k == int_max(-1, oblique_sum_index - BOARD_SIZE) || k == int_min(oblique_sum_index + 1, BOARD_SIZE) ?
-                 0 - player_side : dfs_status.oblique_line_sum[oblique_sum_index][k];
+
+    int start, end;
+
+    if (oblique_sum_index <= BOARD_SIZE - 1) {
+        start = -1;
+        end = oblique_sum_index + 1;
+    } else {
+        start = oblique_sum_index - BOARD_SIZE;
+        end = BOARD_SIZE;
+    }
+
+    for (int k = start; k <= end; ++k) {
+        int ch = k == start || k == end ? 0 - player_side : dfs_status.board[oblique_sum_index - k][k];
         while (tr[cur].trans[ch + COLOR_OFFSET] == -1 && cur != 0) {
             cur = tr[cur].fail;
         }
@@ -180,10 +190,20 @@ inline void update_line_grade_oblique_sum(int oblique_sum_index, int player_side
 inline void update_line_grade_oblique_delta(int oblique_delta_index, int player_side) {
     int cur = 0;
     long long _grade = 0;
-    for (int k = -1; k <= BOARD_SIZE; ++k) {
-        int ch =
-                k == int_max(-1, -1 - oblique_delta_index) || k == int_min(BOARD_SIZE - oblique_delta_index, BOARD_SIZE)
-                ? 0 - player_side : dfs_status.oblique_line_delta[oblique_delta_index + BOARD_SIZE][k];
+
+    int start;
+    int end;
+
+    if (oblique_delta_index >= 0) {
+        start = -1;
+        end = BOARD_SIZE - oblique_delta_index;
+    } else {
+        start = oblique_delta_index - 1;
+        end = BOARD_SIZE;
+    }
+
+    for (int k = start; k <= end; ++k) {
+        int ch = k == start || k == end ? 0 - player_side : dfs_status.board[oblique_delta_index + k][k];
         while (tr[cur].trans[ch + COLOR_OFFSET] == -1 && cur != 0) {
             cur = tr[cur].fail;
         }

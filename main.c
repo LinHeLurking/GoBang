@@ -39,7 +39,7 @@ void test() {
         }
     }
     printf("status board:\n");
-    output_board();
+    output_board(0);
     //printf("dfs board:\n");
     //dfs_output_board();
     int win = winner_check();

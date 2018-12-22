@@ -1,10 +1,12 @@
 //
 // Created by Nine_yota on 2018-10-08.
 //
-#include "icld.h"
+
 
 #ifndef GOBANG_MATHFUNC_H
 #define GOBANG_MATHFUNC_H
+
+#include "icld.h"
 
 long long long_long_max(long long x, long long y);
 

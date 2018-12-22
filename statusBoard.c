@@ -21,8 +21,6 @@ extern unsigned long long hash;
 
 void __status_init(boardStatus *boardStatus1) {
     SET0(boardStatus1->board);
-    SET0(boardStatus1->oblique_line_sum);
-    SET0(boardStatus1->oblique_line_delta);
     SET0(boardStatus1->row_grade);
     SET0(boardStatus1->col_grade);
     SET0(boardStatus1->oblique_sum_grade);
@@ -49,8 +47,6 @@ int add_piece(int i, int j, int player_side) {
     if (status.board[i][j] != VOID)
         return -1;
     status.board[i][j] = player_side;
-    status.oblique_line_sum[i + j][j] = player_side;
-    status.oblique_line_delta[i - j + BOARD_SIZE][j] = player_side;
 
     int check_code = dfs_add_piece(i, j, player_side);
 
@@ -75,8 +71,6 @@ int dfs_add_piece(int i, int j, int player_side) {
     if (dfs_status.board[i][j] != VOID && player_side != VOID)
         return -1;
     dfs_status.board[i][j] = player_side;
-    dfs_status.oblique_line_sum[i + j][j] = player_side;
-    dfs_status.oblique_line_delta[i - j + BOARD_SIZE][j] = player_side;
 
     if (player_side == VOID) {
         dfs_status.steps--;

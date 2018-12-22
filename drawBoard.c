@@ -32,11 +32,11 @@ char black_piece[2][4] = {{"○"},
 //0==null 1==white -1==black
 
 
-void output_board() {
+void output_board(int clear) {
 #ifndef DEBUG_DRAW
-    system("clear");
+    if(clear)
+        system("clear");
 #endif
-
     for (int i = 0; i < BOARD_SIZE; ++i) {
         printf("%d%s", 15 - i, i > 5 ? " " : "");
 
@@ -96,18 +96,13 @@ void dfs_output_board() {
 
         for (int j = 0; j < BOARD_SIZE; ++j) {
             //CHAR_SIZE-1: avoid copying the end symbol of string.
-            int is_last2 = 0;
-            if ((i == record[status.steps].i && j == record[status.steps].j) ||
-                (i == record[status.steps - 1].i && j == record[status.steps - 1].j)) {
-                is_last2 = 1;
-            }
-            if (status.board[i][j] == WHITE) {
+            if (dfs_status.board[i][j] == WHITE) {
                 for (int k = 0; k < CHAR_SIZE - 1; ++k) {
-                    drawing_board[i][j * GAP + k] = white_piece[is_last2][k];
+                    drawing_board[i][j * GAP + k] = white_piece[0][k];
                 }
-            } else if (status.board[i][j] == BLACK) {
+            } else if (dfs_status.board[i][j] == BLACK) {
                 for (int k = 0; k < CHAR_SIZE - 1; ++k) {
-                    drawing_board[i][j * GAP + k] = black_piece[is_last2][k];
+                    drawing_board[i][j * GAP + k] = black_piece[0][k];
                 }
             }
         }

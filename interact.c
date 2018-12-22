@@ -16,7 +16,9 @@ char player_side[3][10] = {
 };
 
 void play() {
+#ifndef DEBUG_DRAW
     system("clear");
+#endif
 
     printf("Welcome to Amadeus GoBang game!\nPlease input the code of corresponding mode:\n");
 
@@ -58,9 +60,7 @@ void human_vs_computer() {
         computer_player = BLACK;
         add_piece(7, 7, computer_player);
     }
-
-
-    output_board();
+    output_board(1);
 
 
 #ifdef PRUNE_DEBUG
@@ -92,25 +92,31 @@ void human_vs_computer() {
             }
             st = add_piece(i, j, human_player);
             if (st == 2) {
+                output_board(1);
                 printf("Ban found! The player of white won.\n");
-                //output_board();
+                //printf("Press any key to quit\n");
+                //getchar();
                 return;
             }
         }
         int win_status = winner_check();
         if (win_status == WHITE) {
-            //output_board();
-            printf("The player of%s won.\n", player_side[WHITE + COLOR_OFFSET]);
+            output_board(1);
+            printf("The player of %s won.\n", player_side[WHITE + COLOR_OFFSET]);
+            //printf("Press any key to quit\n");
+            //getchar();
             return;
         } else if (win_status == BLACK) {
-            //output_board();
-            printf("The player of%s won.\n", player_side[BLACK + COLOR_OFFSET]);
+            output_board(1);
+            printf("The player of %s won.\n", player_side[BLACK + COLOR_OFFSET]);
+            //printf("Press any key to quit\n");
+            //getchar();
             return;
         }
         drop_choice choice = alpha_beta_dfs(computer_player, DFS_MAX_DEPTH, 0 - INF, INF);
         st = add_piece(choice.i, choice.j, computer_player);
 
-        output_board();
+        output_board(1);
 
         if (st == -1) {
             printf("Search error!\n");
@@ -127,11 +133,11 @@ void human_vs_computer() {
 
         win_status = winner_check();
         if (win_status == WHITE) {
-            output_board();
+            output_board(1);
             printf("The player of %s won.\n", player_side[WHITE + COLOR_OFFSET]);
             break;
         } else if (win_status == BLACK) {
-            output_board();
+            output_board(1);
             printf("The player of %s won.\n", player_side[BLACK + COLOR_OFFSET]);
             break;
         }
@@ -141,7 +147,7 @@ void human_vs_computer() {
 void human_vs_human() {
     int player = BLACK;
     while (true) {
-        output_board();
+        output_board(1);
 #ifdef DEBUG_DRAW
         printf("The grade estimate:\nBLACK: %lld\nWHITE: %lld\n", grade_estimate(BLACK), grade_estimate(WHITE));
 #endif
@@ -160,20 +166,27 @@ void human_vs_human() {
             }
             st = add_piece(i, j, player);
             if (st == 2) {
+
+                output_board(1);
                 printf("Ban found! The player of white won.\n");
-                output_board();
+                //printf("Press any key to quit\n");
+                //getchar();
                 return;
             }
         }
 
         int win_status = winner_check();
         if (win_status == WHITE) {
-            output_board();
+            output_board(1);
             printf("The player of %s won.\n", player_side[WHITE + COLOR_OFFSET]);
+            //printf("Press any key to quit\n");
+            //getchar();
             return;
         } else if (win_status == BLACK) {
-            output_board();
+            output_board(1);
             printf("The player of %s won.\n", player_side[BLACK + COLOR_OFFSET]);
+            //printf("Press any key to quit\n");
+            //getchar();
             return;
         }
         player = 0 - player;

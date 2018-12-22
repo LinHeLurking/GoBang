@@ -6,7 +6,8 @@
 
 extern boardStatus status;
 extern boardStatus dfs_status;
-extern long long cache_total_grade[CACHE_SIZE];
+//extern long long cache_total_grade[CACHE_SIZE];
+extern drop_choice cache_choice[CACHE_SIZE];
 extern int subtree_height[CACHE_SIZE];
 extern int found_at_step[CACHE_SIZE];
 extern unsigned long long real_hash[CACHE_SIZE];
@@ -74,6 +75,17 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
     if (search_depth == 0) {
         // it doesn't matter what the position is in the very bottom.
         result.grade = grade_estimate(search_player_side) + grade_estimate(-search_player_side);
+        //todo: overwrite rules could be optimised
+        if (!real_hash[HASH]) {
+            real_hash[HASH] = hash;
+            cache_choice[HASH] = result;
+            subtree_height[HASH] = search_depth;
+            found_at_step[HASH] = dfs_status.steps;
+        }
+        return result;
+    }
+    if (real_hash[HASH] == hash && subtree_height[HASH] >= search_depth) {
+        result = cache_choice[HASH];
         return result;
     }
 
@@ -95,11 +107,7 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
         for (int k = 0; k < pos_num; ++k) {
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, WHITE);
 
-            if (real_hash[HASH] == hash && subtree_height[HASH] >= search_depth) {
-                tmp.grade = cache_total_grade[HASH];
-            } else {
-                tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
-            }
+            tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
 
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
             if (tmp.grade > result.grade) {
@@ -137,11 +145,7 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
                 continue;
             }
 
-            if (real_hash[HASH] == hash && subtree_height[HASH] >= search_depth) {
-                tmp.grade = cache_total_grade[HASH];
-            } else {
-                tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
-            }
+            tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
 
 
@@ -164,11 +168,11 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
         }
         //return result;
     }
-    if (!real_hash[HASH] || (real_hash[HASH] == hash &&
-                             (subtree_height[HASH] < search_depth ||
-                              dfs_status.steps + search_depth > DFS_MAX_DEPTH + found_at_step[HASH]))) {
+    if (!real_hash[HASH] ||
+        (real_hash[HASH] != hash && dfs_status.steps + search_depth > DFS_MAX_DEPTH + found_at_step[HASH])
+        || (real_hash[HASH] == hash && subtree_height[HASH] < search_depth)) {
         real_hash[HASH] = hash;
-        cache_total_grade[HASH] = result.grade;
+        cache_choice[HASH] = result;
         subtree_height[HASH] = search_depth;
         found_at_step[HASH] = dfs_status.steps;
     }
@@ -182,7 +186,8 @@ inline int has_neighbor(int i, int j, int wid, int cnt) {
         for (int _j = j - wid; _j <= j + wid; ++_j) {
             if (_j < 0 || _j >= BOARD_SIZE)continue;
             if (dfs_status.board[_i][_j] != VOID) {
-                if (++_cnt >= cnt)return 1;
+                ++_cnt;
+                if (_cnt == cnt)return 1;
             }
         }
     }
