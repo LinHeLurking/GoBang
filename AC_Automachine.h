@@ -5,8 +5,12 @@
 #ifndef GOBANG_AC_AUTOMACHINE_H
 #define GOBANG_AC_AUTOMACHINE_H
 
+#include "icld.h"
+#include "customTypes.h"
+
 //CAUTIONS!!! this PATTERNS must be exactly the same as the number of patterns
 #define PATTERNS 43
+#define END 7
 
 void AC_build();
 
@@ -23,10 +27,11 @@ void AC_build();
 #define HALF_THREE 500
 #define HALF_TWO 50
 
-#define SPLIT_ALIVE_THREE 250
+#define SPLIT_ALIVE_THREE 80
 #define SPLIT_ALIVE_FOUR_WITHOUT3 3500
 #define SPLIT_ALIVE_FOUR_WITH3 3502
 
-#define LONG_CONTINUOUS 2
+#define LONG_CONTINUOUS 100000
+
 
 #endif //GOBANG_AC_AUTOMACHINE_H

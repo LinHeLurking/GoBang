@@ -10,12 +10,11 @@
 #include "drawBoard.h"
 #include "Zoribrist_hash.h"
 
-long long pos_estimate(int i, int j, int player_side);
+int64_t pos_estimate(int i, int j, int player_side);
 
 int winner_check();
 
-long long grade_estimate(int player_side);
-
+int64_t grade_estimate();
 
 void update_line_grade_row(int row_index, int player_side);
 
@@ -27,8 +26,8 @@ void update_line_grade_oblique_delta(int oblique_delta_index, int player_side);
 
 void update_grade(int i, int j);
 
-void pattern_parse(long long grade);
-
 uint8_t is_ban();
+
+void evaluate_init();
 
 #endif //GOBANG_BOARDEVALUATE_H

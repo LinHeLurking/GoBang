@@ -7,10 +7,8 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <stdint.h>
 
 #define BOARD_SIZE 15
 #define CHAR_SIZE 4
@@ -44,8 +42,8 @@
 #define TRIE_SIZE 1000
 #define STATUS_NUM 3
 
-#define END 7
-#define MAX_PATTERN_LEN 20
+
+
 #define COLOR_OFFSET 1
 
 #define GRADE_DEBUG printf("Direct grade estimate for BLACK: %lld\n",grade_estimate(BLACK));printf("Direct grade estimate for WHITE: %lld\n",grade_estimate(WHITE));
@@ -54,18 +52,7 @@
 
 #define PLAYER_IN_LINE player_side==1?1:0
 
-typedef struct {
-    long long grade;
-    int i, j;
-    //this is used for searching
-    int player;
-    long long grade_estimate;
-} drop_choice;
 
-typedef struct {
-    int trans[3];
-    int grade;
-    int fail;
-} trie;
+
 
 #endif //GOBANG_ICLD_H

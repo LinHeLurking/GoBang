@@ -9,6 +9,8 @@
 #include "boardEvaluate.h"
 #include "mathFunc.h"
 #include "Zoribrist_hash.h"
+#include "customTypes.h"
+
 
 void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_player_side);
 

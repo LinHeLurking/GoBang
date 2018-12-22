@@ -43,14 +43,14 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
                 //above is a bad example: if you need break, drop a void piece first!!!
                 //todo: more conjecture prune needed.
 
+                /*
                 if (pos_estimate(i, j, search_player_side) >= FIVE_GRADE) {
                     dfs_add_piece(i, j, VOID);
                     break;
                 }
+                 */
 
-                long long my_new_grade_estimate = grade_estimate(search_player_side);
-                long long opponent_new_grade_estimate = grade_estimate(0 - search_player_side);
-                drop_choice1[*num].grade_estimate = my_new_grade_estimate + opponent_new_grade_estimate;
+                drop_choice1[*num].grade_estimate = grade_estimate();
                 dfs_add_piece(i, j, VOID);
                 ++(*num);
             }
@@ -74,7 +74,7 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
 
     if (search_depth == 0) {
         // it doesn't matter what the position is in the very bottom.
-        result.grade = grade_estimate(search_player_side) + grade_estimate(-search_player_side);
+        result.grade = grade_estimate();
         //todo: overwrite rules could be optimised
         if (!real_hash[HASH]) {
             real_hash[HASH] = hash;

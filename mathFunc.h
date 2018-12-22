@@ -7,6 +7,7 @@
 #define GOBANG_MATHFUNC_H
 
 #include "icld.h"
+#include "statusSearch.h"
 
 long long long_long_max(long long x, long long y);
 

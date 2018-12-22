@@ -13,6 +13,7 @@ void init() {
     AC_build();
     status_init();
     hash_init();
+    evaluate_init();
 }
 
 void test() {

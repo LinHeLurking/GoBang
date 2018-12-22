@@ -6,6 +6,7 @@
 #define GOBANG_ZORIBRIST_HASH_H
 
 #include "icld.h"
+#include "statusSearch.h"
 
 void hash_init();
 

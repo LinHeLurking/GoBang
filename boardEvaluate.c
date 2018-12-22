@@ -4,12 +4,13 @@
 
 #include "boardEvaluate.h"
 
+int32_t type_grade[PATTERN_TYPES];
 
 extern boardStatus status;
 extern boardStatus dfs_status;
 extern trie tr[TRIE_SIZE];
 // values in ban_cnt are only valid right after calling update_grade()
-int ban_cnt[7];
+uint8_t ban_cnt[7];
 //todo: add type cnt here
 
 //1==white wins -1== black wins 0==no one wins
@@ -82,21 +83,24 @@ int winner_check() {
 }
 
 
-inline long long pos_estimate(int i, int j, int player_side) {
-    return dfs_status.row_grade[PLAYER_IN_LINE][i] + dfs_status.col_grade[PLAYER_IN_LINE][j] +
-           dfs_status.oblique_sum_grade[PLAYER_IN_LINE][i + j] +
-           dfs_status.oblique_delta_grade[PLAYER_IN_LINE][i - j + BOARD_SIZE];
+inline int64_t pos_estimate(int i, int j, int player_side) {
+    //todo: add pos estimate here.
 }
 
 
-inline long long grade_estimate(int player_side) {
-    long long _grade = 0;
-    _grade = dfs_status.total_grade[PLAYER_IN_LINE];
+inline int64_t grade_estimate() {
+    int64_t _grade = 0;
+    for (int i = 0; i < PATTERN_TYPES; ++i) {
+        _grade += dfs_status.total_type[i] * type_grade[i];
+    }
     return _grade;
 }
 
 inline void update_line_grade_row(int row_index, int player_side) {
-    long long _grade = 0;
+    for (int i = 1; i < PATTERN_TYPES; ++i) {
+        dfs_status.total_type[i] -= dfs_status.row_type[i];
+    }
+    SET0(dfs_status.row_type);
     int cur = 0;
     for (int k = -1; k <= BOARD_SIZE; ++k) {
         int ch = k == -1 || k == BOARD_SIZE ? 0 - player_side : dfs_status.board[row_index][k];
@@ -106,25 +110,24 @@ inline void update_line_grade_row(int row_index, int player_side) {
         cur = tr[cur].trans[ch + COLOR_OFFSET];
         cur = cur == -1 ? 0 : cur;
         int tmp = cur;
-        while (tmp != 0 && tr[tmp].grade != 0) {
-            if (player_side == WHITE && tr[tmp].grade > 0) {
-                _grade += tr[tmp].grade;
-            } else if (player_side == BLACK && tr[tmp].grade < 0) {
-                _grade += tr[tmp].grade;
-                pattern_parse(tr[tmp].grade);
+        while (tmp != 0 && tr[tmp].type != 0) {
+            if (tr[tmp].type) {
+                ++dfs_status.row_type[tr[tmp].type];
             }
             tmp = tr[tmp].fail;
         }
     }
-    dfs_status.total_grade[PLAYER_IN_LINE] -= dfs_status.row_grade[PLAYER_IN_LINE][row_index];
-    dfs_status.total_grade[PLAYER_IN_LINE] += _grade;
-
-    dfs_status.row_grade[PLAYER_IN_LINE][row_index] = _grade;
+    for (int i = 1; i < PATTERN_TYPES; ++i) {
+        dfs_status.total_type[i] += dfs_status.row_type[i];
+    }
 }
 
 inline void update_line_grade_col(int col_index, int player_side) {
+    for (int i = 1; i < PATTERN_TYPES; ++i) {
+        dfs_status.total_type[i] -= dfs_status.col_type[i];
+    }
+    SET0(dfs_status.col_type);
     int cur = 0;
-    long long _grade = 0;
     for (int k = -1; k <= BOARD_SIZE; ++k) {
         int ch = k == -1 || k == BOARD_SIZE ? 0 - player_side : dfs_status.board[k][col_index];
         while (tr[cur].trans[ch + COLOR_OFFSET] == -1 && cur != 0) {
@@ -133,25 +136,25 @@ inline void update_line_grade_col(int col_index, int player_side) {
         cur = tr[cur].trans[ch + COLOR_OFFSET];
         cur = cur == -1 ? 0 : cur;
         int tmp = cur;
-        while (tmp != 0 && tr[tmp].grade != 0) {
-            if (player_side == WHITE && tr[tmp].grade > 0) {
-                _grade += tr[tmp].grade;
-            } else if (player_side == BLACK && tr[tmp].grade < 0) {
-                _grade += tr[tmp].grade;
-                pattern_parse(tr[tmp].grade);
+        while (tmp != 0 && tr[tmp].type != 0) {
+            if (tr[tmp].type) {
+                ++dfs_status.col_type[tr[tmp].type];
             }
             tmp = tr[tmp].fail;
         }
     }
-    dfs_status.total_grade[PLAYER_IN_LINE] -= dfs_status.col_grade[PLAYER_IN_LINE][col_index];
-    dfs_status.total_grade[PLAYER_IN_LINE] += _grade;
-
-    dfs_status.col_grade[PLAYER_IN_LINE][col_index] = _grade;
+    for (int i = 1; i < PATTERN_TYPES; ++i) {
+        dfs_status.total_type[i] += dfs_status.col_type[i];
+    }
 }
 
 inline void update_line_grade_oblique_sum(int oblique_sum_index, int player_side) {
+    for (int i = 1; i < PATTERN_TYPES; ++i) {
+        dfs_status.total_type[i] -= dfs_status.oblique_sum_type[i];
+    }
+
+    SET0(dfs_status.oblique_sum_type);
     int cur = 0;
-    long long _grade = 0;
 
     int start, end;
 
@@ -171,25 +174,26 @@ inline void update_line_grade_oblique_sum(int oblique_sum_index, int player_side
         cur = tr[cur].trans[ch + COLOR_OFFSET];
         cur = cur == -1 ? 0 : cur;
         int tmp = cur;
-        while (tmp != 0 && tr[tmp].grade != 0) {
-            if (player_side == WHITE && tr[tmp].grade > 0) {
-                _grade += tr[tmp].grade;
-            } else if (player_side == BLACK && tr[tmp].grade < 0) {
-                _grade += tr[tmp].grade;
-                pattern_parse(tr[tmp].grade);
+        while (tmp != 0 && tr[tmp].type != 0) {
+            if (tr[tmp].type) {
+                ++dfs_status.oblique_sum_type[tr[tmp].type];
             }
             tmp = tr[tmp].fail;
         }
     }
-    dfs_status.total_grade[PLAYER_IN_LINE] -= dfs_status.oblique_sum_grade[PLAYER_IN_LINE][oblique_sum_index];
-    dfs_status.total_grade[PLAYER_IN_LINE] += _grade;
 
-    dfs_status.oblique_sum_grade[PLAYER_IN_LINE][oblique_sum_index] = _grade;
+    for (int i = 0; i < PATTERN_TYPES; ++i) {
+        dfs_status.total_type[i] += dfs_status.oblique_sum_type[i];
+    }
 }
 
 inline void update_line_grade_oblique_delta(int oblique_delta_index, int player_side) {
+    for (int i = 1; i < PATTERN_TYPES; ++i) {
+        dfs_status.total_type[i] -= dfs_status.oblique_delta_type[i];
+    }
+
+    SET0(dfs_status.oblique_delta_type);
     int cur = 0;
-    long long _grade = 0;
 
     int start;
     int end;
@@ -210,27 +214,39 @@ inline void update_line_grade_oblique_delta(int oblique_delta_index, int player_
         cur = tr[cur].trans[ch + COLOR_OFFSET];
         cur = cur == -1 ? 0 : cur;
         int tmp = cur;
-        while (tmp != 0 && tr[tmp].grade != 0) {
-            if (player_side == WHITE && tr[tmp].grade > 0) {
-                _grade += tr[tmp].grade;
-            } else if (player_side == BLACK && tr[tmp].grade < 0) {
-                _grade += tr[tmp].grade;
-                pattern_parse(tr[tmp].grade);
+        while (tmp != 0 && tr[tmp].type != 0) {
+            if (tr[tmp].type) {
+                ++dfs_status.oblique_delta_type[tr[tmp].type];
             }
             tmp = tr[tmp].fail;
         }
     }
-    dfs_status.total_grade[PLAYER_IN_LINE] -= dfs_status.oblique_delta_grade[PLAYER_IN_LINE][oblique_delta_index +
-                                                                                             BOARD_SIZE];
-    dfs_status.total_grade[PLAYER_IN_LINE] += _grade;
-
-    dfs_status.oblique_delta_grade[PLAYER_IN_LINE][oblique_delta_index + BOARD_SIZE] = _grade;
-
+    for (int i = 1; i < PATTERN_TYPES; ++i) {
+        dfs_status.total_type[i] -= dfs_status.oblique_delta_type[i];
+    }
 }
 
 inline void update_grade(int i, int j) {
 
-    SET0(ban_cnt);
+    ban_cnt[3] = ban_cnt[4] = ban_cnt[6] = 0;
+
+    ban_cnt[3] -=
+            dfs_status.row_type[a3b] + dfs_status.row_type[sa3b] + dfs_status.col_type[a3b] + dfs_status.col_type[sa3b]
+            + dfs_status.oblique_sum_type[a3b] + dfs_status.oblique_sum_type[sa3b] + dfs_status.oblique_delta_type[a3b]
+            + dfs_status.oblique_delta_type[sa3b];
+
+    ban_cnt[4] -=
+            dfs_status.row_type[a4b] + dfs_status.row_type[h4b] + dfs_status.row_type[sa4w3b] +
+            dfs_status.row_type[sa4n3b]
+            + dfs_status.col_type[a4b] + dfs_status.col_type[h4b] + dfs_status.col_type[sa4w3b] +
+            dfs_status.col_type[sa4n3b]
+            + dfs_status.oblique_sum_type[a4b] + dfs_status.oblique_sum_type[h4b] +
+            dfs_status.oblique_sum_type[sa4w3b] + dfs_status.oblique_sum_type[sa4n3b]
+            + dfs_status.oblique_delta_type[a4b] + dfs_status.oblique_delta_type[h4b] +
+            dfs_status.oblique_delta_type[sa4w3b] + dfs_status.oblique_delta_type[sa4n3b];
+
+    ban_cnt[6] -= dfs_status.row_type[l6b] + dfs_status.col_type[l6b] + dfs_status.oblique_sum_type[l6b] +
+                  dfs_status.oblique_delta_type[l6b];
 
     update_line_grade_row(i, WHITE);
     update_line_grade_col(j, WHITE);
@@ -241,32 +257,26 @@ inline void update_grade(int i, int j) {
     update_line_grade_col(j, BLACK);
     update_line_grade_oblique_sum(i + j, BLACK);
     update_line_grade_oblique_delta(i - j, BLACK);
+
+    ban_cnt[3] +=
+            dfs_status.row_type[a3b] + dfs_status.row_type[sa3b] + dfs_status.col_type[a3b] + dfs_status.col_type[sa3b]
+            + dfs_status.oblique_sum_type[a3b] + dfs_status.oblique_sum_type[sa3b] + dfs_status.oblique_delta_type[a3b]
+            + dfs_status.oblique_delta_type[sa3b];
+
+    ban_cnt[4] += dfs_status.row_type[a4b] + dfs_status.row_type[h4b] + dfs_status.row_type[sa4w3b] +
+                  dfs_status.row_type[sa4n3b]
+                  + dfs_status.col_type[a4b] + dfs_status.col_type[h4b] + dfs_status.col_type[sa4w3b] +
+                  dfs_status.col_type[sa4n3b]
+                  + dfs_status.oblique_sum_type[a4b] + dfs_status.oblique_sum_type[h4b] +
+                  dfs_status.oblique_sum_type[sa4w3b] + dfs_status.oblique_sum_type[sa4n3b]
+                  + dfs_status.oblique_delta_type[a4b] + dfs_status.oblique_delta_type[h4b] +
+                  dfs_status.oblique_delta_type[sa4w3b] + dfs_status.oblique_delta_type[sa4n3b];
+
+    ban_cnt[6] += dfs_status.row_type[l6b] + dfs_status.col_type[l6b] + dfs_status.oblique_sum_type[l6b] +
+                  dfs_status.oblique_delta_type[l6b];
+
 }
 
-//todo: more tests needed
-inline void pattern_parse(long long grade) {
-    switch (grade) {
-        case -SPLIT_ALIVE_FOUR_WITH3:
-            --ban_cnt[3];
-            ++ban_cnt[4];
-            break;
-        case -SPLIT_ALIVE_FOUR_WITHOUT3:
-            ++ban_cnt[4];
-            break;
-        case -SPLIT_ALIVE_THREE:
-            ++ban_cnt[3];
-            break;
-        case -CONTINUOUS_THREE:
-            ++ban_cnt[3];
-            break;
-        case -LONG_CONTINUOUS:
-            --ban_cnt[4];
-            ++ban_cnt[6];
-            break;
-        default:
-            break;
-    }
-}
 
 uint8_t is_ban() {
     if (ban_cnt[6])
@@ -278,6 +288,38 @@ uint8_t is_ban() {
     return 0;
 }
 
+void evaluate_init() {
+    SET0(ban_cnt);
+    type_grade[a5w] = FIVE_GRADE;
+    type_grade[a5b] = -FIVE_GRADE;
+    type_grade[a4w] = CONTINUOUS_FOUR;
+    type_grade[a4b] = -CONTINUOUS_FOUR;
+    type_grade[a3w] = CONTINUOUS_THREE;
+    type_grade[a3b] = -CONTINUOUS_THREE;
+    type_grade[a2w] = CONTINUOUS_TWO;
+    type_grade[a2b] = -CONTINUOUS_TWO;
+    type_grade[a1w] = CONTINUOUS_ONE;
+    type_grade[a1b] = -CONTINUOUS_ONE;
+
+    type_grade[h5w] = FIVE_GRADE;
+    type_grade[h5b] = -FIVE_GRADE;
+    type_grade[h4w] = HALF_FOUR;
+    type_grade[h4b] = -HALF_FOUR;
+    type_grade[h3w] = HALF_THREE;
+    type_grade[h3b] = -HALF_THREE;
+    type_grade[h2w] = HALF_TWO;
+    type_grade[h2b] = -HALF_TWO;
+
+    type_grade[d5w] = FIVE_GRADE;
+    type_grade[d5b] = -FIVE_GRADE;
+
+    type_grade[sa3w] = SPLIT_ALIVE_THREE;
+    type_grade[sa3b] = -SPLIT_ALIVE_THREE;
+    type_grade[sa4n3w] = SPLIT_ALIVE_FOUR_WITHOUT3;
+    type_grade[sa4n3b] = -SPLIT_ALIVE_FOUR_WITHOUT3;
+    type_grade[sa4w3w] = SPLIT_ALIVE_FOUR_WITH3;
+    type_grade[sa4w3b] = -SPLIT_ALIVE_FOUR_WITH3;
+}
 
 #undef TRIE_SIZE
 #undef PATTERNS
