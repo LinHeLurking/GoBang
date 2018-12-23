@@ -51,7 +51,7 @@ void play() {
 void human_vs_computer() {
     int human_player = BLACK;
     int computer_player = WHITE;
-    int order_check;
+    int order_check = HUMAN_FIRST;
 
     printf("Human first or computer first?\nHuman first: 1\nComputer first: 2\n");
     scanf("%d", &order_check);
@@ -123,10 +123,6 @@ void human_vs_computer() {
             //exit(-1);
         }
 
-#ifdef DEBUG_DRAW
-        printf("The grade estimate:\nBLACK: %lld\nWHITE: %lld\n", grade_estimate(BLACK), grade_estimate(WHITE));
-        printf("dfs grade: %lld\n", choice.grade);
-#endif
 #ifdef PRUNE_DEBUG
         prune_cnt = 0;
 #endif
@@ -149,7 +145,7 @@ void human_vs_human() {
     while (true) {
         output_board(1);
 #ifdef DEBUG_DRAW
-        printf("The grade estimate:\nBLACK: %lld\nWHITE: %lld\n", grade_estimate(BLACK), grade_estimate(WHITE));
+        printf("The grade estimate:\nBLACK: %"PRId64"\n", grade_estimate());
 #endif
         printf("Round for %s, input the position you want to place the piece\n", player_side[player + COLOR_OFFSET]);
         printf("Input 'quit'(without quotes) to quit this game\n");

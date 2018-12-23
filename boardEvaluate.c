@@ -90,17 +90,20 @@ inline int64_t pos_estimate(int i, int j, int player_side) {
 
 inline int64_t grade_estimate() {
     int64_t _grade = 0;
-    for (int i = 0; i < PATTERN_TYPES; ++i) {
+    for (int i = 1; i <= PATTERN_TYPES; ++i) {
         _grade += dfs_status.total_type[i] * type_grade[i];
     }
     return _grade;
 }
 
 inline void update_line_grade_row(int row_index, int player_side) {
-    for (int i = 1; i < PATTERN_TYPES; ++i) {
-        dfs_status.total_type[i] -= dfs_status.row_type[i];
+    for (int i = 1; i <= PATTERN_TYPES; ++i) {
+        dfs_status.total_type[i] -= dfs_status.row_type[row_index][i];
     }
-    SET0(dfs_status.row_type);
+
+    for (int j = 1; j <= PATTERN_TYPES; ++j) {
+        dfs_status.row_type[row_index][j] = 0;
+    }
     int cur = 0;
     for (int k = -1; k <= BOARD_SIZE; ++k) {
         int ch = k == -1 || k == BOARD_SIZE ? 0 - player_side : dfs_status.board[row_index][k];
@@ -112,21 +115,24 @@ inline void update_line_grade_row(int row_index, int player_side) {
         int tmp = cur;
         while (tmp != 0 && tr[tmp].type != 0) {
             if (tr[tmp].type) {
-                ++dfs_status.row_type[tr[tmp].type];
+                ++dfs_status.row_type[row_index][tr[tmp].type];
             }
             tmp = tr[tmp].fail;
         }
     }
     for (int i = 1; i < PATTERN_TYPES; ++i) {
-        dfs_status.total_type[i] += dfs_status.row_type[i];
+        dfs_status.total_type[i] += dfs_status.row_type[row_index][i];
     }
 }
 
 inline void update_line_grade_col(int col_index, int player_side) {
-    for (int i = 1; i < PATTERN_TYPES; ++i) {
-        dfs_status.total_type[i] -= dfs_status.col_type[i];
+    for (int i = 1; i <= PATTERN_TYPES; ++i) {
+        dfs_status.total_type[i] -= dfs_status.col_type[col_index][i];
     }
-    SET0(dfs_status.col_type);
+    for (int j = 1; j <= PATTERN_TYPES; ++j) {
+        dfs_status.col_type[col_index][j] = 0;
+    }
+
     int cur = 0;
     for (int k = -1; k <= BOARD_SIZE; ++k) {
         int ch = k == -1 || k == BOARD_SIZE ? 0 - player_side : dfs_status.board[k][col_index];
@@ -138,22 +144,24 @@ inline void update_line_grade_col(int col_index, int player_side) {
         int tmp = cur;
         while (tmp != 0 && tr[tmp].type != 0) {
             if (tr[tmp].type) {
-                ++dfs_status.col_type[tr[tmp].type];
+                ++dfs_status.col_type[col_index][tr[tmp].type];
             }
             tmp = tr[tmp].fail;
         }
     }
     for (int i = 1; i < PATTERN_TYPES; ++i) {
-        dfs_status.total_type[i] += dfs_status.col_type[i];
+        dfs_status.total_type[i] += dfs_status.col_type[col_index][i];
     }
 }
 
 inline void update_line_grade_oblique_sum(int oblique_sum_index, int player_side) {
-    for (int i = 1; i < PATTERN_TYPES; ++i) {
-        dfs_status.total_type[i] -= dfs_status.oblique_sum_type[i];
+    for (int i = 1; i <= PATTERN_TYPES; ++i) {
+        dfs_status.total_type[i] -= dfs_status.oblique_sum_type[oblique_sum_index][i];
+    }
+    for (int j = 1; j <= PATTERN_TYPES; ++j) {
+        dfs_status.oblique_sum_type[oblique_sum_index][j] = 0;
     }
 
-    SET0(dfs_status.oblique_sum_type);
     int cur = 0;
 
     int start, end;
@@ -176,23 +184,28 @@ inline void update_line_grade_oblique_sum(int oblique_sum_index, int player_side
         int tmp = cur;
         while (tmp != 0 && tr[tmp].type != 0) {
             if (tr[tmp].type) {
-                ++dfs_status.oblique_sum_type[tr[tmp].type];
+                ++dfs_status.oblique_sum_type[oblique_sum_index][tr[tmp].type];
             }
             tmp = tr[tmp].fail;
         }
     }
 
     for (int i = 0; i < PATTERN_TYPES; ++i) {
-        dfs_status.total_type[i] += dfs_status.oblique_sum_type[i];
+        dfs_status.total_type[i] += dfs_status.oblique_sum_type[oblique_sum_index][i];
     }
 }
 
 inline void update_line_grade_oblique_delta(int oblique_delta_index, int player_side) {
-    for (int i = 1; i < PATTERN_TYPES; ++i) {
-        dfs_status.total_type[i] -= dfs_status.oblique_delta_type[i];
+    //this is important! offset=BOARD_SIZE
+    oblique_delta_index += BOARD_SIZE;
+
+    for (int i = 1; i <= PATTERN_TYPES; ++i) {
+        dfs_status.total_type[i] -= dfs_status.oblique_delta_type[oblique_delta_index][i];
+    }
+    for (int j = 1; j <= PATTERN_TYPES; ++j) {
+        dfs_status.oblique_delta_type[oblique_delta_index][j] = 0;
     }
 
-    SET0(dfs_status.oblique_delta_type);
     int cur = 0;
 
     int start;
@@ -216,13 +229,13 @@ inline void update_line_grade_oblique_delta(int oblique_delta_index, int player_
         int tmp = cur;
         while (tmp != 0 && tr[tmp].type != 0) {
             if (tr[tmp].type) {
-                ++dfs_status.oblique_delta_type[tr[tmp].type];
+                ++dfs_status.oblique_delta_type[oblique_delta_index][tr[tmp].type];
             }
             tmp = tr[tmp].fail;
         }
     }
     for (int i = 1; i < PATTERN_TYPES; ++i) {
-        dfs_status.total_type[i] -= dfs_status.oblique_delta_type[i];
+        dfs_status.total_type[i] += dfs_status.oblique_delta_type[oblique_delta_index][i];
     }
 }
 
@@ -231,22 +244,26 @@ inline void update_grade(int i, int j) {
     ban_cnt[3] = ban_cnt[4] = ban_cnt[6] = 0;
 
     ban_cnt[3] -=
-            dfs_status.row_type[a3b] + dfs_status.row_type[sa3b] + dfs_status.col_type[a3b] + dfs_status.col_type[sa3b]
-            + dfs_status.oblique_sum_type[a3b] + dfs_status.oblique_sum_type[sa3b] + dfs_status.oblique_delta_type[a3b]
-            + dfs_status.oblique_delta_type[sa3b];
+            dfs_status.row_type[i][a3b] + dfs_status.row_type[i][sa3b] + dfs_status.col_type[j][a3b] +
+            dfs_status.col_type[j][sa3b]
+            + dfs_status.oblique_sum_type[i + j][a3b] + dfs_status.oblique_sum_type[i + j][sa3b] +
+            dfs_status.oblique_delta_type[i - j + BOARD_SIZE][a3b]
+            + dfs_status.oblique_delta_type[i - j + BOARD_SIZE][sa3b];
 
     ban_cnt[4] -=
-            dfs_status.row_type[a4b] + dfs_status.row_type[h4b] + dfs_status.row_type[sa4w3b] +
-            dfs_status.row_type[sa4n3b]
-            + dfs_status.col_type[a4b] + dfs_status.col_type[h4b] + dfs_status.col_type[sa4w3b] +
-            dfs_status.col_type[sa4n3b]
-            + dfs_status.oblique_sum_type[a4b] + dfs_status.oblique_sum_type[h4b] +
-            dfs_status.oblique_sum_type[sa4w3b] + dfs_status.oblique_sum_type[sa4n3b]
-            + dfs_status.oblique_delta_type[a4b] + dfs_status.oblique_delta_type[h4b] +
-            dfs_status.oblique_delta_type[sa4w3b] + dfs_status.oblique_delta_type[sa4n3b];
+            dfs_status.row_type[i][a4b] + dfs_status.row_type[i][h4b] + dfs_status.row_type[i][sa4w3b] +
+            dfs_status.row_type[i][sa4n3b]
+            + dfs_status.col_type[j][a4b] + dfs_status.col_type[j][h4b] + dfs_status.col_type[j][sa4w3b] +
+            dfs_status.col_type[j][sa4n3b]
+            + dfs_status.oblique_sum_type[i + j][a4b] + dfs_status.oblique_sum_type[i + j][h4b] +
+            dfs_status.oblique_sum_type[i + j][sa4w3b] + dfs_status.oblique_sum_type[i + j][sa4n3b]
+            + dfs_status.oblique_delta_type[i - j + BOARD_SIZE][a4b] +
+            dfs_status.oblique_delta_type[i - j + BOARD_SIZE][h4b] +
+            dfs_status.oblique_delta_type[i - j + BOARD_SIZE][sa4w3b] +
+            dfs_status.oblique_delta_type[i - j + BOARD_SIZE][sa4n3b];
 
-    ban_cnt[6] -= dfs_status.row_type[l6b] + dfs_status.col_type[l6b] + dfs_status.oblique_sum_type[l6b] +
-                  dfs_status.oblique_delta_type[l6b];
+    ban_cnt[6] -= dfs_status.row_type[i][l6b] + dfs_status.col_type[j][l6b] + dfs_status.oblique_sum_type[i + j][l6b] +
+                  dfs_status.oblique_delta_type[i - j + BOARD_SIZE][l6b];
 
     update_line_grade_row(i, WHITE);
     update_line_grade_col(j, WHITE);
@@ -259,21 +276,25 @@ inline void update_grade(int i, int j) {
     update_line_grade_oblique_delta(i - j, BLACK);
 
     ban_cnt[3] +=
-            dfs_status.row_type[a3b] + dfs_status.row_type[sa3b] + dfs_status.col_type[a3b] + dfs_status.col_type[sa3b]
-            + dfs_status.oblique_sum_type[a3b] + dfs_status.oblique_sum_type[sa3b] + dfs_status.oblique_delta_type[a3b]
-            + dfs_status.oblique_delta_type[sa3b];
+            dfs_status.row_type[i][a3b] + dfs_status.row_type[i][sa3b] + dfs_status.col_type[j][a3b] +
+            dfs_status.col_type[j][sa3b]
+            + dfs_status.oblique_sum_type[i + j][a3b] + dfs_status.oblique_sum_type[i + j][sa3b] +
+            dfs_status.oblique_delta_type[i - j + BOARD_SIZE][a3b]
+            + dfs_status.oblique_delta_type[i - j + BOARD_SIZE][sa3b];
 
-    ban_cnt[4] += dfs_status.row_type[a4b] + dfs_status.row_type[h4b] + dfs_status.row_type[sa4w3b] +
-                  dfs_status.row_type[sa4n3b]
-                  + dfs_status.col_type[a4b] + dfs_status.col_type[h4b] + dfs_status.col_type[sa4w3b] +
-                  dfs_status.col_type[sa4n3b]
-                  + dfs_status.oblique_sum_type[a4b] + dfs_status.oblique_sum_type[h4b] +
-                  dfs_status.oblique_sum_type[sa4w3b] + dfs_status.oblique_sum_type[sa4n3b]
-                  + dfs_status.oblique_delta_type[a4b] + dfs_status.oblique_delta_type[h4b] +
-                  dfs_status.oblique_delta_type[sa4w3b] + dfs_status.oblique_delta_type[sa4n3b];
+    ban_cnt[4] += dfs_status.row_type[i][a4b] + dfs_status.row_type[i][h4b] + dfs_status.row_type[i][sa4w3b] +
+                  dfs_status.row_type[i][sa4n3b]
+                  + dfs_status.col_type[j][a4b] + dfs_status.col_type[j][h4b] + dfs_status.col_type[j][sa4w3b] +
+                  dfs_status.col_type[j][sa4n3b]
+                  + dfs_status.oblique_sum_type[i + j][a4b] + dfs_status.oblique_sum_type[i + j][h4b] +
+                  dfs_status.oblique_sum_type[i + j][sa4w3b] + dfs_status.oblique_sum_type[i + j][sa4n3b]
+                  + dfs_status.oblique_delta_type[i - j + BOARD_SIZE][a4b] +
+                  dfs_status.oblique_delta_type[i - j + BOARD_SIZE][h4b] +
+                  dfs_status.oblique_delta_type[i - j + BOARD_SIZE][sa4w3b] +
+                  dfs_status.oblique_delta_type[i - j + BOARD_SIZE][sa4n3b];
 
-    ban_cnt[6] += dfs_status.row_type[l6b] + dfs_status.col_type[l6b] + dfs_status.oblique_sum_type[l6b] +
-                  dfs_status.oblique_delta_type[l6b];
+    ban_cnt[6] += dfs_status.row_type[i][l6b] + dfs_status.col_type[j][l6b] + dfs_status.oblique_sum_type[i + j][l6b] +
+                  dfs_status.oblique_delta_type[i - j + BOARD_SIZE][l6b];
 
 }
 

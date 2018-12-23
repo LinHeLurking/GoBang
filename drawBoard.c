@@ -2,6 +2,7 @@
 // Created by Nine_yota on 2018-09-29.
 //
 
+
 #include "drawBoard.h"
 
 extern boardStatus status;
@@ -69,6 +70,10 @@ void output_board(int clear) {
 
     if(status.steps>0)
         printf("%d %c%d\n", status.steps, record[status.steps].j + 'A', 15 - record[status.steps].i);
+
+#ifdef DEBUG_DRAW
+    printf("The grade estimate:\n%"PRId64"\n", grade_estimate());
+#endif
 
 #ifndef USE_HASH
     printf("(without hash)\n");

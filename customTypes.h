@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <inttypes.h>
 #include "AC_Automachine.h"
 
 #define MAX_PATTERN_LEN 20
@@ -74,11 +75,11 @@ typedef struct {
     //these are used to record the board status
     int board[BOARD_SIZE][BOARD_SIZE];
 
-    uint8_t row_type[PATTERN_TYPES];
-    uint8_t col_type[PATTERN_TYPES];
-    uint8_t oblique_sum_type[PATTERN_TYPES];
-    uint8_t oblique_delta_type[PATTERN_TYPES];
-    uint8_t total_type[PATTERN_TYPES];
+    uint8_t row_type[BOARD_SIZE][PATTERN_TYPES + 5];
+    uint8_t col_type[BOARD_SIZE][PATTERN_TYPES + 5];
+    uint8_t oblique_sum_type[BOARD_SIZE * 2][PATTERN_TYPES + 5];
+    uint8_t oblique_delta_type[BOARD_SIZE * 2][PATTERN_TYPES + 5];
+    uint8_t total_type[PATTERN_TYPES + 5];
 
     //these are used to record the last place and the total steps
     int steps;
