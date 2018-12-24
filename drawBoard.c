@@ -68,11 +68,13 @@ void output_board(int clear) {
     printf("\n");
 
 
-    if(status.steps>0)
+    if (status.steps > 0)
         printf("%d %c%d\n", status.steps, record[status.steps].j + 'A', 15 - record[status.steps].i);
 
 #ifdef DEBUG_DRAW
-    printf("The grade estimate:\n%"PRId64"\n", grade_estimate());
+    printf("The grade estimate:\n");
+    printf("WHITE: %"PRId64"\n", grade_estimate(WHITE));
+    printf("BLACK: %"PRId64"\n", grade_estimate(BLACK));
 #endif
 
 #ifndef USE_HASH

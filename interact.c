@@ -69,7 +69,7 @@ void human_vs_computer() {
 
     while (true) {
 
-        printf("\n\nRound for %s, input the position you want to place the piece\n",
+        printf("Round for %s, input the position you want to place the piece\n",
                player_side[human_player + COLOR_OFFSET]);
         printf("Input 'quit'(without quotes) to quit this game\n");
 
@@ -91,13 +91,7 @@ void human_vs_computer() {
                 }
             }
             st = add_piece(i, j, human_player);
-            if (st == 2) {
-                output_board(1);
-                printf("Ban found! The player of white won.\n");
-                //printf("Press any key to quit\n");
-                //getchar();
-                return;
-            }
+
         }
         int win_status = winner_check();
         if (win_status == WHITE) {
@@ -116,17 +110,20 @@ void human_vs_computer() {
         drop_choice choice = alpha_beta_dfs(computer_player, DFS_MAX_DEPTH, 0 - INF, INF);
         st = add_piece(choice.i, choice.j, computer_player);
 
-        output_board(1);
-
-        if (st == -1) {
+        if (st == 2) {
+            output_board(1);
+            printf("Ban found! The player of white won.\n");
+            //printf("Press any key to quit\n");
+            //getchar();
+            return;
+        }else if(st==-1){
             printf("Search error!\n");
-            //exit(-1);
+        }else{
+            output_board(1);
         }
-
 #ifdef PRUNE_DEBUG
         prune_cnt = 0;
 #endif
-
         win_status = winner_check();
         if (win_status == WHITE) {
             output_board(1);
@@ -144,9 +141,6 @@ void human_vs_human() {
     int player = BLACK;
     while (true) {
         output_board(1);
-#ifdef DEBUG_DRAW
-        printf("The grade estimate:\nBLACK: %"PRId64"\n", grade_estimate());
-#endif
         printf("Round for %s, input the position you want to place the piece\n", player_side[player + COLOR_OFFSET]);
         printf("Input 'quit'(without quotes) to quit this game\n");
         int i, j;

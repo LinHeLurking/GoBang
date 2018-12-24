@@ -50,7 +50,8 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
                 }
                  */
 
-                drop_choice1[*num].grade_estimate = grade_estimate();
+                drop_choice1[*num].grade_estimate =
+                        grade_estimate(search_player_side) + grade_estimate(0 - search_player_side);
                 dfs_add_piece(i, j, VOID);
                 ++(*num);
             }
@@ -74,7 +75,7 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
 
     if (search_depth == 0) {
         // it doesn't matter what the position is in the very bottom.
-        result.grade = grade_estimate();
+        result.grade = grade_estimate(search_player_side) + grade_estimate(0 - search_player_side);
         //todo: overwrite rules could be optimised
         if (!real_hash[HASH]) {
             real_hash[HASH] = hash;

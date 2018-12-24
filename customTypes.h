@@ -22,7 +22,7 @@ enum {
      * l6b: long continue of black
      **/
 
-    //enum starts at 1 and ends at 28
+    //enum starts at 1 and ends at 28!!
 
     a5w = 1,
     a5b,
