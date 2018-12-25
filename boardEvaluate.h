@@ -33,8 +33,8 @@ void evaluate_init();
 //this function is used for 011101 <-> 01110
 void update_type(uint8_t type_array[], uint8_t type);
 
-void ban_clear(int i ,int j);
+void ban_clear();
 
-void ban_detect(int i, int j);
+void ban_detect();
 
 #endif //GOBANG_BOARDEVALUATE_H

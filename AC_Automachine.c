@@ -195,7 +195,7 @@ __AC_node AC_node[PATTERNS] = {
         },
         {
                 sa4n3b,
-                {BLACK, BLACK, VOID,  BLACK, BLACK, END},
+                {BLACK, BLACK, VOID, BLACK, BLACK, END},
                 -SPLIT_ALIVE_FOUR_WITHOUT3
         },
         {
