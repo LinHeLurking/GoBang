@@ -100,12 +100,6 @@ int winner_check() {
     return __flag;
 }
 
-
-inline int64_t pos_estimate(int i, int j, int player_side) {
-    //todo: add pos estimate here.
-}
-
-
 inline int64_t grade_estimate(int32_t player_side) {
     int64_t __grade = 0;
     if (player_side == WHITE) {
@@ -266,7 +260,7 @@ inline void update_line_type_oblique_delta(int oblique_delta_index, int player_s
         start = -1;
         end = BOARD_SIZE - oblique_delta_index;
     } else {
-        start = -oblique_delta_index + 1;
+        start = -oblique_delta_index - 1;
         end = BOARD_SIZE;
     }
 
@@ -291,6 +285,8 @@ inline void update_line_type_oblique_delta(int oblique_delta_index, int player_s
 }
 
 inline void update_grade(int i, int j) {
+
+    //todo: direct grade estimate remains problematic
 
     ban_clear(i, j);
 

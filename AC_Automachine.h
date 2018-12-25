@@ -16,7 +16,6 @@ void AC_build();
 
 // values may need changing or the program would be too greedy. QAQ
 // make sure that split alive grades are mot the same as continuous ones.
-//todo: values need changing to make it less aggressive
 #define FIVE_GRADE 100000
 #define CONTINUOUS_FOUR 10000
 #define CONTINUOUS_THREE 1000
