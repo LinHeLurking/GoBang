@@ -12,7 +12,7 @@
 
 #define BOARD_SIZE 15
 #define CHAR_SIZE 4
-#define GAP 6
+#define CHAR_GAP 6
 #define BLACK (-1)
 #define WHITE 1
 #define VOID 0
@@ -20,7 +20,7 @@
 #define HUMAN_VS_COMPUTER 1
 
 #ifndef DFS_MAX_DEPTH
-#define DFS_MAX_DEPTH 4
+#define DFS_MAX_DEPTH 6
 #endif
 
 #define INF 20000000000007

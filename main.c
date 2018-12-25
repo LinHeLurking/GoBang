@@ -7,6 +7,7 @@
 #include "AC_Automachine.h"
 #include "Zoribrist_hash.h"
 
+
 extern boardStatus status;
 
 void init() {
@@ -14,6 +15,8 @@ void init() {
     status_init();
     hash_init();
     evaluate_init();
+
+    //brute_force();
 }
 
 void test() {

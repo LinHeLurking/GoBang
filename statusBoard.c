@@ -26,6 +26,8 @@ void __status_init(boardStatus *boardStatus1) {
     SET0(boardStatus1->oblique_delta_type);
     SET0(boardStatus1->total_type);
     boardStatus1->steps = 0;
+    boardStatus1->__WHITE = WHITE;
+    boardStatus1->__BLACK = BLACK;
 }
 
 void status_init() {
@@ -54,7 +56,7 @@ int add_piece(int i, int j, int player_side) {
         record[status.steps].j = j;
         record[status.steps].player = player_side;
         if (is_ban()) {
-            printf("ban found!\n");
+            //printf("Ban found!\n");
             check_code = 2;
         }
     }
@@ -79,4 +81,24 @@ int dfs_add_piece(int i, int j, int player_side) {
     }
     update_grade(i, j);
     return 1;
+}
+
+inline int32_t *board_acess(int32_t index1, int32_t index2, int32_t line_type) {
+    if (line_type == row) {
+        if (index1 >= 0 && index1 < BOARD_SIZE && index2 >= 0 && index2 < BOARD_SIZE)
+            return &dfs_status.board[index1][index2];
+    } else if (line_type == col) {
+        if (index1 >= 0 && index1 < BOARD_SIZE && index2 >= 0 && index2 < BOARD_SIZE)
+            return &dfs_status.board[index2][index1];
+    } else {
+        int32_t i;
+        if (line_type == oblique_sum) {
+            i = index1 - index2;
+        } else {
+            i = index2 + index1;
+        }
+        if (i >= 0 && i < BOARD_SIZE && index2 >= 0 && index2 < BOARD_SIZE)
+            return &dfs_status.board[i][index2];
+    }
+    return NULL;
 }

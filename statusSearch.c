@@ -44,7 +44,6 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
                 //if (pos_estimate(i, j, search_player_side) >= FIVE_GRADE)
                 //break;
                 //above is a bad example: if you need break, drop a void piece first!!!
-                //todo: more conjecture prune needed.
                 //cautions: DO NOT PRUNE ALIVE 4 HERE!!!
                 if (search_player_side == WHITE) {
                     if (dfs_status.total_type[a5w]) {

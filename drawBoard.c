@@ -50,11 +50,11 @@ void output_board(int clear) {
             }
             if (status.board[i][j] == WHITE) {
                 for (int k = 0; k < CHAR_SIZE - 1; ++k) {
-                    drawing_board[i][j * GAP + k] = white_piece[is_last2][k];
+                    drawing_board[i][j * CHAR_GAP + k] = white_piece[is_last2][k];
                 }
             } else if (status.board[i][j] == BLACK) {
                 for (int k = 0; k < CHAR_SIZE - 1; ++k) {
-                    drawing_board[i][j * GAP + k] = black_piece[is_last2][k];
+                    drawing_board[i][j * CHAR_GAP + k] = black_piece[is_last2][k];
                 }
             }
         }
@@ -105,11 +105,11 @@ void dfs_output_board() {
             //CHAR_SIZE-1: avoid copying the end symbol of string.
             if (dfs_status.board[i][j] == WHITE) {
                 for (int k = 0; k < CHAR_SIZE - 1; ++k) {
-                    drawing_board[i][j * GAP + k] = white_piece[0][k];
+                    drawing_board[i][j * CHAR_GAP + k] = white_piece[0][k];
                 }
             } else if (dfs_status.board[i][j] == BLACK) {
                 for (int k = 0; k < CHAR_SIZE - 1; ++k) {
-                    drawing_board[i][j * GAP + k] = black_piece[0][k];
+                    drawing_board[i][j * CHAR_GAP + k] = black_piece[0][k];
                 }
             }
         }

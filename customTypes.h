@@ -73,7 +73,7 @@ typedef struct {
 
 typedef struct {
     //these are used to record the board status
-    int board[BOARD_SIZE][BOARD_SIZE];
+    int32_t board[BOARD_SIZE][BOARD_SIZE];
 
     uint8_t row_type[BOARD_SIZE][PATTERN_TYPES + 5];
     uint8_t col_type[BOARD_SIZE][PATTERN_TYPES + 5];
@@ -82,7 +82,9 @@ typedef struct {
     uint8_t total_type[PATTERN_TYPES + 5];
 
     //these are used to record the last place and the total steps
-    int steps;
+    int32_t steps;
+
+    int8_t __WHITE, __BLACK;
 
 } boardStatus;
 
@@ -91,11 +93,15 @@ typedef struct {
 } drop_record;
 
 typedef struct {
-    long long grade;
+    int64_t grade;
     int i, j;
     //this is used for searching
     int player;
-    long long grade_estimate;
+    int64_t grade_estimate;
 } drop_choice;
+
+typedef struct {
+    int8_t type[PATTERN_TYPES];
+} __line_status;
 
 #endif //GOBANG_CUSTOMTYPES_H
