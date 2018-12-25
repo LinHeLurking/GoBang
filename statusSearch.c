@@ -25,10 +25,13 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
     for (int i = 0; i < BOARD_SIZE; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
             if (dfs_status.board[i][j] == VOID) {
-                //skip useless points as many as possible
-                if (dfs_status.steps < 2) {
+                /* skip useless points as many as possible
+                 * no piece has been dropped when counting,
+                 * so the central piece should not been taken into consideration.
+                 */
+                if (dfs_status.steps <= 2) {
                     if (!has_neighbor(i, j, 1, 1)) continue;
-                } else if (dfs_status.steps < 3) {
+                } else if (dfs_status.steps <= 4) {
                     if (!has_neighbor(i, j, 1, 2)) continue;
                 } else {
                     if (!has_neighbor(i, j, 2, 1)) continue;
@@ -43,13 +46,17 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
                 //above is a bad example: if you need break, drop a void piece first!!!
                 //todo: more conjecture prune needed.
 
-                /*
-                if (pos_estimate(i, j, search_player_side) >= FIVE_GRADE) {
-                    dfs_add_piece(i, j, VOID);
-                    break;
+                if (search_player_side == WHITE) {
+                    if (dfs_status.total_type[a5w] || dfs_status.total_type[a4w]) {
+                        dfs_add_piece(9, j, VOID);
+                        break;
+                    }
+                } else {
+                    if (dfs_status.total_type[a5b] || dfs_status.total_type[a4b]) {
+                        dfs_add_piece(i, j, VOID);
+                        break;
+                    }
                 }
-                 */
-
                 drop_choice1[*num].grade_estimate =
                         grade_estimate(search_player_side) + grade_estimate(0 - search_player_side);
                 dfs_add_piece(i, j, VOID);
@@ -58,7 +65,7 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
         }
     }
     choice_sort(drop_choice1, *num, search_player_side);
-    *num = int_min(*num, 50);
+    *num = int_min(*num, 40);
 }
 
 #ifdef PRUNE_DEBUG
