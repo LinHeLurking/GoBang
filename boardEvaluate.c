@@ -450,7 +450,7 @@ inline int64_t type_shift(int8_t type, int8_t player_side) {
             case a2b:
                 return -CONTINUOUS_THREE;
             case a3b:
-                return -CONTINUOUS_THREE;
+                return -CONTINUOUS_FOUR;
             case a4b:
                 return -FIVE_GRADE;
             case h3b:

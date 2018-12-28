@@ -59,7 +59,7 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int8_t se
         }
     }
     choice_sort(drop_choice1, *num, search_player_side);
-    *num = int_min(*num, 40);
+    *num = int_min(*num, 23);
 }
 
 #ifdef PRUNE_DEBUG
