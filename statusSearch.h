@@ -12,7 +12,7 @@
 #include "customTypes.h"
 
 
-void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_player_side);
+void generate_possible_pos(drop_choice *drop_choice1, int *num, int8_t search_player_side);
 
 drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long alpha, long long beta);
 

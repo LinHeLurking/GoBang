@@ -60,6 +60,7 @@ enum {
 typedef struct {
     uint8_t type;
     int8_t pattern[MAX_PATTERN_LEN];
+    int32_t back[MAX_PATTERN_LEN];
     int64_t grade;
 } __AC_node;
 
@@ -67,8 +68,9 @@ typedef struct {
 typedef struct {
     int8_t trans[3];
     int32_t grade;
-    uint8_t type;
+    //uint8_t type;
     int8_t fail;
+    __AC_node nd;
 } trie;
 
 typedef struct {
@@ -80,6 +82,12 @@ typedef struct {
     uint8_t oblique_sum_type[BOARD_SIZE * 2][PATTERN_TYPES + 5];
     uint8_t oblique_delta_type[BOARD_SIZE * 2][PATTERN_TYPES + 5];
     uint8_t total_type[PATTERN_TYPES + 5];
+
+    int64_t row_increment[BOARD_SIZE][BOARD_SIZE][PATTERN_TYPES + 5];
+    int64_t col_increment[BOARD_SIZE][BOARD_SIZE][PATTERN_TYPES + 5];
+    int64_t oblique_sum_increment[BOARD_SIZE * 2][BOARD_SIZE][PATTERN_TYPES + 5];
+    int64_t oblique_delta_increment[BOARD_SIZE * 2][BOARD_SIZE][PATTERN_TYPES + 5];
+    //int64_t total_increment;
 
     //these are used to record the last place and the total steps
     int32_t steps;

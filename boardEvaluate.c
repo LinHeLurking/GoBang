@@ -124,12 +124,16 @@ inline int64_t grade_estimate(int32_t player_side) {
 
 //todo: now the 4 finds of type update could be merged into a single function using board_access()
 inline void update_line_type_row(int row_index) {
-    for (int i = 1; i <= PATTERN_TYPES; ++i) {
+    for (int32_t i = 1; i <= PATTERN_TYPES; ++i) {
         dfs_status.total_type[i] -= dfs_status.row_type[row_index][i];
     }
-    for (int j = 1; j <= PATTERN_TYPES; ++j) {
+    for (int32_t j = 1; j <= PATTERN_TYPES; ++j) {
         dfs_status.row_type[row_index][j] = 0;
+        for (int32_t k = 0; k < BOARD_SIZE; ++k) {
+            dfs_status.row_increment[row_index][k][j] = 0;
+        }
     }
+
     int32_t cur = 0;
 
     int32_t left, right;
@@ -146,10 +150,11 @@ inline void update_line_type_row(int row_index) {
         cur = tr[cur].trans[ch + COLOR_OFFSET];
         cur = cur == -1 ? 0 : cur;
         int tmp = cur;
-        while (tmp != 0 && tr[tmp].type != 0) {
-            if (tr[tmp].type) {
+        while (tmp != 0 && tr[tmp].nd.type != 0) {
+            if (tr[tmp].nd.type) {
                 //todo: add void place estimate to avoid drop an extra piece when searching
-                update_type(dfs_status.row_type[row_index], tr[tmp].type);
+                update_type(dfs_status.row_type[row_index], tr[tmp].nd.type);
+                increment_void(dfs_status.row_increment[row_index], &tr[tmp].nd, k);
             }
             tmp = tr[tmp].fail;
         }
@@ -160,11 +165,14 @@ inline void update_line_type_row(int row_index) {
 }
 
 inline void update_line_type_col(int col_index) {
-    for (int i = 1; i <= PATTERN_TYPES; ++i) {
+    for (int32_t i = 1; i <= PATTERN_TYPES; ++i) {
         dfs_status.total_type[i] -= dfs_status.col_type[col_index][i];
     }
-    for (int j = 1; j <= PATTERN_TYPES; ++j) {
+    for (int32_t j = 1; j <= PATTERN_TYPES; ++j) {
         dfs_status.col_type[col_index][j] = 0;
+        for (int32_t k = 0; k < BOARD_SIZE; ++k) {
+            dfs_status.col_increment[col_index][k][j] = 0;
+        }
     }
 
     int cur = 0;
@@ -183,9 +191,10 @@ inline void update_line_type_col(int col_index) {
         cur = tr[cur].trans[ch + COLOR_OFFSET];
         cur = cur == -1 ? 0 : cur;
         int tmp = cur;
-        while (tmp != 0 && tr[tmp].type != 0) {
-            if (tr[tmp].type) {
-                update_type(dfs_status.col_type[col_index], tr[tmp].type);
+        while (tmp != 0 && tr[tmp].nd.type != 0) {
+            if (tr[tmp].nd.type) {
+                update_type(dfs_status.col_type[col_index], tr[tmp].nd.type);
+                increment_void(dfs_status.col_increment[col_index], &tr[tmp].nd, k);
             }
             tmp = tr[tmp].fail;
         }
@@ -196,11 +205,14 @@ inline void update_line_type_col(int col_index) {
 }
 
 inline void update_line_type_oblique_sum(int oblique_sum_index) {
-    for (int i = 1; i <= PATTERN_TYPES; ++i) {
+    for (int32_t i = 1; i <= PATTERN_TYPES; ++i) {
         dfs_status.total_type[i] -= dfs_status.oblique_sum_type[oblique_sum_index][i];
     }
-    for (int j = 1; j <= PATTERN_TYPES; ++j) {
+    for (int32_t j = 1; j <= PATTERN_TYPES; ++j) {
         dfs_status.oblique_sum_type[oblique_sum_index][j] = 0;
+        for (int32_t k = 0; k < BOARD_SIZE; ++k) {
+            dfs_status.oblique_sum_increment[oblique_sum_index][k][j] = 0;
+        }
     }
 
     int cur = 0;
@@ -230,9 +242,10 @@ inline void update_line_type_oblique_sum(int oblique_sum_index) {
         cur = tr[cur].trans[ch + COLOR_OFFSET];
         cur = cur == -1 ? 0 : cur;
         int tmp = cur;
-        while (tmp != 0 && tr[tmp].type != 0) {
-            if (tr[tmp].type) {
-                update_type(dfs_status.oblique_sum_type[oblique_sum_index], tr[tmp].type);
+        while (tmp != 0 && tr[tmp].nd.type != 0) {
+            if (tr[tmp].nd.type) {
+                update_type(dfs_status.oblique_sum_type[oblique_sum_index], tr[tmp].nd.type);
+                increment_void(dfs_status.oblique_sum_increment[oblique_sum_index], &tr[tmp].nd, k);
             }
             tmp = tr[tmp].fail;
         }
@@ -244,11 +257,14 @@ inline void update_line_type_oblique_sum(int oblique_sum_index) {
 }
 
 inline void update_line_type_oblique_delta(int oblique_delta_index) {
-    for (int i = 1; i <= PATTERN_TYPES; ++i) {
+    for (int32_t i = 1; i <= PATTERN_TYPES; ++i) {
         dfs_status.total_type[i] -= dfs_status.oblique_delta_type[oblique_delta_index + BOARD_SIZE][i];
     }
-    for (int j = 1; j <= PATTERN_TYPES; ++j) {
+    for (int32_t j = 1; j <= PATTERN_TYPES; ++j) {
         dfs_status.oblique_delta_type[oblique_delta_index + BOARD_SIZE][j] = 0;
+        for (int32_t k = 0; k < BOARD_SIZE; ++k) {
+            dfs_status.oblique_delta_increment[oblique_delta_index + BOARD_SIZE][k][j] = 0;
+        }
     }
 
     int cur = 0;
@@ -279,9 +295,10 @@ inline void update_line_type_oblique_delta(int oblique_delta_index) {
         cur = tr[cur].trans[ch + COLOR_OFFSET];
         cur = cur == -1 ? 0 : cur;
         int tmp = cur;
-        while (tmp != 0 && tr[tmp].type != 0) {
-            if (tr[tmp].type) {
-                update_type(dfs_status.oblique_delta_type[oblique_delta_index + BOARD_SIZE], tr[tmp].type);
+        while (tmp != 0 && tr[tmp].nd.type != 0) {
+            if (tr[tmp].nd.type) {
+                update_type(dfs_status.oblique_delta_type[oblique_delta_index + BOARD_SIZE], tr[tmp].nd.type);
+                increment_void(dfs_status.oblique_delta_increment[oblique_delta_index + BOARD_SIZE], &tr[tmp].nd, k);
             }
             tmp = tr[tmp].fail;
         }
@@ -385,6 +402,71 @@ inline void ban_detect() {
                   dfs_status.total_type[sa4n3b];
 
     ban_cnt[6] += dfs_status.total_type[l6b];
+}
+
+inline void increment_void(int64_t v[][PATTERN_TYPES + 5], __AC_node *p, int32_t index) {
+    for (int32_t i = 0; p->back[i] != END; ++i) {
+        if (index - p->back[i] >= 0)
+            v[index + p->back[i]][p->type]++;
+    }
+}
+
+inline int64_t pos_estimate(int i, int j, int8_t player_side) {
+    int64_t ans = 0;
+    for (int8_t t = 1; t <= PATTERN_TYPES; ++t) {
+        int64_t shift = type_shift(t, player_side);
+        ans += shift * dfs_status.row_increment[i][j][t];
+        ans += shift * dfs_status.col_increment[j][i][t];
+        ans += shift * dfs_status.oblique_sum_increment[i + j][j][t];
+        ans += shift * dfs_status.oblique_delta_increment[i - j + BOARD_SIZE][j][t];
+    }
+    return ans;
+}
+
+inline int64_t type_shift(int8_t type, int8_t player_side) {
+    if (player_side == WHITE) {
+        switch (type) {
+            case a2w:
+                return CONTINUOUS_THREE;
+            case a3w:
+                return CONTINUOUS_FOUR;
+            case a4w:
+                return FIVE_GRADE;
+            case h3w:
+                return HALF_FOUR;
+            case h4w:
+                return FIVE_GRADE;
+            case sa3w:
+                return CONTINUOUS_FOUR;
+            case sa4n3w:
+                FIVE_GRADE;
+            case sa4w3w:
+                CONTINUOUS_FOUR;
+            default:
+                return 0;
+        }
+    } else {
+        switch (type) {
+            case a2b:
+                return -CONTINUOUS_THREE;
+            case a3b:
+                return -CONTINUOUS_THREE;
+            case a4b:
+                return -FIVE_GRADE;
+            case h3b:
+                return -HALF_FOUR;
+            case h4b:
+                return -FIVE_GRADE;
+            case sa3b:
+                return CONTINUOUS_FOUR;
+            case sa4n3b:
+                return -FIVE_GRADE;
+            case sa4w3b:
+                return -CONTINUOUS_FOUR;
+            default:
+                return 0;
+        }
+    }
 }
 
 #undef TRIE_SIZE

@@ -19,7 +19,7 @@ extern unsigned long long hash;
  * */
 #define MAX_POS 225
 
-inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_player_side) {
+inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int8_t search_player_side) {
     *num = 0;
 
     for (int i = 0; i < BOARD_SIZE; ++i) {
@@ -36,29 +36,24 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
                 } else {
                     if (!has_neighbor(i, j, 2, 1)) continue;
                 }
-
-                dfs_add_piece(i, j, search_player_side);
                 drop_choice1[*num].i = i;
                 drop_choice1[*num].j = j;
-
-                //if (pos_estimate(i, j, search_player_side) >= FIVE_GRADE)
-                //break;
-                //above is a bad example: if you need break, drop a void piece first!!!
-                //cautions: DO NOT PRUNE ALIVE 4 HERE!!!
+                //CAUTIONS!!! IT SHOULD BE MINUS!!!
+                drop_choice1[*num].grade_estimate =
+                        pos_estimate(i, j, search_player_side) - pos_estimate(i, j, -search_player_side);
+                /*
                 if (search_player_side == WHITE) {
-                    if (dfs_status.total_type[a5w]) {
+                    if (dfs_status.total_type[a5w] || dfs_status.total_type[h5w]) {
                         dfs_add_piece(i, j, VOID);
                         break;
                     }
                 } else {
-                    if (dfs_status.total_type[a5b]) {
+                    if (dfs_status.total_type[a5b] || dfs_status.total_type[h5b]) {
                         dfs_add_piece(i, j, VOID);
                         break;
                     }
                 }
-                drop_choice1[*num].grade_estimate =
-                        grade_estimate(search_player_side) + 2 * grade_estimate(0 - search_player_side);
-                dfs_add_piece(i, j, VOID);
+                 */
                 ++(*num);
             }
         }

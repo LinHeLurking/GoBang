@@ -20,7 +20,7 @@
 #define HUMAN_VS_COMPUTER 1
 
 #ifndef DFS_MAX_DEPTH
-#define DFS_MAX_DEPTH 6
+#define DFS_MAX_DEPTH 4
 #endif
 
 #define INF 20000000000007

@@ -24,6 +24,10 @@ void __status_init(boardStatus *boardStatus1) {
     SET0(boardStatus1->col_type);
     SET0(boardStatus1->oblique_sum_type);
     SET0(boardStatus1->oblique_delta_type);
+    SET0(boardStatus1->row_increment);
+    SET0(boardStatus1->col_increment);
+    SET0(boardStatus1->oblique_sum_increment);
+    SET0(boardStatus1->oblique_delta_increment);
     SET0(boardStatus1->total_type);
     boardStatus1->steps = 0;
     boardStatus1->__WHITE = WHITE;
