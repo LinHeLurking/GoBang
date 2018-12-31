@@ -20,7 +20,7 @@ void play() {
     system("clear");
 #endif
 
-    printf("Welcome to Amadeus GoBang game!\nPlease input the code of corresponding mode:\n");
+    printf("Welcome to Amadeus GoBang game!\nAuthor: Lei Ci\nPlease input the code of corresponding mode:\n");
 
     int mode = -1;
     char tmp;

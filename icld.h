@@ -30,7 +30,10 @@
 #define COMPUTER_FIRST 2
 #define HUMAN_FIRST 1
 
+#ifndef NONE_DEBUG_DRAW
 #define DEBUG_DRAW
+#endif
+
 #define USE_HASH
 //#define DFS_BOARD_DEBUG
 //#define PRUNE_DEBUG

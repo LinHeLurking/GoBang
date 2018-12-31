@@ -29,6 +29,7 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int8_t se
                  * no piece has been dropped when counting,
                  * so the central piece should not been taken into consideration.
                  */
+                //todo: more methods needed to ensure that better places are sorted ahead.
                 if (dfs_status.steps <= 2) {
                     if (!has_neighbor(i, j, 1, 1)) continue;
                 } else if (dfs_status.steps <= 4) {
@@ -59,7 +60,7 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int8_t se
         }
     }
     choice_sort(drop_choice1, *num, search_player_side);
-    *num = int_min(*num, 23);
+    *num = int_min(*num, 21);
 }
 
 #ifdef PRUNE_DEBUG
