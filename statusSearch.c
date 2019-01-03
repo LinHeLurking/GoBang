@@ -13,6 +13,13 @@ extern int found_at_step[CACHE_SIZE];
 extern unsigned long long real_hash[CACHE_SIZE];
 extern unsigned long long hash;
 
+//0 for WHITE and 1 for BLACK
+unsigned long long prune_table[2][BOARD_SIZE][BOARD_SIZE];
+/*
+ * values are stored in this table by 8^remaining_depth
+ * and the scale of different depth are following:
+ * */
+
 
 /*
  *  DFS starts here
@@ -41,26 +48,21 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int8_t se
                 drop_choice1[*num].j = j;
                 //CAUTIONS!!! IT SHOULD BE MINUS!!!
                 drop_choice1[*num].grade_estimate =
-                        pos_estimate(i, j, search_player_side) - pos_estimate(i, j, -search_player_side);
-                /*
-                if (search_player_side == WHITE) {
-                    if (dfs_status.total_type[a5w] || dfs_status.total_type[h5w]) {
-                        dfs_add_piece(i, j, VOID);
-                        break;
-                    }
-                } else {
-                    if (dfs_status.total_type[a5b] || dfs_status.total_type[h5b]) {
-                        dfs_add_piece(i, j, VOID);
-                        break;
-                    }
+                        grade_standarise(
+                                pos_estimate(i, j, search_player_side) - pos_estimate(i, j, -search_player_side));
+                //todo: check
+                drop_choice1[*num].grade_estimate += prune_table[search_player_side == WHITE ? 0 : 1][i][j];
+
+                //make reached choices sorted ahead
+                if (real_hash[HASH] == hash) {
+                    drop_choice1[*num].grade_estimate += search_player_side == WHITE ? INF : -INF;
                 }
-                 */
                 ++(*num);
             }
         }
     }
     choice_sort(drop_choice1, *num, search_player_side);
-    *num = int_min(*num, 21);
+    *num = int_min(*num, 50);
 }
 
 #ifdef PRUNE_DEBUG
@@ -69,7 +71,7 @@ int prune_cnt = 0;
 
 //remember that the larger the grade is, the better the status is for WHITE. and vice versa.
 //alpha is the upper bound and beta is the lower bound.
-drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long alpha, long long beta) {
+drop_choice alpha_beta_dfs(int8_t search_player_side, uint32_t search_depth, int64_t alpha, int64_t beta) {
     drop_choice result;
     //result.i = result.j = 0;
     //result.grade = 0;
@@ -78,13 +80,6 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
     if (search_depth == 0) {
         // it doesn't matter what the position is in the very bottom.
         result.grade = grade_estimate(search_player_side) + grade_estimate(0 - search_player_side);
-        //todo: overwrite rules could be optimised
-        if (!real_hash[HASH]) {
-            real_hash[HASH] = hash;
-            cache_choice[HASH] = result;
-            subtree_height[HASH] = search_depth;
-            found_at_step[HASH] = dfs_status.steps;
-        }
         return result;
     }
     if (real_hash[HASH] == hash && subtree_height[HASH] >= search_depth) {
@@ -100,17 +95,12 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
 
     //traverse the proper places
     if (search_player_side == WHITE) {
-#ifdef DFS_BOARD_DEBUG
-        printf("dfs board:\n");
-        dfs_output_board();
-        GRADE_DEBUG
-#endif
         result.grade = 0 - INF;
         drop_choice tmp;
         for (int k = 0; k < pos_num; ++k) {
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, WHITE);
 
-            tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
+            tmp = alpha_beta_dfs((int8_t) 0 - search_player_side, search_depth - 1, alpha, beta);
 
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
             if (tmp.grade > result.grade) {
@@ -126,17 +116,15 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
                     printf("dfs depth: %d\n", DFS_MAX_DEPTH - search_depth);
                 }
 #endif
+
+                //0 for WHITE
+                prune_table[0][drop_choice1[k].i][drop_choice1[k].j] += 1U << (search_depth << 2U);
                 //return result;
                 break;
             }
         }
         //return result;
     } else {
-#ifdef DFS_BOARD_DEBUG
-        printf("dfs board:\n");
-        dfs_output_board();
-        GRADE_DEBUG
-#endif
         result.grade = INF;
         drop_choice tmp;
         for (int k = 0; k < pos_num; ++k) {
@@ -148,7 +136,7 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
                 continue;
             }
 
-            tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
+            tmp = alpha_beta_dfs((int8_t) 0 - search_player_side, search_depth - 1, alpha, beta);
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
 
 
@@ -165,6 +153,9 @@ drop_choice alpha_beta_dfs(int search_player_side, int search_depth, long long a
                     printf("dfs depth: %d\n", DFS_MAX_DEPTH - search_depth);
                 }
 #endif
+
+                //1 for BLACK
+                prune_table[1][drop_choice1[k].i][drop_choice1[k].j] -= 1U << (search_depth << 2U);
                 //return result;
                 break;
             }
@@ -198,3 +189,18 @@ inline int has_neighbor(int i, int j, int wid, int cnt) {
 }
 
 
+void search_init() {
+    SET0(prune_table);
+}
+
+int64_t grade_standarise(int64_t grade) {
+    if (grade <= -CONTINUOUS_FOUR) {
+        return -INF;
+    } else if (grade >= CONTINUOUS_FOUR) {
+        return INF;
+    } else if (grade < 0) {
+        return -(int64_t) pow(1.0008, -grade);
+    } else {
+        return (int64_t) pow(1.0008, grade);
+    }
+}

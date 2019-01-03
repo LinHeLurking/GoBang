@@ -54,6 +54,7 @@ enum {
     sa4w3w,
     sa4w3b,
 
+    l6w,
     l6b
 };
 

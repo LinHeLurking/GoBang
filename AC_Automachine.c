@@ -137,7 +137,7 @@ __AC_node AC_node[PATTERNS] = {
         {
                 h4b,
                 {VOID,  BLACK, BLACK, BLACK, BLACK, WHITE, END},
-                {-5,  END},
+                {-5, END},
                 -HALF_FOUR
         },
         {
@@ -265,6 +265,13 @@ __AC_node AC_node[PATTERNS] = {
                 {BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, END},
                 {END},
                 LONG_CONTINUOUS
+        },
+        {
+                l6w,
+                {WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, END},
+                {END},
+                LONG_CONTINUOUS
+
         }
 };
 uint8_t root = 0;

@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <math.h>
 
 #define BOARD_SIZE 15
 #define CHAR_SIZE 4

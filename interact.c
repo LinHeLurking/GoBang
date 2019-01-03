@@ -79,6 +79,7 @@ void human_vs_computer() {
         int st = -1;
         int cnt = 0;
         while (st == -1) {
+            //todo: bugs here!!!
             if (cnt++ != 0) {
                 i = j = -1;
 
