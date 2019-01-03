@@ -4,6 +4,8 @@
 
 #include "statusSearch.h"
 
+#define FORCE_CUT 225
+
 extern boardStatus status;
 extern boardStatus dfs_status;
 //extern long long cache_total_grade[CACHE_SIZE];
@@ -21,6 +23,10 @@ unsigned long long prune_table[2][BOARD_SIZE][BOARD_SIZE];
  * */
 
 
+timer search_duration;
+
+drop_choice best_choice_of_lower_depth;
+
 /*
  *  DFS starts here
  * */
@@ -36,7 +42,6 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int8_t se
                  * no piece has been dropped when counting,
                  * so the central piece should not been taken into consideration.
                  */
-                //todo: more methods needed to ensure that better places are sorted ahead.
                 if (dfs_status.steps <= 2) {
                     if (!has_neighbor(i, j, 1, 1)) continue;
                 } else if (dfs_status.steps <= 4) {
@@ -50,7 +55,6 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int8_t se
                 drop_choice1[*num].grade_estimate =
                         grade_standarise(
                                 pos_estimate(i, j, search_player_side) - pos_estimate(i, j, -search_player_side));
-                //todo: check
                 drop_choice1[*num].grade_estimate += prune_table[search_player_side == WHITE ? 0 : 1][i][j];
 
                 //make reached choices sorted ahead
@@ -62,7 +66,9 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int8_t se
         }
     }
     choice_sort(drop_choice1, *num, search_player_side);
-    *num = int_min(*num, 50);
+    // in older versions, this is used for force prune.
+    // but it turns out that program drops worse so now it doesn't do this
+    *num = int_min(*num, FORCE_CUT);
 }
 
 #ifdef PRUNE_DEBUG
@@ -72,10 +78,10 @@ int prune_cnt = 0;
 //remember that the larger the grade is, the better the status is for WHITE. and vice versa.
 //alpha is the upper bound and beta is the lower bound.
 drop_choice alpha_beta_dfs(int8_t search_player_side, uint32_t search_depth, int64_t alpha, int64_t beta) {
-    drop_choice result;
-    //result.i = result.j = 0;
-    //result.grade = 0;
+
+    drop_choice result = best_choice_of_lower_depth;
     result.player = search_player_side;
+    result.broken_search_flag = false;
 
     if (search_depth == 0) {
         // it doesn't matter what the position is in the very bottom.
@@ -105,9 +111,19 @@ drop_choice alpha_beta_dfs(int8_t search_player_side, uint32_t search_depth, int
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
             if (tmp.grade > result.grade) {
                 result = tmp;
+                result.broken_search_flag = false;
             }
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, VOID);
             alpha = long_long_max(alpha, result.grade);
+
+            if (search_depth >= 2 &&
+                (clock() - search_duration.start_clock) * 3 > 2 * TIME_LIMIT * (k + 1) * CLOCKS_PER_SEC) {
+                printf("search breaks half way\ntime: %ld depth: %d\n",
+                       (clock() - search_duration.start_clock) / CLOCKS_PER_SEC, search_depth);
+                result.broken_search_flag = true;
+                break;
+            }
+
             if (beta < alpha) {
 #ifdef PRUNE_DEBUG
                 ++prune_cnt;
@@ -142,9 +158,19 @@ drop_choice alpha_beta_dfs(int8_t search_player_side, uint32_t search_depth, int
 
             if (tmp.grade < result.grade) {
                 result = tmp;
+                result.broken_search_flag = false;
             }
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, VOID);
             beta = long_long_min(beta, result.grade);
+
+
+            if ((clock() - search_duration.start_clock) * 3 > 2 * TIME_LIMIT * (k + 1) * CLOCKS_PER_SEC) {
+                printf("search breaks half way\ntime: %ld depth: %d\n",
+                       (clock() - search_duration.start_clock) / CLOCKS_PER_SEC, search_depth);
+                result.broken_search_flag = true;
+                break;
+            }
+
             if (beta < alpha) {
 #ifdef PRUNE_DEBUG
                 ++prune_cnt;
@@ -173,6 +199,25 @@ drop_choice alpha_beta_dfs(int8_t search_player_side, uint32_t search_depth, int
     return result;
 }
 
+
+inline drop_choice deeping_search(int8_t search_player_side) {
+    search_duration.start_clock = clock();
+    clock_t tm;
+    drop_choice best_choice = alpha_beta_dfs(search_player_side, 2, 0 - INF, INF);;
+    for (uint32_t d = 4; d <= DFS_MAX_DEPTH; d += 2) {
+        best_choice = alpha_beta_dfs(search_player_side, d, 0 - INF, INF);
+        //search_duration.end_clock = clock();
+        tm = (clock() - search_duration.start_clock);
+#ifdef DEBUG_DRAW
+        printf("time: %ld depth: %d\n", tm / CLOCKS_PER_SEC, d);
+#endif
+        if (best_choice.broken_search_flag) {
+            break;
+        }
+    }
+    return best_choice;
+}
+
 inline int has_neighbor(int i, int j, int wid, int cnt) {
     int _cnt = 0;
     for (int _i = i - wid; _i <= i + wid; ++_i) {
@@ -199,8 +244,16 @@ int64_t grade_standarise(int64_t grade) {
     } else if (grade >= CONTINUOUS_FOUR) {
         return INF;
     } else if (grade < 0) {
-        return -(int64_t) pow(1.0008, -grade);
+        return -(int64_t) pow(1.0008, -grade) * 10;
     } else {
-        return (int64_t) pow(1.0008, grade);
+        return (int64_t) pow(1.0008, grade) * 10;
     }
+}
+
+void time_init() {
+    search_duration.start_clock = search_duration.end_clock = 0;
+}
+
+inline int64_t getdura(timer timer1) {
+    return (timer1.end_clock - timer1.start_clock) / CLOCKS_PER_SEC;
 }

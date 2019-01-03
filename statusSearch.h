@@ -15,12 +15,17 @@ void generate_possible_pos(drop_choice *drop_choice1, int *num, int8_t search_pl
 
 drop_choice alpha_beta_dfs(int8_t search_player_side, uint32_t search_depth, int64_t alpha, int64_t beta);
 
+drop_choice deeping_search(int8_t search_player_side);
+
 int has_neighbor(int i, int j, int wid, int cnt);
 
-//call this initialise function right after program starts
+//call these initialise function sright after program starts
 void search_init();
+void time_init();
 
 //standarise the grade to fit with the scale of 8^remaining_depth
 int64_t grade_standarise(int64_t grade);
+
+int64_t getdura(timer timer1);
 
 #endif //GOBANG_STATUSSEARCH_H

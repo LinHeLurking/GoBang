@@ -122,7 +122,6 @@ inline int64_t grade_estimate(int32_t player_side) {
     return __grade;
 }
 
-//todo: now the 4 finds of type update could be merged into a single function using board_access()
 inline void update_line_type_row(int row_index) {
     for (int32_t i = 1; i <= PATTERN_TYPES; ++i) {
         dfs_status.total_type[i] -= dfs_status.row_type[row_index][i];
@@ -152,7 +151,6 @@ inline void update_line_type_row(int row_index) {
         int tmp = cur;
         while (tmp != 0 && tr[tmp].nd.type != 0) {
             if (tr[tmp].nd.type) {
-                //todo: add void place estimate to avoid drop an extra piece when searching
                 update_type(dfs_status.row_type[row_index], tr[tmp].nd.type);
                 increment_void(dfs_status.row_increment[row_index], &tr[tmp].nd, k);
             }

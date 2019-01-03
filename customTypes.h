@@ -107,10 +107,17 @@ typedef struct {
     //this is used for searching
     int player;
     int64_t grade_estimate;
+
+    bool broken_search_flag;
 } drop_choice;
 
 typedef struct {
     int8_t type[PATTERN_TYPES];
 } __line_status;
+
+typedef struct {
+    clock_t start_clock;
+    clock_t end_clock;
+} timer;
 
 #endif //GOBANG_CUSTOMTYPES_H

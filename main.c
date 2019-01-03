@@ -16,6 +16,7 @@ void init() {
     hash_init();
     evaluate_init();
     search_init();
+    time_init();
     //brute_force();
 }
 

@@ -108,7 +108,8 @@ void human_vs_computer() {
             //getchar();
             return;
         }
-        drop_choice choice = alpha_beta_dfs(computer_player, DFS_MAX_DEPTH, 0 - INF, INF);
+        //drop_choice choice = alpha_beta_dfs(computer_player, DFS_MAX_DEPTH, 0 - INF, INF);
+        drop_choice choice = deeping_search(computer_player);
         st = add_piece(choice.i, choice.j, computer_player);
 
         if (st == 2) {
@@ -117,9 +118,9 @@ void human_vs_computer() {
             //printf("Press any key to quit\n");
             //getchar();
             return;
-        }else if(st==-1){
+        } else if (st == -1) {
             printf("Search error!\n");
-        }else{
+        } else {
             output_board(1);
         }
 #ifdef PRUNE_DEBUG
