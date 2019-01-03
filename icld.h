@@ -15,8 +15,6 @@
 #include <time.h>
 
 #define BOARD_SIZE 15
-#define CHAR_SIZE 4
-#define CHAR_GAP 6
 #define BLACK (-1)
 #define WHITE 1
 #define VOID 0
@@ -45,11 +43,10 @@
 //#define PLAYER_SIDE_DEBUG
 //#define HASH_DEBUG
 //#define RECORD_DEBUG
-#define BAN_DEBUG
+//#define BAN_DEBUG
 
 #define TRIE_SIZE 1000
 #define STATUS_NUM 3
-
 
 
 #define COLOR_OFFSET 1
@@ -59,8 +56,5 @@
 #define SET0(a) memset(a,0,sizeof(a))
 
 #define PLAYER_IN_LINE player_side==1?1:0
-
-
-
 
 #endif //GOBANG_ICLD_H

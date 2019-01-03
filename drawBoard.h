@@ -9,6 +9,9 @@
 #include "icld.h"
 #include "statusBoard.h"
 
+#define CHAR_SIZE 4
+#define CHAR_GAP 6
+
 void output_board(int clear);
 
 void dfs_output_board();

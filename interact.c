@@ -109,7 +109,7 @@ void human_vs_computer() {
             return;
         }
         //drop_choice choice = alpha_beta_dfs(computer_player, DFS_MAX_DEPTH, 0 - INF, INF);
-        drop_choice choice = deeping_search(computer_player);
+        drop_choice choice = deepening_search(computer_player);
         st = add_piece(choice.i, choice.j, computer_player);
 
         if (st == 2) {

@@ -320,7 +320,7 @@ inline void update_grade(int i, int j) {
 
 
 bool is_ban() {
-    //todo: there are problems with ban check
+    //todo: there are problems with ban check, really.
     if (ban_cnt[6])
         return 1;
     if (ban_cnt[4] >= 2)
@@ -409,7 +409,7 @@ inline void increment_void(int64_t v[][PATTERN_TYPES + 5], __AC_node *p, int32_t
     }
 }
 
-inline int64_t pos_estimate(int i, int j, int8_t player_side) {
+inline int64_t pos_estimate(int i, int j, int player_side) {
     int64_t ans = 0;
     for (int8_t t = 1; t <= PATTERN_TYPES; ++t) {
         int64_t shift = type_shift(t, player_side);
@@ -421,7 +421,7 @@ inline int64_t pos_estimate(int i, int j, int8_t player_side) {
     return ans;
 }
 
-inline int64_t type_shift(int8_t type, int8_t player_side) {
+inline int64_t type_shift(int8_t type, int player_side) {
     if (player_side == WHITE) {
         switch (type) {
             case a2w:
@@ -439,7 +439,7 @@ inline int64_t type_shift(int8_t type, int8_t player_side) {
             case sa4n3w:
                 FIVE_GRADE;
             case sa4w3w:
-                CONTINUOUS_FOUR;
+                FIVE_GRADE;
             default:
                 return 0;
         }
@@ -460,7 +460,7 @@ inline int64_t type_shift(int8_t type, int8_t player_side) {
             case sa4n3b:
                 return -FIVE_GRADE;
             case sa4w3b:
-                return -CONTINUOUS_FOUR;
+                return -FIVE_GRADE;
             default:
                 return 0;
         }
