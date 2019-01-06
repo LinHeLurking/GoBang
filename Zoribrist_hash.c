@@ -54,12 +54,12 @@ void hash_init() {
     for (long long i = 0; i < CACHE_SIZE; ++i) {
         cache_choice[i].grade_estimate = cache_choice[i].grade = 0;
         cache_choice[i].i = cache_choice[i].j = -1;
-        cache_choice[i].player = VOID;
+        //cache_choice[i].player = VOID;
     }
 
     SET0(real_hash);
     SET0(found_at_step);
     memset(subtree_height, -1, sizeof(subtree_height));
 
-    hash = ~0UL;
+    hash = 0L;
 }

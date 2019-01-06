@@ -18,6 +18,8 @@ void human_vs_human();
 
 void human_vs_computer();
 
+void computer_vs_computer();
+
 int read_pos(int *i, int *j);
 
 #endif //GOBANG_INTERACT_H

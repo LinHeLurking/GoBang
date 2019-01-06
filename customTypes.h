@@ -18,7 +18,7 @@ enum {
     /* axw: alive x piece(s) of white
      * hyb: half alive y piece(s) of black
      * saxw: split alive x piece(s) of white
-     * sa4n3w: split alive 4 without 3 of white
+     * s4n3w: split alive 4 without 3 of white
      * l6b: long continue of black
      **/
 
@@ -49,20 +49,21 @@ enum {
 
     sa3w,
     sa3b,
-    sa4n3w,
-    sa4n3b,
-    sa4w3w,
-    sa4w3b,
+    s4n3w,
+    s4n3b,
+    s4w3w,
+    s4w3b,
 
     l6w,
     l6b
 };
 
 typedef struct {
-    uint8_t type;
-    int8_t pattern[MAX_PATTERN_LEN];
-    int32_t back[MAX_PATTERN_LEN];
-    int64_t grade;
+    int type;
+    int pattern[MAX_PATTERN_LEN];
+    int back[MAX_PATTERN_LEN];
+    int blank_type[MAX_PATTERN_LEN];
+    long long grade;
 } __AC_node;
 
 
@@ -76,24 +77,24 @@ typedef struct {
 
 typedef struct {
     //these are used to record the board status
-    int32_t board[BOARD_SIZE][BOARD_SIZE];
+    int board[BOARD_SIZE][BOARD_SIZE];
 
-    uint8_t row_type[BOARD_SIZE][PATTERN_TYPES + 5];
-    uint8_t col_type[BOARD_SIZE][PATTERN_TYPES + 5];
-    uint8_t oblique_sum_type[BOARD_SIZE * 2][PATTERN_TYPES + 5];
-    uint8_t oblique_delta_type[BOARD_SIZE * 2][PATTERN_TYPES + 5];
-    uint8_t total_type[PATTERN_TYPES + 5];
+    int row_type[BOARD_SIZE][PATTERN_TYPES + 5];
+    int col_type[BOARD_SIZE][PATTERN_TYPES + 5];
+    int oblique_sum_type[BOARD_SIZE * 2][PATTERN_TYPES + 5];
+    int oblique_delta_type[BOARD_SIZE * 2][PATTERN_TYPES + 5];
+    int total_type[PATTERN_TYPES + 5];
 
-    int64_t row_increment[BOARD_SIZE][BOARD_SIZE][PATTERN_TYPES + 5];
-    int64_t col_increment[BOARD_SIZE][BOARD_SIZE][PATTERN_TYPES + 5];
-    int64_t oblique_sum_increment[BOARD_SIZE * 2][BOARD_SIZE][PATTERN_TYPES + 5];
-    int64_t oblique_delta_increment[BOARD_SIZE * 2][BOARD_SIZE][PATTERN_TYPES + 5];
-    //int64_t total_increment;
+    long long row_increment[BOARD_SIZE][BOARD_SIZE][PATTERN_TYPES + 5];
+    long long col_increment[BOARD_SIZE][BOARD_SIZE][PATTERN_TYPES + 5];
+    long long oblique_sum_increment[BOARD_SIZE * 2][BOARD_SIZE][PATTERN_TYPES + 5];
+    long long oblique_delta_increment[BOARD_SIZE * 2][BOARD_SIZE][PATTERN_TYPES + 5];
+    long long total_increment[PATTERN_TYPES + 5];
 
     //these are used to record the last place and the total steps
-    int32_t steps;
+    int steps;
 
-    int8_t __WHITE, __BLACK;
+    int __WHITE, __BLACK;
 
 } boardStatus;
 
@@ -105,7 +106,7 @@ typedef struct {
     int64_t grade;
     int i, j;
     //this is used for searching
-    int player;
+    //int player;
     int64_t grade_estimate;
 
     bool broken_search_flag;

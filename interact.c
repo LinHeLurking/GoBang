@@ -25,8 +25,10 @@ void play() {
     int mode = -1;
     char tmp;
     while (mode == -1) {
-
         printf("Human vs. human: 0\nHuman vs. computer: 1\n");
+#ifdef DEBUG_DRAW
+        printf("computer vs. computer: 2\n");
+#endif
         scanf("%c", &tmp);
         //printf("tmp:%c", tmp);
         if (tmp == 'q')exit(0);
@@ -39,6 +41,11 @@ void play() {
             case HUMAN_VS_COMPUTER:
                 human_vs_computer();
                 break;
+#ifdef DEBUG_DRAW
+            case COMPUTER_VS_COMPUTER:
+                computer_vs_computer();
+                break;
+#endif
             default:
                 mode = -1;
                 printf("Wrong code(%d)! input the right one!\n", tmp);
@@ -59,6 +66,9 @@ void human_vs_computer() {
         human_player = WHITE;
         computer_player = BLACK;
         add_piece(7, 7, computer_player);
+    } else if (order_check == HUMAN_FIRST) {
+        human_player = BLACK;
+        computer_player = WHITE;
     }
     output_board(1);
 
@@ -78,8 +88,7 @@ void human_vs_computer() {
         read_pos(&i, &j);
         int st = -1;
         int cnt = 0;
-        while (st == -1) {
-            //todo: bugs here!!!
+        while (st != 1) {
             if (cnt++ != 0) {
                 i = j = -1;
 
@@ -92,7 +101,10 @@ void human_vs_computer() {
                 }
             }
             st = add_piece(i, j, human_player);
-
+            if (st == 2) {
+                printf("Ban!\n");
+                return;
+            }
         }
         int win_status = winner_check();
         if (win_status == WHITE) {
@@ -109,7 +121,7 @@ void human_vs_computer() {
             return;
         }
         //drop_choice choice = alpha_beta_dfs(computer_player, DFS_MAX_DEPTH, 0 - INF, INF);
-        drop_choice choice = deepening_search(computer_player);
+        drop_choice choice = deepening_search(computer_player, DFS_MAX_DEPTH);
         st = add_piece(choice.i, choice.j, computer_player);
 
         if (st == 2) {
@@ -158,7 +170,6 @@ void human_vs_human() {
             }
             st = add_piece(i, j, player);
             if (st == 2) {
-
                 output_board(1);
                 printf("Ban found! The player of white won.\n");
                 //printf("Press any key to quit\n");
@@ -216,6 +227,59 @@ int read_pos(int *i, int *j) {
         }
     }
     return 0;
+}
+
+
+void computer_vs_computer() {
+    printf("This is used only for test\n");
+    printf("Input search depth for WHITE and BLACK in order:\n");
+    int white_d, black_d;
+    scanf("%d%d", &white_d, &black_d);
+
+    add_piece(7, 7, BLACK);
+    output_board(0);
+
+    int player = WHITE;
+    int st;
+    int winner_status;
+
+    while (true) {
+        printf("round for WHITE\n");
+        drop_choice c = deepening_search(player, white_d);
+        st = add_piece(c.i, c.j, player);
+        if (st == -1) {
+            printf("ERROR!\n");
+            return;
+        }
+        output_board(0);
+        if ((winner_status = winner_check()) == WHITE) {
+            printf("The player of %s won.\n", player_side[WHITE + COLOR_OFFSET]);
+            return;
+        } else if (winner_status == BLACK) {
+            printf("The player of %s won.\n", player_side[BLACK + COLOR_OFFSET]);
+            return;
+        }
+        printf("round for BLACK\n");
+        c = deepening_search(0 - player, black_d);
+        st = add_piece(c.i, c.j, 0 - player);
+        output_board(0);
+        if (st == 2) {
+            printf("Ban!\n");
+            printf("The player of %s won.\n", player_side[WHITE + COLOR_OFFSET]);
+            return;
+        } else if (st == -1) {
+            printf("ERROR!\n");
+            printf("Invalid choice in %c%d", c.j + 'A', 15 - c.i);
+            return;
+        }
+        if ((winner_status = winner_check()) == WHITE) {
+            printf("The player of %s won.\n", player_side[WHITE + COLOR_OFFSET]);
+            return;
+        } else if (winner_status == BLACK) {
+            printf("The player of %s won.\n", player_side[BLACK + COLOR_OFFSET]);
+            return;
+        }
+    }
 }
 
 #undef COLOR_OFFSET

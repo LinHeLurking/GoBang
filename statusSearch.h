@@ -15,7 +15,7 @@ void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_playe
 
 drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_t alpha, int64_t beta);
 
-drop_choice deepening_search(int search_player_side);
+drop_choice deepening_search(int search_player_side, int depth_bound);
 
 int has_neighbor(int i, int j, int wid, int cnt);
 
@@ -28,6 +28,6 @@ int64_t grade_standardise(int64_t grade);
 
 void time_display(uint32_t depth, long long int dfs_grade);
 
-int duration_check(int k);
+int duration_check();
 
 #endif //GOBANG_STATUSSEARCH_H

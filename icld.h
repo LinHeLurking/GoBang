@@ -5,8 +5,6 @@
 #ifndef GOBANG_ICLD_H
 #define GOBANG_ICLD_H
 
-//todo: sometimes segmentation fault occurs but reasons are not clear.
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -20,12 +18,15 @@
 #define VOID 0
 #define HUMAN_VS_HUMAN 0
 #define HUMAN_VS_COMPUTER 1
+#define COMPUTER_VS_COMPUTER 2
 
 #ifndef DFS_MAX_DEPTH
 #define DFS_MAX_DEPTH 12
 #endif
 
+#ifndef TIME_LIMIT
 #define TIME_LIMIT 10
+#endif
 
 #define INF 20000000000007
 #define CACHE_SIZE 10009897

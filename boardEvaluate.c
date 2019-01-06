@@ -7,14 +7,16 @@
 #define __WHITE 1
 #define __BLACK 0
 
-int32_t type_grade[PATTERN_TYPES];
+long long type_grade[PATTERN_TYPES];
+//long long last_bias[PATTERN_TYPES];
 
 extern boardStatus status;
 extern boardStatus dfs_status;
+extern drop_record record[BOARD_SIZE * BOARD_SIZE + 5];
 
 extern trie tr[TRIE_SIZE];
 // values in ban_cnt are only valid right after calling update_grade()
-uint8_t ban_cnt[7];
+int ban_cnt[7];
 
 //1==white wins -1== black wins 0==no one wins
 int winner_check() {
@@ -28,7 +30,7 @@ int winner_check() {
         memset(continuous5, 0, sizeof(continuous5));
         for (int j = 0; j < BOARD_SIZE; ++j) {
             sum -= continuous5[j % 5];
-            continuous5[j % 5] = status.board[i][j];
+            continuous5[j % 5] = dfs_status.board[i][j];
             sum += continuous5[j % 5];
             if (sum == 5)
                 __flag = WHITE;
@@ -42,7 +44,7 @@ int winner_check() {
         memset(continuous5, 0, sizeof(continuous5));
         for (int i = 0; i < BOARD_SIZE; ++i) {
             sum -= continuous5[i % 5];
-            continuous5[i % 5] = status.board[i][j];
+            continuous5[i % 5] = dfs_status.board[i][j];
             sum += continuous5[i % 5];
             if (sum == 5)
                 __flag = WHITE;
@@ -59,7 +61,7 @@ int winner_check() {
         int j = offset - i;
         for (; i >= 0 && j < BOARD_SIZE; --i, ++j) {
             sum -= continuous5[i % 5];
-            continuous5[i % 5] = status.board[i][j];
+            continuous5[i % 5] = dfs_status.board[i][j];
             sum += continuous5[i % 5];
             if (sum == 5)
                 __flag = WHITE;
@@ -75,7 +77,7 @@ int winner_check() {
         int j = i - offset;
         for (; i < BOARD_SIZE && j < BOARD_SIZE; ++i, ++j) {
             sum -= continuous5[i % 5];
-            continuous5[i % 5] = status.board[i][j];
+            continuous5[i % 5] = dfs_status.board[i][j];
             sum += continuous5[i % 5];
             if (sum == 5)
                 __flag = WHITE;
@@ -86,10 +88,11 @@ int winner_check() {
 
 
     int flag;
-    if (dfs_status.total_type[a5w] || dfs_status.total_type[d5w]) {
+    if (dfs_status.total_type[a5w] || dfs_status.total_type[d5w] || dfs_status.total_type[h5w] ||
+        dfs_status.total_type[l6w] || dfs_status.total_type[l6b]) {
         //return WHITE;
         flag = WHITE;
-    } else if (dfs_status.total_type[a5b] || dfs_status.total_type[d5b]) {
+    } else if (dfs_status.total_type[a5b] || dfs_status.total_type[d5b] || dfs_status.total_type[h5b]) {
         //return BLACK;
         flag = BLACK;
     } else {
@@ -104,38 +107,50 @@ int winner_check() {
     return __flag;
 }
 
-inline int64_t grade_estimate(int32_t player_side) {
-    int64_t __grade = 0;
+inline long long int grade_estimate(int player_side) {
+
+    long long __grade = 0;
+
     if (player_side == WHITE) {
-        for (int i = 1; i <= PATTERN_TYPES; ++i) {
-            if (type_grade[i] < 0)
+        for (int type = 1; type <= PATTERN_TYPES; ++type) {
+            if (type_grade[type] <= 0)
                 continue;
-            __grade += dfs_status.total_type[i] * type_grade[i];
+            __grade += dfs_status.total_type[type] *
+                       (type_grade[type]);
         }
     } else {
-        for (int i = 1; i <= PATTERN_TYPES; ++i) {
-            if (type_grade[i] > 0)
+        for (int type = 1; type <= PATTERN_TYPES; ++type) {
+            if (type_grade[type] >= 0)
                 continue;
-            __grade += dfs_status.total_type[i] * type_grade[i];
+            __grade += dfs_status.total_type[type] *
+                       (type_grade[type]);
         }
     }
+
+    __grade += last_bias_generator(player_side);
+
     return __grade;
 }
 
 inline void update_line_type_row(int row_index) {
-    for (int32_t i = 1; i <= PATTERN_TYPES; ++i) {
+    for (int i = 1; i <= PATTERN_TYPES; ++i) {
         dfs_status.total_type[i] -= dfs_status.row_type[row_index][i];
     }
-    for (int32_t j = 1; j <= PATTERN_TYPES; ++j) {
+    for (int i = 1; i <= PATTERN_TYPES; ++i) {
+        for (int k = 0; k < BOARD_SIZE; ++k) {
+            dfs_status.total_increment[i] -= dfs_status.row_increment[row_index][k][i];
+        }
+    }
+    for (int j = 1; j <= PATTERN_TYPES; ++j) {
         dfs_status.row_type[row_index][j] = 0;
-        for (int32_t k = 0; k < BOARD_SIZE; ++k) {
+        for (int k = 0; k < BOARD_SIZE; ++k) {
             dfs_status.row_increment[row_index][k][j] = 0;
         }
     }
 
-    int32_t cur = 0;
+    int cur = 0;
 
-    int32_t left, right;
+    int left, right;
 
     left = dfs_status.board[row_index][0] == VOID ? VOID : 0 - dfs_status.board[row_index][0];
     right = dfs_status.board[row_index][BOARD_SIZE - 1] == VOID ?
@@ -157,25 +172,35 @@ inline void update_line_type_row(int row_index) {
             tmp = tr[tmp].fail;
         }
     }
-    for (int i = 1; i < PATTERN_TYPES; ++i) {
+    for (int i = 1; i <= PATTERN_TYPES; ++i) {
         dfs_status.total_type[i] += dfs_status.row_type[row_index][i];
+    }
+    for (int i = 1; i <= PATTERN_TYPES; ++i) {
+        for (int k = 0; k < BOARD_SIZE; ++k) {
+            dfs_status.total_increment[i] += dfs_status.row_increment[row_index][k][i];
+        }
     }
 }
 
 inline void update_line_type_col(int col_index) {
-    for (int32_t i = 1; i <= PATTERN_TYPES; ++i) {
+    for (int i = 1; i <= PATTERN_TYPES; ++i) {
         dfs_status.total_type[i] -= dfs_status.col_type[col_index][i];
     }
-    for (int32_t j = 1; j <= PATTERN_TYPES; ++j) {
+    for (int i = 1; i <= PATTERN_TYPES; ++i) {
+        for (int k = 0; k < BOARD_SIZE; ++k) {
+            dfs_status.total_increment[i] -= dfs_status.col_increment[col_index][k][i];
+        }
+    }
+    for (int j = 1; j <= PATTERN_TYPES; ++j) {
         dfs_status.col_type[col_index][j] = 0;
-        for (int32_t k = 0; k < BOARD_SIZE; ++k) {
+        for (int k = 0; k < BOARD_SIZE; ++k) {
             dfs_status.col_increment[col_index][k][j] = 0;
         }
     }
 
     int cur = 0;
 
-    int32_t left, right;
+    int left, right;
 
     left = dfs_status.board[0][col_index] == VOID ? VOID : 0 - dfs_status.board[0][col_index];
     right = dfs_status.board[BOARD_SIZE - 1][col_index] == VOID ?
@@ -197,18 +222,28 @@ inline void update_line_type_col(int col_index) {
             tmp = tr[tmp].fail;
         }
     }
-    for (int i = 1; i < PATTERN_TYPES; ++i) {
+    for (int i = 1; i <= PATTERN_TYPES; ++i) {
         dfs_status.total_type[i] += dfs_status.col_type[col_index][i];
+    }
+    for (int i = 1; i <= PATTERN_TYPES; ++i) {
+        for (int k = 0; k < BOARD_SIZE; ++k) {
+            dfs_status.total_increment[i] += dfs_status.col_increment[col_index][k][i];
+        }
     }
 }
 
 inline void update_line_type_oblique_sum(int oblique_sum_index) {
-    for (int32_t i = 1; i <= PATTERN_TYPES; ++i) {
+    for (int i = 1; i <= PATTERN_TYPES; ++i) {
         dfs_status.total_type[i] -= dfs_status.oblique_sum_type[oblique_sum_index][i];
     }
-    for (int32_t j = 1; j <= PATTERN_TYPES; ++j) {
+    for (int type = 1; type <= PATTERN_TYPES; ++type) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            dfs_status.total_increment[type] -= dfs_status.oblique_sum_increment[oblique_sum_index][j][type];
+        }
+    }
+    for (int j = 1; j <= PATTERN_TYPES; ++j) {
         dfs_status.oblique_sum_type[oblique_sum_index][j] = 0;
-        for (int32_t k = 0; k < BOARD_SIZE; ++k) {
+        for (int k = 0; k < BOARD_SIZE; ++k) {
             dfs_status.oblique_sum_increment[oblique_sum_index][k][j] = 0;
         }
     }
@@ -225,11 +260,11 @@ inline void update_line_type_oblique_sum(int oblique_sum_index) {
         end = BOARD_SIZE;
     }
 
-    int32_t left, right;
+    int left, right;
 
-    left = dfs_status.board[oblique_sum_index - start][start] == VOID ?
+    left = dfs_status.board[oblique_sum_index - start - 1][start + 1] == VOID ?
            VOID : 0 - dfs_status.board[oblique_sum_index - start][start];
-    right = dfs_status.board[oblique_sum_index - end][end] == VOID ?
+    right = dfs_status.board[oblique_sum_index - end + 1][end - 1] == VOID ?
             VOID : 0 - dfs_status.board[oblique_sum_index - start][start];
 
     for (int k = start; k <= end; ++k) {
@@ -249,19 +284,30 @@ inline void update_line_type_oblique_sum(int oblique_sum_index) {
         }
     }
 
-    for (int i = 0; i < PATTERN_TYPES; ++i) {
+    for (int i = 1; i <= PATTERN_TYPES; ++i) {
         dfs_status.total_type[i] += dfs_status.oblique_sum_type[oblique_sum_index][i];
+    }
+    for (int type = 1; type <= PATTERN_TYPES; ++type) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            dfs_status.total_increment[type] += dfs_status.oblique_sum_increment[oblique_sum_index][j][type];
+        }
     }
 }
 
 inline void update_line_type_oblique_delta(int oblique_delta_index) {
-    for (int32_t i = 1; i <= PATTERN_TYPES; ++i) {
-        dfs_status.total_type[i] -= dfs_status.oblique_delta_type[oblique_delta_index + BOARD_SIZE][i];
+    for (int type = 1; type <= PATTERN_TYPES; ++type) {
+        dfs_status.total_type[type] -= dfs_status.oblique_delta_type[oblique_delta_index + BOARD_SIZE][type];
     }
-    for (int32_t j = 1; j <= PATTERN_TYPES; ++j) {
-        dfs_status.oblique_delta_type[oblique_delta_index + BOARD_SIZE][j] = 0;
-        for (int32_t k = 0; k < BOARD_SIZE; ++k) {
-            dfs_status.oblique_delta_increment[oblique_delta_index + BOARD_SIZE][k][j] = 0;
+    for (int type = 1; type <= PATTERN_TYPES; ++type) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            dfs_status.total_increment[type] -=
+                    dfs_status.oblique_delta_increment[oblique_delta_index + BOARD_SIZE][j][type];
+        }
+    }
+    for (int type = 1; type <= PATTERN_TYPES; ++type) {
+        dfs_status.oblique_delta_type[oblique_delta_index + BOARD_SIZE][type] = 0;
+        for (int k = 0; k < BOARD_SIZE; ++k) {
+            dfs_status.oblique_delta_increment[oblique_delta_index + BOARD_SIZE][k][type] = 0;
         }
     }
 
@@ -278,11 +324,11 @@ inline void update_line_type_oblique_delta(int oblique_delta_index) {
         end = BOARD_SIZE;
     }
 
-    int32_t left, right;
+    int left, right;
 
-    left = dfs_status.board[oblique_delta_index + start][start] == VOID ?
+    left = dfs_status.board[oblique_delta_index + start + 1][start + 1] == VOID ?
            VOID : 0 - dfs_status.board[oblique_delta_index + start][start];
-    right = dfs_status.board[oblique_delta_index + end][end] == VOID ?
+    right = dfs_status.board[oblique_delta_index + end - 1][end - 1] == VOID ?
             VOID : 0 - dfs_status.board[oblique_delta_index + end][end];
 
     for (int k = start; k <= end; ++k) {
@@ -301,8 +347,14 @@ inline void update_line_type_oblique_delta(int oblique_delta_index) {
             tmp = tr[tmp].fail;
         }
     }
-    for (int i = 1; i < PATTERN_TYPES; ++i) {
+    for (int i = 1; i <= PATTERN_TYPES; ++i) {
         dfs_status.total_type[i] += dfs_status.oblique_delta_type[oblique_delta_index + BOARD_SIZE][i];
+    }
+    for (int type = 1; type <= PATTERN_TYPES; ++type) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            dfs_status.total_increment[type] +=
+                    dfs_status.oblique_delta_increment[oblique_delta_index + BOARD_SIZE][j][type];
+        }
     }
 }
 
@@ -321,7 +373,7 @@ inline void update_grade(int i, int j) {
 
 bool is_ban() {
     //todo: there are problems with ban check, really.
-    if (ban_cnt[6])
+    if (ban_cnt[6] > 0)
         return 1;
     if (ban_cnt[4] >= 2)
         return 1;
@@ -357,20 +409,43 @@ void evaluate_init() {
 
     type_grade[sa3w] = SPLIT_ALIVE_THREE;
     type_grade[sa3b] = -SPLIT_ALIVE_THREE;
-    type_grade[sa4n3w] = SPLIT_ALIVE_FOUR_WITHOUT3;
-    type_grade[sa4n3b] = -SPLIT_ALIVE_FOUR_WITHOUT3;
-    type_grade[sa4w3w] = SPLIT_ALIVE_FOUR_WITH3;
-    type_grade[sa4w3b] = -SPLIT_ALIVE_FOUR_WITH3;
+    type_grade[s4n3w] = SPLIT_ALIVE_FOUR_WITHOUT3;
+    type_grade[s4n3b] = -SPLIT_ALIVE_FOUR_WITHOUT3;
+    type_grade[s4w3w] = SPLIT_ALIVE_FOUR_WITH3;
+    type_grade[s4w3b] = -SPLIT_ALIVE_FOUR_WITH3;
+
+    /*
+    SET0(last_bias);
+    //pay attention that signs for players are different from type grades because these are used by adding.
+    last_bias[a3w] = (int) (-0.8 * CONTINUOUS_THREE);
+    last_bias[a3b] = (int) (0.8 * CONTINUOUS_THREE);
+    last_bias[a2w] = (int) (-0.8 * CONTINUOUS_TWO);
+    last_bias[a2b] = (int) (0.8 * CONTINUOUS_TWO);
+
+    last_bias[h4w] = (int) (-0.8 * HALF_FOUR);
+    last_bias[h4b] = (int) (0.8 * HALF_FOUR);
+    last_bias[h3w] = (int) (-0.8 * HALF_THREE);
+    last_bias[h3b] = (int) (0.8 * HALF_THREE);
+    last_bias[h2w] = (int) (-0.8 * HALF_TWO);
+    last_bias[h2b] = (int) (0.8 * HALF_TWO);
+
+    last_bias[sa3w] = (int) (-0.8 * SPLIT_ALIVE_THREE);
+    last_bias[sa3b] = (int) (0.8 * SPLIT_ALIVE_THREE);
+    last_bias[s4n3w] = (int) (-0.8 * SPLIT_ALIVE_FOUR_WITHOUT3);
+    last_bias[s4n3b] = (int) (0.8 * SPLIT_ALIVE_FOUR_WITHOUT3);
+    last_bias[s4w3w] = (int) (-0.8 * SPLIT_ALIVE_FOUR_WITH3);
+    last_bias[s4w3b] = (int) (0.8 * SPLIT_ALIVE_FOUR_WITH3);
+     */
 }
 
-inline void update_type(uint8_t type_array[], uint8_t type) {
+inline void update_type(int *type_array, int type) {
     switch (type) {
-        case sa4w3w:
-            ++type_array[sa4w3w];
+        case s4w3w:
+            ++type_array[s4w3w];
             --type_array[a3w];
             break;
-        case sa4w3b:
-            ++type_array[sa4w3b];
+        case s4w3b:
+            ++type_array[s4w3b];
             --type_array[a3b];
             break;
         default:
@@ -385,8 +460,8 @@ inline void ban_clear() {
     ban_cnt[3] -= dfs_status.total_type[a3b] + dfs_status.total_type[sa3b];
 
 
-    ban_cnt[4] -= dfs_status.total_type[a4b] + dfs_status.total_type[h4b] + dfs_status.total_type[sa4w3b] +
-                  dfs_status.total_type[sa4n3b];
+    ban_cnt[4] -= dfs_status.total_type[a4b] + dfs_status.total_type[h4b] + dfs_status.total_type[s4w3b] +
+                  dfs_status.total_type[s4n3b];
 
     ban_cnt[6] -= dfs_status.total_type[l6b];
 
@@ -396,75 +471,127 @@ inline void ban_detect() {
     ban_cnt[3] += dfs_status.total_type[a3b] + dfs_status.total_type[sa3b];
 
 
-    ban_cnt[4] += dfs_status.total_type[a4b] + dfs_status.total_type[h4b] + dfs_status.total_type[sa4w3b] +
-                  dfs_status.total_type[sa4n3b];
+    ban_cnt[4] += dfs_status.total_type[a4b] + dfs_status.total_type[h4b] + dfs_status.total_type[s4w3b] +
+                  dfs_status.total_type[s4n3b];
 
     ban_cnt[6] += dfs_status.total_type[l6b];
 }
 
-inline void increment_void(int64_t v[][PATTERN_TYPES + 5], __AC_node *p, int32_t index) {
-    for (int32_t i = 0; p->back[i] != END; ++i) {
-        if (index - p->back[i] >= 0)
-            v[index + p->back[i]][p->type]++;
+inline void increment_void(long long v[][PATTERN_TYPES + 5], __AC_node *p, int index) {
+    for (int i = 0; p->back[i] != END; ++i) {
+        if (index + p->back[i] >= 0)
+            v[index + p->back[i]][p->blank_type[i]]++;
     }
 }
 
-inline int64_t pos_estimate(int i, int j, int player_side) {
-    int64_t ans = 0;
-    for (int8_t t = 1; t <= PATTERN_TYPES; ++t) {
-        int64_t shift = type_shift(t, player_side);
-        ans += shift * dfs_status.row_increment[i][j][t];
-        ans += shift * dfs_status.col_increment[j][i][t];
-        ans += shift * dfs_status.oblique_sum_increment[i + j][j][t];
-        ans += shift * dfs_status.oblique_delta_increment[i - j + BOARD_SIZE][j][t];
+inline long long int pos_estimate(int i, int j, int player_side) {
+    long long ans = 0;
+    for (int t = 1; t <= PATTERN_TYPES; ++t) {
+        if (type_grade[t] * player_side < 0)continue;
+        ans += type_grade[t] * dfs_status.row_increment[i][j][t];
+        ans += type_grade[t] * dfs_status.col_increment[j][i][t];
+        ans += type_grade[t] * dfs_status.oblique_sum_increment[i + j][j][t];
+        ans += type_grade[t] * dfs_status.oblique_delta_increment[i - j + BOARD_SIZE][j][t];
     }
     return ans;
 }
 
-inline int64_t type_shift(int8_t type, int player_side) {
+inline long long int type_shift(int type, int player_side) {
     if (player_side == WHITE) {
         switch (type) {
+            case a1w:
+                return CONTINUOUS_TWO;
             case a2w:
                 return CONTINUOUS_THREE;
             case a3w:
                 return CONTINUOUS_FOUR;
             case a4w:
                 return FIVE_GRADE;
+            case a5w:
+                return FIVE_GRADE;
+            case h2w:
+                return HALF_THREE;
             case h3w:
                 return HALF_FOUR;
             case h4w:
                 return FIVE_GRADE;
+            case h5w:
+                return FIVE_GRADE;
+            case d5w:
+                return FIVE_GRADE;
+            case l6w:
+                return LONG_CONTINUOUS;
             case sa3w:
                 return CONTINUOUS_FOUR;
-            case sa4n3w:
+            case s4n3w:
                 FIVE_GRADE;
-            case sa4w3w:
+            case s4w3w:
                 FIVE_GRADE;
             default:
                 return 0;
         }
     } else {
         switch (type) {
+            case a1b:
+                return -CONTINUOUS_TWO;
             case a2b:
                 return -CONTINUOUS_THREE;
             case a3b:
                 return -CONTINUOUS_FOUR;
             case a4b:
                 return -FIVE_GRADE;
+            case a5b:
+                return -FIVE_GRADE;
+            case h2b:
+                return -HALF_THREE;
             case h3b:
                 return -HALF_FOUR;
             case h4b:
                 return -FIVE_GRADE;
+            case h5b:
+                return -FIVE_GRADE;
+            case d5b:
+                return -FIVE_GRADE;
             case sa3b:
-                return CONTINUOUS_FOUR;
-            case sa4n3b:
+                return -CONTINUOUS_FOUR;
+            case s4n3b:
                 return -FIVE_GRADE;
-            case sa4w3b:
+            case s4w3b:
                 return -FIVE_GRADE;
+            case l6b:
+                return LONG_CONTINUOUS;
             default:
                 return 0;
         }
     }
+}
+
+inline long long int last_bias_generator(int player_side) {
+    //todo: finish bias check here.
+    long long __ret = 0;
+    if (player_side == WHITE && record[dfs_status.steps].player == WHITE) {
+        if (dfs_status.total_type[a3b]) {
+            __ret += 2 * type_grade[a3b];
+        }
+        if (dfs_status.total_type[sa3b]) {
+            __ret += 2 * type_grade[sa3b];
+        }
+        if (dfs_status.total_type[h4b]) {
+            __ret += 2 * type_grade[h4b];
+        }
+    } else if (player_side == BLACK && record[dfs_status.steps].player == BLACK) {
+        if (dfs_status.total_type[a3w]) {
+            __ret += 2 * type_grade[a3w];
+        }
+        if (dfs_status.total_type[sa3w]) {
+            __ret += 2 * type_grade[sa3w];
+        }
+        if (dfs_status.total_type[h4w]) {
+            __ret += 2 * type_grade[h4w];
+        }
+    }
+
+    return __ret;
 }
 
 #undef TRIE_SIZE

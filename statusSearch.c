@@ -49,6 +49,7 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
                 } else {
                     if (!has_neighbor(i, j, 2, 1)) continue;
                 }
+
                 drop_choice1[*num].i = i;
                 drop_choice1[*num].j = j;
                 //CAUTIONS!!! IT SHOULD BE MINUS!!!
@@ -77,21 +78,18 @@ int prune_cnt = 0;
 //remember that the larger the grade is, the better the status is for WHITE. and vice versa.
 //alpha is the upper bound and beta is the lower bound.
 drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_t alpha, int64_t beta) {
-
     drop_choice result;
-    result.player = search_player_side;
     result.broken_search_flag = false;
+    bool no_ban = true;
 
     if (search_depth == 0) {
         // it doesn't matter what the position is in the very bottom.
         result.grade = grade_estimate(search_player_side) + grade_estimate(0 - search_player_side);
         return result;
     }
-    if (real_hash[HASH] == hash && subtree_height[HASH] >= search_depth) {
-        //maybe there could be bias here?
-        result = cache_choice[HASH];
-        return result;
-    }
+    /*
+     * if you check hash and return result here, it may drop in a occupied place!
+     */
 
     drop_choice drop_choice1[MAX_POS];
     int pos_num = 0;
@@ -108,16 +106,23 @@ drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_
 
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, WHITE);
 
-            tmp = alpha_beta_dfs((int8_t) 0 - search_player_side, search_depth - 1, alpha, beta);
+            if (winner_check() == WHITE) {
+                dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, VOID);
+                result.grade = FIVE_GRADE;
+                result.i = drop_choice1[k].i;
+                result.j = drop_choice1[k].j;
+                break;
+            }
 
+            tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
+
             if (tmp.grade > result.grade) {
                 result = tmp;
                 //result.broken_search_flag = false;
             }
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, VOID);
             alpha = long_long_max(alpha, result.grade);
-
 
             if (beta < alpha) {
 #ifdef PRUNE_DEBUG
@@ -129,12 +134,12 @@ drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_
 #endif
 
                 //0 for WHITE
-                prune_table[0][drop_choice1[k].i][drop_choice1[k].j] += 1U << (search_depth << 2U);
-                //return result;
+                if (prune_table[0][drop_choice1[k].i][drop_choice1[k].j] < INF)
+                    prune_table[0][drop_choice1[k].i][drop_choice1[k].j] += 1U << (search_depth << 2U);
                 break;
             }
 
-            if (search_depth >= 4 && duration_check(k)) {
+            if (search_depth >= 4 && duration_check()) {
 #ifdef DEBUG_DRAW
                 printf("search breaks half way\n");
                 time_display(search_depth, result.grade);
@@ -143,28 +148,34 @@ drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_
                 break;
             }
         }
-        //return result;
     } else {
         result.grade = INF;
         drop_choice tmp;
         for (int k = 0; k < pos_num; ++k) {
 
 
+
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, BLACK);
 
             if (is_ban()) {
-                //tmp.grade = INF;
                 dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, VOID);
+                no_ban = false;
                 continue;
+            } else if (winner_check() == BLACK) {
+                dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, VOID);
+                result.grade = -FIVE_GRADE;
+                result.i = drop_choice1[k].i;
+                result.j = drop_choice1[k].j;
+                break;
             }
 
-            tmp = alpha_beta_dfs((int8_t) 0 - search_player_side, search_depth - 1, alpha, beta);
+
+            tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
 
 
             if (tmp.grade < result.grade) {
                 result = tmp;
-                //result.broken_search_flag = false;
             }
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, VOID);
             beta = long_long_min(beta, result.grade);
@@ -180,11 +191,12 @@ drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_
 #endif
 
                 //1 for BLACK
-                prune_table[1][drop_choice1[k].i][drop_choice1[k].j] -= 1U << (search_depth << 2U);
+                if (prune_table[1][drop_choice1[k].i][drop_choice1[k].j] > -INF)
+                    prune_table[1][drop_choice1[k].i][drop_choice1[k].j] -= 1U << (search_depth << 2U);
                 //return result;
                 break;
             }
-            if (search_depth >= 4 && duration_check(k)) {
+            if (search_depth >= 4 && duration_check()) {
 #ifdef DEBUG_DRAW
                 printf("search breaks half way\n");
                 time_display(search_depth, result.grade);
@@ -193,11 +205,9 @@ drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_
                 break;
             }
         }
-        //return result;
     }
-    if (!real_hash[HASH] ||
-        (real_hash[HASH] != hash && dfs_status.steps + search_depth > DFS_MAX_DEPTH + found_at_step[HASH])
-        || (real_hash[HASH] == hash && subtree_height[HASH] < search_depth)) {
+    if (no_ban && (!real_hash[HASH] || (real_hash[HASH] != hash))) {
+        //todo: hash really has bugs!
         real_hash[HASH] = hash;
         cache_choice[HASH] = result;
         subtree_height[HASH] = search_depth;
@@ -207,17 +217,21 @@ drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_
 }
 
 
-inline drop_choice deepening_search(int search_player_side) {
-    static int factor_guess = 20;
+inline drop_choice deepening_search(int search_player_side, int depth_bound) {
     search_duration.start_clock = clock();
-    drop_choice best_choice = best_choice_of_lower_depth = alpha_beta_dfs(search_player_side, 2, 0 - INF, INF);
-    for (uint32_t d = 4; d <= DFS_MAX_DEPTH; d += 2) {
+    unsigned int d = 2;
+    drop_choice best_choice = best_choice_of_lower_depth = alpha_beta_dfs(search_player_side, d, 0 - INF, INF);
+#ifdef DEBUG_DRAW
+    time_display(d, best_choice.grade);
+#endif
+    for (d = d + 2; d <= depth_bound; d += 2) {
         best_choice = alpha_beta_dfs(search_player_side, d, 0 - INF, INF);
 #ifdef DEBUG_DRAW
         time_display(d, best_choice.grade);
 #endif
         if (best_choice.broken_search_flag ||
-            (search_duration.start_clock - clock()) * 1.0 / CLOCKS_PER_SEC > 1.0 * TIME_LIMIT / (1 + factor_guess)) {
+            abs(best_choice.grade) >= FIVE_GRADE ||
+                                   search_duration.start_clock - clock() >= 0.99 * TIME_LIMIT) {
             return best_choice_of_lower_depth;
         }
     }
@@ -249,9 +263,9 @@ inline int64_t grade_standardise(int64_t grade) {
     } else if (grade >= CONTINUOUS_FOUR) {
         return INF;
     } else if (grade < 0) {
-        return -(int64_t) pow(1.005, -grade);
+        return -(int64_t) pow(1.001, -grade);
     } else {
-        return (int64_t) pow(1.005, grade);
+        return (int64_t) pow(1.001, grade);
     }
 }
 
@@ -265,6 +279,6 @@ inline void time_display(uint32_t depth, long long int dfs_grade) {
     printf("grade: %lld\n", dfs_grade);
 }
 
-inline int duration_check(int k) {
-    return (clock() - search_duration.start_clock) * 1.0 / CLOCKS_PER_SEC > (k + 1) * TIME_LIMIT * 1.0;
+inline int duration_check() {
+    return (clock() - search_duration.start_clock) * 1.0 / CLOCKS_PER_SEC > TIME_LIMIT * 0.99;
 }

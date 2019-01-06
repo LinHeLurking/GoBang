@@ -29,6 +29,7 @@ void __status_init(boardStatus *boardStatus1) {
     SET0(boardStatus1->oblique_sum_increment);
     SET0(boardStatus1->oblique_delta_increment);
     SET0(boardStatus1->total_type);
+    SET0(boardStatus1->total_increment);
     boardStatus1->steps = 0;
     boardStatus1->__WHITE = WHITE;
     boardStatus1->__BLACK = BLACK;
@@ -79,7 +80,7 @@ int dfs_add_piece(int i, int j, int player_side) {
     if (player_side == VOID) {
         dfs_status.steps--;
     }
-    hash ^= hash_key[dfs_status.steps & 1][i][j];
+    hash ^= hash_key[record[dfs_status.steps].player == BLACK ? 1 : 0][i][j];
     if (player_side != VOID) {
         dfs_status.steps++;
     }

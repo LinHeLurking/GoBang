@@ -30,7 +30,7 @@ void max_heapfy(drop_choice *a, int start, int end);
 
 #define swap(a, b, type) type tmp=*(a); *(a)=*(b); *(b)=tmp;
 
-#define abs(x) x<0?(0-(x)):x
+#define abs(x) x<0?(0-(x)):(x)
 
 
 #endif //GOBANG_MATHFUNC_H

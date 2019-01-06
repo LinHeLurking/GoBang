@@ -73,8 +73,8 @@ void output_board(int clear) {
 
 #ifdef DEBUG_DRAW
     printf("The grade estimate:\n");
-    printf("WHITE: %"PRId64"\n", grade_estimate(WHITE));
-    printf("BLACK: %"PRId64"\n", grade_estimate(BLACK));
+    printf("WHITE: %lld\n", grade_estimate(WHITE));
+    printf("BLACK: %lld\n", grade_estimate(BLACK));
 #endif
 
 #ifndef USE_HASH

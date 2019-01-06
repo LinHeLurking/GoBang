@@ -12,264 +12,308 @@ __AC_node AC_node[PATTERNS] = {
                 a5w,
                 {VOID,  WHITE, WHITE, WHITE, WHITE, WHITE, VOID,  END},
                 {-6, 0,  END},
+                {l6w,   l6w},
                 FIVE_GRADE
         },
         {
                 a4w,
                 {VOID,  WHITE, WHITE, WHITE, WHITE, VOID,  END},
                 {-5, 0,  END},
+                {a5w,   a5w},
                 CONTINUOUS_FOUR
         },
         {
                 a3w,
                 {VOID,  WHITE, WHITE, WHITE, VOID,  END},
                 {-4, 0,  END},
+                {a4w,   a4w},
                 CONTINUOUS_THREE
         },
         {
                 a2w,
                 {VOID,  WHITE, WHITE, VOID,  END},
                 {-3, 0,  END},
+                {a3w,   a3w},
                 CONTINUOUS_TWO
         },
         {
                 a1w,
                 {VOID,  WHITE, VOID,  END},
                 {-2, 0,  END},
+                {a2w,   a2w},
                 CONTINUOUS_ONE
         },
         {
                 a5b,
                 {VOID,  BLACK, BLACK, BLACK, BLACK, BLACK, VOID,  END},
                 {-6, 0,  END},
+                {l6b,   l6b},
                 -FIVE_GRADE
         },
         {
                 a4b,
                 {VOID,  BLACK, BLACK, BLACK, BLACK, VOID,  END},
                 {-5, 0,  END},
+                {a5b,   a5b},
                 -CONTINUOUS_FOUR
         },
         {
                 a3b,
                 {VOID,  BLACK, BLACK, BLACK, VOID,  END},
                 {-4, 0,  END},
+                {a4b,   a4b},
                 -CONTINUOUS_THREE
         },
         {
                 a2b,
                 {VOID,  BLACK, BLACK, VOID,  END},
                 {-3, 0,  END},
+                {a3b,   a3b},
                 -CONTINUOUS_TWO
         },
         {
                 a1b,
                 {VOID,  BLACK, VOID,  END},
                 {-2, 0,  END},
+                {a2b,   a2b},
                 -CONTINUOUS_ONE
         },
         {
                 h5w,
                 {BLACK, WHITE, WHITE, WHITE, WHITE, WHITE, VOID,  END},
                 {0,  END},
+                {l6w},
                 FIVE_GRADE
         },
         {
                 h5w,
                 {VOID,  WHITE, WHITE, WHITE, WHITE, WHITE, BLACK, END},
                 {-6, END},
+                {l6w},
                 FIVE_GRADE
         },
         {
                 h4w,
                 {BLACK, WHITE, WHITE, WHITE, WHITE, VOID,  END},
                 {0,  END},
+                {h5w},
                 HALF_FOUR
         },
         {
                 h4w,
                 {VOID,  WHITE, WHITE, WHITE, WHITE, BLACK, END},
                 {-5, END},
+                {h5w},
                 HALF_FOUR
         },
         {
                 h3w,
                 {BLACK, WHITE, WHITE, WHITE, VOID,  END},
                 {0,  END},
+                {h4w},
                 HALF_THREE
         },
         {
                 h3w,
                 {VOID,  WHITE, WHITE, WHITE, BLACK, END},
                 {-4, END},
+                {h4w},
                 HALF_THREE
         },
         {
                 h2w,
                 {BLACK, WHITE, WHITE, VOID,  END},
                 {0,  END},
+                {h3w},
                 HALF_TWO
         },
         {
                 h2w,
                 {VOID,  WHITE, WHITE, BLACK, END},
                 {-3, END},
+                {h3w},
                 HALF_TWO
         },
         {
                 h5b,
                 {WHITE, BLACK, BLACK, BLACK, BLACK, BLACK, VOID,  END},
                 {0,  END},
+                {l6b},
                 -FIVE_GRADE
         },
         {
                 h5b,
                 {VOID,  BLACK, BLACK, BLACK, BLACK, BLACK, WHITE, END},
                 {-6, END},
+                {l6b},
                 -FIVE_GRADE
         },
         {
                 h4b,
                 {WHITE, BLACK, BLACK, BLACK, BLACK, VOID,  END},
                 {0,  END},
+                {h5b},
                 -HALF_FOUR
         },
         {
                 h4b,
                 {VOID,  BLACK, BLACK, BLACK, BLACK, WHITE, END},
                 {-5, END},
+                {h5b},
                 -HALF_FOUR
         },
         {
                 h3b,
                 {WHITE, BLACK, BLACK, BLACK, VOID,  END},
                 {0,  END},
+                {h4b},
                 -HALF_THREE
         },
         {
                 h3b,
                 {VOID,  BLACK, BLACK, BLACK, WHITE, END},
                 {-4, END},
+                {h4b},
                 -HALF_THREE
         },
         {
                 h2b,
                 {WHITE, BLACK, BLACK, VOID,  END},
                 {0,  END},
+                {h3b},
                 -HALF_TWO
         },
         {
                 h2b,
                 {VOID,  BLACK, BLACK, WHITE, END},
                 {-3, END},
+                {h3b},
                 -HALF_TWO
         },
         {
                 d5w,
                 {BLACK, WHITE, WHITE, WHITE, WHITE, WHITE, BLACK, END},
                 {END},
+                {},
                 FIVE_GRADE
         },
         {
                 d5b,
                 {WHITE, BLACK, BLACK, BLACK, BLACK, BLACK, WHITE, END},
                 {END},
+                {},
                 -FIVE_GRADE
         },
         {
                 sa3w,
                 {VOID,  WHITE, VOID,  WHITE, WHITE, VOID,  END},
                 {-5, -3, 0, END},
+                {s4n3w, a4w, s4w3w},
                 SPLIT_ALIVE_THREE
         },
         {
                 sa3w,
                 {VOID,  WHITE, WHITE, VOID,  WHITE, VOID,  END},
                 {-5, -2, 0, END},
+                {s4w3w, a4w, s4n3w},
                 SPLIT_ALIVE_THREE
         },
         {
                 sa3b,
                 {VOID,  BLACK, VOID,  BLACK, BLACK, VOID,  END},
                 {-5, -3, 0, END},
+                {s4n3b, a4b, s4w3b},
                 -SPLIT_ALIVE_THREE
         },
         {
                 sa3b,
                 {VOID,  BLACK, BLACK, VOID,  BLACK, VOID,  END},
                 {-5, -2, 0, END},
+                {s4w3b, a4b, s4n3b},
                 -SPLIT_ALIVE_THREE
         },
         {
-                sa4n3w,
-                {BLACK, WHITE, WHITE, WHITE, VOID,  WHITE, END},
+                s4n3w,
+                {WHITE, WHITE, WHITE, VOID,  WHITE, END},
                 {-1, END},
+                {h5b},
                 SPLIT_ALIVE_FOUR_WITHOUT3
         },
         {
-                sa4n3w,
-                {WHITE, VOID,  WHITE, WHITE, WHITE, BLACK, END},
+                s4n3w,
+                {WHITE, VOID,  WHITE, WHITE, WHITE, END},
                 {-4, END},
+                {h5b},
                 SPLIT_ALIVE_FOUR_WITHOUT3
         },
         {
-                sa4n3w,
+                s4n3w,
                 {WHITE, WHITE, VOID,  WHITE, WHITE, END},
                 {-3, END},
+                {h5w},
                 SPLIT_ALIVE_FOUR_WITHOUT3
         },
         {
-                sa4n3b,
-                {WHITE, BLACK, BLACK, BLACK, VOID,  BLACK, END},
+                s4n3b,
+                {BLACK, BLACK, BLACK, VOID,  BLACK, END},
                 {-1, END},
+                {h5b},
                 -SPLIT_ALIVE_FOUR_WITHOUT3
         },
         {
-                sa4n3b,
-                {BLACK, VOID,  BLACK, BLACK, BLACK, WHITE, END},
+                s4n3b,
+                {BLACK, VOID,  BLACK, BLACK, BLACK, END},
                 {-4, END},
+                {h5b},
                 -SPLIT_ALIVE_FOUR_WITHOUT3
         },
         {
-                sa4n3b,
+                s4n3b,
                 {BLACK, BLACK, VOID,  BLACK, BLACK, END},
                 {-2, END},
+                {h5b},
                 -SPLIT_ALIVE_FOUR_WITHOUT3
         },
         {
-                sa4w3w,
-                {VOID,  WHITE, WHITE, WHITE, VOID,  WHITE, END},
+                s4w3w,
+                {WHITE, WHITE, WHITE, VOID,  WHITE, END},
                 {-5, -1, END},
+                {h4w,   a5w},
                 SPLIT_ALIVE_FOUR_WITH3
         },
         {
-                sa4w3w,
-                {WHITE, VOID,  WHITE, WHITE, WHITE, VOID,  END},
+                s4w3w,
+                {WHITE, VOID,  WHITE, WHITE, WHITE, END},
                 {-4, 0,  END},
+                {a5w,   h4w},
                 SPLIT_ALIVE_FOUR_WITH3
         },
         {
-                sa4w3b,
-                {VOID,  BLACK, BLACK, BLACK, VOID,  BLACK, END},
+                s4w3b,
+                {BLACK, BLACK, BLACK, VOID,  BLACK, END},
                 {-5, -1, END},
+                {h4b,   a5b},
                 -SPLIT_ALIVE_FOUR_WITH3
         },
         {
-                sa4w3b,
-                {BLACK, VOID,  BLACK, BLACK, BLACK, VOID,  END},
+                s4w3b,
+                {BLACK, VOID,  BLACK, BLACK, BLACK, END},
                 {-4, 0,  END},
+                {a5b,   h4b},
                 -SPLIT_ALIVE_FOUR_WITH3
         },
         {
                 l6b,
                 {BLACK, BLACK, BLACK, BLACK, BLACK, BLACK, END},
                 {END},
+                {},
                 LONG_CONTINUOUS
         },
         {
                 l6w,
                 {WHITE, WHITE, WHITE, WHITE, WHITE, WHITE, END},
                 {END},
+                {},
                 LONG_CONTINUOUS
 
         }
@@ -288,10 +332,10 @@ void AC_init() {
     }
 }
 
-void insert(int8_t *s, __AC_node nd) {
+void insert(int *s, __AC_node nd) {
     int p = root;
-    for (int8_t *c = s; *c != END; ++c) {
-        int8_t tmp = (*c);
+    for (int *c = s; *c != END; ++c) {
+        int tmp = (*c);
         if (tr[p].trans[tmp + COLOR_OFFSET] == -1) {
             tr[p].trans[tmp + COLOR_OFFSET] = ++count;
         }
