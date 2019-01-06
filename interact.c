@@ -157,6 +157,7 @@ void human_vs_human() {
         output_board(1);
         printf("Round for %s, input the position you want to place the piece\n", player_side[player + COLOR_OFFSET]);
         printf("Input 'quit'(without quotes) to quit this game\n");
+        printf("Positions such as h8, H8, 8h, and 8H all could be accepted.\n");
         int i, j;
         read_pos(&i, &j);
         int st = -1;

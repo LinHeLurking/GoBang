@@ -570,23 +570,30 @@ inline long long int last_bias_generator(int player_side) {
     //todo: finish bias check here.
     long long __ret = 0;
     if (player_side == WHITE && record[dfs_status.steps].player == WHITE) {
-        if (dfs_status.total_type[a3b]) {
+        if (dfs_status.total_type[a3b] &&
+            !(dfs_status.total_type[h4w] || dfs_status.total_type[a4w])) {
             __ret += 2 * type_grade[a3b];
         }
-        if (dfs_status.total_type[sa3b]) {
+        if (dfs_status.total_type[sa3b] &&
+            !(dfs_status.total_type[h4w] || dfs_status.total_type[a4w])) {
             __ret += 2 * type_grade[sa3b];
         }
-        if (dfs_status.total_type[h4b]) {
+        if (dfs_status.total_type[h4b] &&
+            !(dfs_status.total_type[a5w] || dfs_status.total_type[h5w] ||
+              dfs_status.total_type[d5w] || dfs_status.total_type[l6w])) {
             __ret += 2 * type_grade[h4b];
         }
     } else if (player_side == BLACK && record[dfs_status.steps].player == BLACK) {
-        if (dfs_status.total_type[a3w]) {
+        if (dfs_status.total_type[a3w] &&
+            !(dfs_status.total_type[h4b] || dfs_status.total_type[a4b])) {
             __ret += 2 * type_grade[a3w];
         }
-        if (dfs_status.total_type[sa3w]) {
+        if (dfs_status.total_type[sa3w] &&
+            !(dfs_status.total_type[h4b] || dfs_status.total_type[a4b])) {
             __ret += 2 * type_grade[sa3w];
         }
-        if (dfs_status.total_type[h4w]) {
+        if (dfs_status.total_type[h4w] &&
+            !(dfs_status.total_type[a5b] || dfs_status.total_type[h5b] || dfs_status.total_type[d5b])) {
             __ret += 2 * type_grade[h4w];
         }
     }
