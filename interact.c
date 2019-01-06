@@ -81,6 +81,7 @@ void human_vs_computer() {
 
         printf("Round for %s, input the position you want to place the piece\n",
                player_side[human_player + COLOR_OFFSET]);
+        printf("Positions such as h8, H8, 8h, and 8H all could be accepted.\n");
         printf("Input 'quit'(without quotes) to quit this game\n");
 
 
@@ -95,6 +96,7 @@ void human_vs_computer() {
                 printf("There is already a piece in this place!\n");
                 printf("Round for %s, input the position you want to place the piece\n",
                        player_side[human_player + COLOR_OFFSET]);
+                printf("Positions such as h8, H8, 8h, and 8H all could be accepted.\n");
 
                 while (!(i >= '0' && i <= '0' + BOARD_SIZE && j >= '0' && j <= '0' + BOARD_SIZE)) {
                     read_pos(&i, &j);
@@ -127,8 +129,7 @@ void human_vs_computer() {
         if (st == 2) {
             output_board(1);
             printf("Ban found! The player of white won.\n");
-            //printf("Press any key to quit\n");
-            //getchar();
+            output_board(0);
             return;
         } else if (st == -1) {
             printf("Search error!\n");
@@ -156,8 +157,8 @@ void human_vs_human() {
     while (true) {
         output_board(1);
         printf("Round for %s, input the position you want to place the piece\n", player_side[player + COLOR_OFFSET]);
-        printf("Input 'quit'(without quotes) to quit this game\n");
         printf("Positions such as h8, H8, 8h, and 8H all could be accepted.\n");
+        printf("Input 'quit'(without quotes) to quit this game\n");
         int i, j;
         read_pos(&i, &j);
         int st = -1;
@@ -167,6 +168,7 @@ void human_vs_human() {
                 printf("There is already a piece in this place!\n");
                 printf("Round for %s, input the position you want to place the piece\n",
                        player_side[player + COLOR_OFFSET]);
+                printf("Positions such as h8, H8, 8h, and 8H all could be accepted.\n");
                 read_pos(&i, &j);
             }
             st = add_piece(i, j, player);
