@@ -22,52 +22,46 @@ void play() {
 #ifndef DEBUG_DRAW
     system("clear");
 #endif
+    print_line(50, 1);
+    printf("Welcome to Amadeus GoBang game!\n");
+    printf("\tAuthor: Lei Ci\n");
+    print_line(50, 1);
+    printf("Please input the code of corresponding mode:\n");
 
-    printf("Welcome to Amadeus GoBang game!\nAuthor: Lei Ci\nPlease input the code of corresponding mode:\n");
-
-    int mode = -1;
-    while (mode == -1) {
-        printf("Human vs. human: 0\nHuman vs. computer: 1\n");
+    printf("\tHuman vs. human:%2d\n", HUMAN_VS_HUMAN);
+    printf("\tHuman vs. computer:%2d\n", HUMAN_VS_COMPUTER);
 #ifdef DEBUG_DRAW
-        printf("computer vs. computer: 2\n");
+    printf("\tComputer vs. computer:%2d\n", COMPUTER_VS_COMPUTER);
 #endif
-        printf("Input 'quit'(without quotes) to quit this game\n");
+    printf("\tInput 'quit'(without quotes) to quit this game\n");
+    print_line(50, 1);
 
-        while (true) {
-            scanf("%s", interact_buffer);
-            if (strcmp(interact_buffer, "quit") == 0) {
-                return;
-            } else if (interact_buffer[0] >= '0' && interact_buffer[0] <= '1') {
-                mode = interact_buffer[0] - '0';
-                break;
-            }
-#ifdef DEBUG_DRAW
-            else if (interact_buffer[0] == '2') {
-                mode = interact_buffer[0] - '0';
-                break;
-            }
-#endif
-            else {
-                throw_interact_error(1);
-            }
+    int mode;
+
+    while (true) {
+        scanf("%s", interact_buffer);
+        if (strcmp(interact_buffer, "quit") == 0) {
+            return;
+        } else if (interact_buffer[0] >= '0' && interact_buffer[0] <= '1') {
+            mode = interact_buffer[0] - '0';
+            break;
         }
-        switch (mode) {
-            case HUMAN_VS_HUMAN:
-                human_vs_human();
-                break;
-            case HUMAN_VS_COMPUTER:
-                human_vs_computer();
-                break;
 #ifdef DEBUG_DRAW
-            case COMPUTER_VS_COMPUTER:
-                computer_vs_computer();
-                break;
-#endif
-            default:
-                mode = -1;
-                printf("Wrong code(%d)! input the right one!\n", mode);
+        else if (interact_buffer[0] == '2') {
+            mode = interact_buffer[0] - '0';
+            break;
         }
-
+#endif
+        else {
+            throw_interact_error(1);
+        }
+    }
+    if (mode == HUMAN_VS_HUMAN) {
+        human_vs_human();
+    } else if (mode == HUMAN_VS_COMPUTER) {
+        human_vs_computer();
+    } else if (mode == COMPUTER_VS_COMPUTER) {
+        computer_vs_computer();
     }
 }
 
@@ -76,9 +70,12 @@ void human_vs_computer() {
     int human_player;
     int computer_player;
     int order_check;
-
-    printf("Human first or computer first?\nHuman first: 1\nComputer first: 2\n");
-    printf("Input 'quit'(without quotes) to quit this game\n");
+    print_line(50, 1);
+    printf("Human first or computer first?\n");
+    printf("\tHuman first:%2d\n", HUMAN_FIRST);
+    printf("\tComputer first:%2d\n", COMPUTER_FIRST);
+    printf("\tInput 'quit'(without quotes) to quit this game\n");
+    print_line(50, 1);
     while (true) {
         scanf("%s", interact_buffer);
         if (interact_buffer[0] == '1') {
@@ -101,6 +98,12 @@ void human_vs_computer() {
         human_player = BLACK;
         computer_player = WHITE;
     }
+#ifdef DEBUG_DRAW
+    print_line(94, 1);
+    printf("This is in the debug mode, so some massages about searching will be printed onto the console.\n");
+    print_line(94, 1);
+#endif
+
     output_board(1);
     while (true) {
         round_announcement(human_player);
@@ -296,6 +299,15 @@ void throw_interact_error(int to_continue) {
         printf("Input again.\n");
     } else {
         printf("Program ends\n");
+    }
+}
+
+void print_line(int cnt, int with_a_newline) {
+    for (int i = 0; i < cnt; ++i) {
+        printf("~");
+    }
+    if (with_a_newline) {
+        printf("\n");
     }
 }
 

@@ -26,4 +26,6 @@ void round_announcement(int player_side);
 
 void throw_interact_error(int to_continue);
 
+void print_line(int cnt, int with_a_newline);
+
 #endif //GOBANG_INTERACT_H
