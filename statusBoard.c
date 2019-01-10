@@ -13,10 +13,6 @@ boardStatus dfs_status;
 drop_record record[BOARD_SIZE * BOARD_SIZE + 5];
 
 extern trie tr[TRIE_SIZE];
-extern unsigned long long hash_key[2][BOARD_SIZE][BOARD_SIZE];
-extern int subtree_height[CACHE_SIZE];
-extern unsigned long long real_hash[CACHE_SIZE];
-extern unsigned long long hash;
 
 void __status_init(boardStatus *boardStatus1) {
     SET0(boardStatus1->board);
@@ -80,7 +76,6 @@ int dfs_add_piece(int i, int j, int player_side) {
     if (player_side == VOID) {
         dfs_status.steps--;
     }
-    hash ^= hash_key[record[dfs_status.steps].player == BLACK ? 1 : 0][i][j];
     if (player_side != VOID) {
         dfs_status.steps++;
     }

@@ -152,9 +152,11 @@ inline void update_line_type_row(int row_index) {
 
     int left, right;
 
-    left = dfs_status.board[row_index][0] == VOID ? VOID : 0 - dfs_status.board[row_index][0];
-    right = dfs_status.board[row_index][BOARD_SIZE - 1] == VOID ?
-            VOID : 0 - dfs_status.board[row_index][BOARD_SIZE - 1];
+    left = dfs_status.board[row_index][0] != VOID ? 0 - dfs_status.board[row_index][0] :
+           dfs_status.board[row_index][1] != VOID ? 0 - dfs_status.board[row_index][1] : VOID;
+    right = dfs_status.board[row_index][BOARD_SIZE - 1] != VOID ?
+            0 - dfs_status.board[row_index][BOARD_SIZE - 1] : dfs_status.board[row_index][BOARD_SIZE - 2] != VOID ?
+                                                              0 - dfs_status.board[row_index][BOARD_SIZE - 1] : VOID;
 
     for (int k = -1; k <= BOARD_SIZE; ++k) {
         int ch = k == -1 ? left : k == BOARD_SIZE ? right : dfs_status.board[row_index][k];
@@ -202,9 +204,11 @@ inline void update_line_type_col(int col_index) {
 
     int left, right;
 
-    left = dfs_status.board[0][col_index] == VOID ? VOID : 0 - dfs_status.board[0][col_index];
-    right = dfs_status.board[BOARD_SIZE - 1][col_index] == VOID ?
-            VOID : 0 - dfs_status.board[BOARD_SIZE - 1][col_index];
+    left = dfs_status.board[0][col_index] != VOID ? 0 - dfs_status.board[0][col_index] :
+           dfs_status.board[1][col_index] != VOID ? 0 - dfs_status.board[1][col_index] : VOID;
+    right = dfs_status.board[BOARD_SIZE - 1][col_index] != VOID ?
+            0 - dfs_status.board[BOARD_SIZE - 1][col_index] : dfs_status.board[BOARD_SIZE - 2][col_index] != VOID ?
+                                                              0 - dfs_status.board[BOARD_SIZE - 2][col_index] : VOID;
 
     for (int k = -1; k <= BOARD_SIZE; ++k) {
         int ch = k == -1 ? left : k == BOARD_SIZE ? right : dfs_status.board[k][col_index];
@@ -260,12 +264,26 @@ inline void update_line_type_oblique_sum(int oblique_sum_index) {
         end = BOARD_SIZE;
     }
 
-    int left, right;
+    int left = VOID, right = VOID;
 
-    left = dfs_status.board[oblique_sum_index - start - 1][start + 1] == VOID ?
-           VOID : 0 - dfs_status.board[oblique_sum_index - start][start];
-    right = dfs_status.board[oblique_sum_index - end + 1][end - 1] == VOID ?
-            VOID : 0 - dfs_status.board[oblique_sum_index - start][start];
+    if (dfs_status.board[oblique_sum_index - start - 1][start + 1] != VOID) {
+        left = 0 - dfs_status.board[oblique_sum_index - start - 1][start + 1];
+    } else if (oblique_sum_index - start - 2 >= 0 && start + 2 < BOARD_SIZE) {
+        if (dfs_status.board[oblique_sum_index - start - 2][start + 2] != VOID) {
+            left = 0 - dfs_status.board[oblique_sum_index - start - 2][start + 2];
+        } else {
+            left = VOID;
+        }
+    }
+    if (dfs_status.board[oblique_sum_index - end + 1][end - 1] != VOID) {
+        right = 0 - dfs_status.board[oblique_sum_index - end + 1][end - 1];
+    } else if (oblique_sum_index - end + 2 < BOARD_SIZE && end - 2 >= 0) {
+        if (dfs_status.board[oblique_sum_index - end + 2][end - 2] != VOID) {
+            right = 0 - dfs_status.board[oblique_sum_index - end + 2][end - 2];
+        } else {
+            right = VOID;
+        }
+    }
 
     for (int k = start; k <= end; ++k) {
         int ch = k == -1 ? left : k == BOARD_SIZE ? right : dfs_status.board[oblique_sum_index - k][k];
@@ -324,12 +342,22 @@ inline void update_line_type_oblique_delta(int oblique_delta_index) {
         end = BOARD_SIZE;
     }
 
-    int left, right;
+    int left = VOID, right = VOID;
 
-    left = dfs_status.board[oblique_delta_index + start + 1][start + 1] == VOID ?
-           VOID : 0 - dfs_status.board[oblique_delta_index + start][start];
-    right = dfs_status.board[oblique_delta_index + end - 1][end - 1] == VOID ?
-            VOID : 0 - dfs_status.board[oblique_delta_index + end][end];
+    if (dfs_status.board[oblique_delta_index + start + 1][start + 1] != VOID) {
+        left = 0 - dfs_status.board[oblique_delta_index + start + 1][start + 1];
+    } else if (oblique_delta_index + start + 2 < BOARD_SIZE && start + 2 < BOARD_SIZE) {
+        if (dfs_status.board[oblique_delta_index + start + 2][start + 2] != VOID) {
+            left = 0 - dfs_status.board[oblique_delta_index + start + 2][start + 2];
+        }
+    }
+    if (dfs_status.board[oblique_delta_index + end - 1][end - 1] != VOID) {
+        right = 0 - dfs_status.board[oblique_delta_index + end - 1][end - 1];
+    } else if (oblique_delta_index + end - 2 >= 0 && end - 2 >= 0) {
+        if (dfs_status.board[oblique_delta_index + end - 2][end - 2] != VOID) {
+            right = 0 - dfs_status.board[oblique_delta_index + end - 2][end - 2];
+        }
+    }
 
     for (int k = start; k <= end; ++k) {
         int ch = k == -1 ? left : k == BOARD_SIZE ? right : dfs_status.board[oblique_delta_index + k][k];
@@ -414,28 +442,6 @@ void evaluate_init() {
     type_grade[s4w3w] = SPLIT_ALIVE_FOUR_WITH3;
     type_grade[s4w3b] = -SPLIT_ALIVE_FOUR_WITH3;
 
-    /*
-    SET0(last_bias);
-    //pay attention that signs for players are different from type grades because these are used by adding.
-    last_bias[a3w] = (int) (-0.8 * CONTINUOUS_THREE);
-    last_bias[a3b] = (int) (0.8 * CONTINUOUS_THREE);
-    last_bias[a2w] = (int) (-0.8 * CONTINUOUS_TWO);
-    last_bias[a2b] = (int) (0.8 * CONTINUOUS_TWO);
-
-    last_bias[h4w] = (int) (-0.8 * HALF_FOUR);
-    last_bias[h4b] = (int) (0.8 * HALF_FOUR);
-    last_bias[h3w] = (int) (-0.8 * HALF_THREE);
-    last_bias[h3b] = (int) (0.8 * HALF_THREE);
-    last_bias[h2w] = (int) (-0.8 * HALF_TWO);
-    last_bias[h2b] = (int) (0.8 * HALF_TWO);
-
-    last_bias[sa3w] = (int) (-0.8 * SPLIT_ALIVE_THREE);
-    last_bias[sa3b] = (int) (0.8 * SPLIT_ALIVE_THREE);
-    last_bias[s4n3w] = (int) (-0.8 * SPLIT_ALIVE_FOUR_WITHOUT3);
-    last_bias[s4n3b] = (int) (0.8 * SPLIT_ALIVE_FOUR_WITHOUT3);
-    last_bias[s4w3w] = (int) (-0.8 * SPLIT_ALIVE_FOUR_WITH3);
-    last_bias[s4w3b] = (int) (0.8 * SPLIT_ALIVE_FOUR_WITH3);
-     */
 }
 
 inline void update_type(int *type_array, int type) {

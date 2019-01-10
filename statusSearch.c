@@ -8,12 +8,7 @@
 
 extern boardStatus status;
 extern boardStatus dfs_status;
-//extern long long cache_total_grade[CACHE_SIZE];
-extern drop_choice cache_choice[CACHE_SIZE];
-extern int subtree_height[CACHE_SIZE];
-extern int found_at_step[CACHE_SIZE];
-extern unsigned long long real_hash[CACHE_SIZE];
-extern unsigned long long hash;
+
 
 //0 for WHITE and 1 for BLACK
 unsigned long long prune_table[2][BOARD_SIZE][BOARD_SIZE];
@@ -57,10 +52,6 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
                         pos_estimate(i, j, search_player_side) - pos_estimate(i, j, -search_player_side));
                 drop_choice1[*num].grade_estimate += prune_table[search_player_side == WHITE ? 0 : 1][i][j];
 
-                //make reached choices sorted ahead
-                if (real_hash[HASH] == hash) {
-                    drop_choice1[*num].grade_estimate += search_player_side == WHITE ? INF : -INF;
-                }
                 ++(*num);
             }
         }
@@ -139,7 +130,7 @@ drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_
                 break;
             }
 
-            if (search_depth >= 4 && duration_check()) {
+            if (duration_check() || tmp.broken_search_flag) {
 #ifdef DEBUG_DRAW
                 printf("search breaks half way\n");
                 time_display(search_depth, result.grade);
@@ -152,7 +143,6 @@ drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_
         result.grade = INF;
         drop_choice tmp;
         for (int k = 0; k < pos_num; ++k) {
-
 
 
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, BLACK);
@@ -196,7 +186,7 @@ drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_
                 //return result;
                 break;
             }
-            if (search_depth >= 4 && duration_check()) {
+            if (duration_check() || tmp.broken_search_flag) {
 #ifdef DEBUG_DRAW
                 printf("search breaks half way\n");
                 time_display(search_depth, result.grade);
@@ -205,13 +195,6 @@ drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_
                 break;
             }
         }
-    }
-    if (no_ban && (!real_hash[HASH] || (real_hash[HASH] != hash))) {
-        //todo: hash really has bugs!
-        real_hash[HASH] = hash;
-        cache_choice[HASH] = result;
-        subtree_height[HASH] = search_depth;
-        found_at_step[HASH] = dfs_status.steps;
     }
     return result;
 }
@@ -257,15 +240,15 @@ void search_init() {
     SET0(prune_table);
 }
 
-inline int64_t grade_standardise(int64_t grade) {
+inline long long int grade_standardise(long long int grade) {
     if (grade <= -CONTINUOUS_FOUR) {
         return -INF;
     } else if (grade >= CONTINUOUS_FOUR) {
         return INF;
     } else if (grade < 0) {
-        return -(int64_t) pow(1.001, -grade);
+        return -(long long) pow(1.001, -grade);
     } else {
-        return (int64_t) pow(1.001, grade);
+        return (long long) pow(1.001, grade);
     }
 }
 

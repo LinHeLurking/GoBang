@@ -9,7 +9,7 @@
 #include "statusBoard.h"
 #include "mathFunc.h"
 #include "drawBoard.h"
-#include "Zoribrist_hash.h"
+
 
 enum {
     row, col, oblique_sum, oblique_delta

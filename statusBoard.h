@@ -8,7 +8,6 @@
 
 #include "icld.h"
 #include "AC_Automachine.h"
-#include "Zoribrist_hash.h"
 #include "mathFunc.h"
 #include "boardEvaluate.h"
 #include "customTypes.h"
