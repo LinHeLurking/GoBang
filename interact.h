@@ -22,4 +22,8 @@ void computer_vs_computer();
 
 int read_pos(int *i, int *j);
 
+void round_announcement(int player_side);
+
+void throw_interact_error(int to_continue);
+
 #endif //GOBANG_INTERACT_H

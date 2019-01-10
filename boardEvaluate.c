@@ -150,13 +150,22 @@ inline void update_line_type_row(int row_index) {
 
     int cur = 0;
 
-    int left, right;
+    int left = VOID, right = VOID;
+    if (dfs_status.board[row_index][0] != VOID) {
+        left = 0 - dfs_status.board[row_index][0];
+    } else if (dfs_status.board[row_index][1] != VOID) {
+        left = 0 - dfs_status.board[row_index][1];
+    } else if (dfs_status.board[row_index][2] != VOID) {
+        left = 0 - dfs_status.board[row_index][2];
+    }
 
-    left = dfs_status.board[row_index][0] != VOID ? 0 - dfs_status.board[row_index][0] :
-           dfs_status.board[row_index][1] != VOID ? 0 - dfs_status.board[row_index][1] : VOID;
-    right = dfs_status.board[row_index][BOARD_SIZE - 1] != VOID ?
-            0 - dfs_status.board[row_index][BOARD_SIZE - 1] : dfs_status.board[row_index][BOARD_SIZE - 2] != VOID ?
-                                                              0 - dfs_status.board[row_index][BOARD_SIZE - 1] : VOID;
+    if (dfs_status.board[row_index][BOARD_SIZE - 1] != VOID) {
+        right = 0 - dfs_status.board[row_index][BOARD_SIZE - 1];
+    } else if (dfs_status.board[row_index][BOARD_SIZE - 2] != VOID) {
+        right = 0 - dfs_status.board[row_index][BOARD_SIZE - 2];
+    } else if (dfs_status.board[row_index][BOARD_SIZE - 3] != VOID) {
+        right = 0 - dfs_status.board[row_index][BOARD_SIZE - 3];
+    }
 
     for (int k = -1; k <= BOARD_SIZE; ++k) {
         int ch = k == -1 ? left : k == BOARD_SIZE ? right : dfs_status.board[row_index][k];
@@ -202,13 +211,21 @@ inline void update_line_type_col(int col_index) {
 
     int cur = 0;
 
-    int left, right;
-
-    left = dfs_status.board[0][col_index] != VOID ? 0 - dfs_status.board[0][col_index] :
-           dfs_status.board[1][col_index] != VOID ? 0 - dfs_status.board[1][col_index] : VOID;
-    right = dfs_status.board[BOARD_SIZE - 1][col_index] != VOID ?
-            0 - dfs_status.board[BOARD_SIZE - 1][col_index] : dfs_status.board[BOARD_SIZE - 2][col_index] != VOID ?
-                                                              0 - dfs_status.board[BOARD_SIZE - 2][col_index] : VOID;
+    int left = VOID, right = VOID;
+    if (dfs_status.board[0][col_index] != VOID) {
+        left = 0 - dfs_status.board[0][col_index];
+    } else if (dfs_status.board[1][col_index] != VOID) {
+        left = 0 - dfs_status.board[1][col_index];
+    } else if (dfs_status.board[2][col_index]) {
+        left = 0 - dfs_status.board[0][col_index];
+    }
+    if (dfs_status.board[BOARD_SIZE - 1][col_index] != VOID) {
+        right = 0 - dfs_status.board[BOARD_SIZE - 1][col_index];
+    } else if (dfs_status.board[BOARD_SIZE - 2][col_index]) {
+        right = 0 - dfs_status.board[BOARD_SIZE - 2][col_index];
+    } else if (dfs_status.board[BOARD_SIZE - 3][col_index]) {
+        right = 0 - dfs_status.board[BOARD_SIZE - 3][col_index];
+    }
 
     for (int k = -1; k <= BOARD_SIZE; ++k) {
         int ch = k == -1 ? left : k == BOARD_SIZE ? right : dfs_status.board[k][col_index];
@@ -265,14 +282,15 @@ inline void update_line_type_oblique_sum(int oblique_sum_index) {
     }
 
     int left = VOID, right = VOID;
-
     if (dfs_status.board[oblique_sum_index - start - 1][start + 1] != VOID) {
         left = 0 - dfs_status.board[oblique_sum_index - start - 1][start + 1];
     } else if (oblique_sum_index - start - 2 >= 0 && start + 2 < BOARD_SIZE) {
         if (dfs_status.board[oblique_sum_index - start - 2][start + 2] != VOID) {
             left = 0 - dfs_status.board[oblique_sum_index - start - 2][start + 2];
-        } else {
-            left = VOID;
+        }
+    } else if (oblique_sum_index - start - 3 >= 0 && start + 3 < BOARD_SIZE) {
+        if (dfs_status.board[oblique_sum_index - start - 3][start + 3] != VOID) {
+            left = 0 - dfs_status.board[oblique_sum_index - start - 3][start + 3];
         }
     }
     if (dfs_status.board[oblique_sum_index - end + 1][end - 1] != VOID) {
@@ -280,8 +298,10 @@ inline void update_line_type_oblique_sum(int oblique_sum_index) {
     } else if (oblique_sum_index - end + 2 < BOARD_SIZE && end - 2 >= 0) {
         if (dfs_status.board[oblique_sum_index - end + 2][end - 2] != VOID) {
             right = 0 - dfs_status.board[oblique_sum_index - end + 2][end - 2];
-        } else {
-            right = VOID;
+        }
+    } else if (oblique_sum_index - end + 3 < BOARD_SIZE && end - 3 >= 0) {
+        if (dfs_status.board[oblique_sum_index - end + 3][end - 3] != VOID) {
+            right = 0 - dfs_status.board[oblique_sum_index - end + 3][end - 3];
         }
     }
 
@@ -343,12 +363,15 @@ inline void update_line_type_oblique_delta(int oblique_delta_index) {
     }
 
     int left = VOID, right = VOID;
-
     if (dfs_status.board[oblique_delta_index + start + 1][start + 1] != VOID) {
         left = 0 - dfs_status.board[oblique_delta_index + start + 1][start + 1];
     } else if (oblique_delta_index + start + 2 < BOARD_SIZE && start + 2 < BOARD_SIZE) {
         if (dfs_status.board[oblique_delta_index + start + 2][start + 2] != VOID) {
             left = 0 - dfs_status.board[oblique_delta_index + start + 2][start + 2];
+        }
+    } else if (oblique_delta_index + start + 3 < BOARD_SIZE && start + 3 < BOARD_SIZE) {
+        if (dfs_status.board[oblique_delta_index + start + 3][start + 3] != VOID) {
+            left = 0 - dfs_status.board[oblique_delta_index + start + 3][start + 3];
         }
     }
     if (dfs_status.board[oblique_delta_index + end - 1][end - 1] != VOID) {
@@ -356,6 +379,10 @@ inline void update_line_type_oblique_delta(int oblique_delta_index) {
     } else if (oblique_delta_index + end - 2 >= 0 && end - 2 >= 0) {
         if (dfs_status.board[oblique_delta_index + end - 2][end - 2] != VOID) {
             right = 0 - dfs_status.board[oblique_delta_index + end - 2][end - 2];
+        }
+    } else if (oblique_delta_index + end - 3 >= 0 && end - 3 >= 0) {
+        if (dfs_status.board[oblique_delta_index + end - 3][end - 3] != VOID) {
+            right = 0 - dfs_status.board[oblique_delta_index + end - 3][end - 3];
         }
     }
 
@@ -520,14 +547,6 @@ inline long long int bias_generator(int player_side) {
                 __ret += 2 * type_grade[h4b];
             }
         }
-
-        if (dfs_status.total_type[a3b] + dfs_status.total_type[sa3b] >= 2) {
-            __ret += type_grade[a5b];
-        } else if (dfs_status.total_type[h4b] + dfs_status.total_type[a3b] + dfs_status.total_type[sa3b] >= 2) {
-            __ret += type_grade[a5b];
-        }
-
-
     } else if (player_side == BLACK) {
         if (record[dfs_status.steps].player == BLACK) {
             if (dfs_status.total_type[a3w] &&
@@ -543,13 +562,14 @@ inline long long int bias_generator(int player_side) {
                 __ret += 2 * type_grade[h4w];
             }
         }
+    }
 
-        if (dfs_status.total_type[a3w] + dfs_status.total_type[sa3w] >= 2) {
-            __ret += type_grade[a5w];
-        } else if (dfs_status.total_type[h4w] + dfs_status.total_type[a3w] + dfs_status.total_type[sa3w] >= 2) {
-            __ret += type_grade[a5w];
-        }
+    if (dfs_status.total_type[h4b] + dfs_status.total_type[a3b] + dfs_status.total_type[sa3b] >= 2) {
+        __ret += type_grade[a5b];
+    }
 
+    if (dfs_status.total_type[h4w] + dfs_status.total_type[a3w] + dfs_status.total_type[sa3w] >= 2) {
+        __ret += type_grade[a5w];
     }
 
     return __ret;

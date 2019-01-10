@@ -204,6 +204,10 @@ drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_
 
 
 inline drop_choice deepening_search(int search_player_side, int depth_bound) {
+    if (depth_bound <= 0) {
+        printf("Search error!\n Invalid depth\n");
+        exit(1);
+    }
     search_duration.start_clock = clock();
     unsigned int d = 2;
     drop_choice best_choice = best_choice_of_lower_depth = alpha_beta_dfs(search_player_side, d, 0 - INF, INF);

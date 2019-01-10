@@ -5,15 +5,18 @@
 #include "interact.h"
 
 #define COLOR_OFFSET 1
+#define BUFFERSIZE 100
 
 extern boardStatus status;
 
 
-char player_side[3][10] = {
-        "black",
+static char player_name[3][10] = {
+        "BLACK",
         "",
-        "white"
+        "WHITE"
 };
+
+static char interact_buffer[BUFFERSIZE];
 
 void play() {
 #ifndef DEBUG_DRAW
@@ -23,17 +26,31 @@ void play() {
     printf("Welcome to Amadeus GoBang game!\nAuthor: Lei Ci\nPlease input the code of corresponding mode:\n");
 
     int mode = -1;
-    char tmp;
     while (mode == -1) {
         printf("Human vs. human: 0\nHuman vs. computer: 1\n");
 #ifdef DEBUG_DRAW
         printf("computer vs. computer: 2\n");
 #endif
-        scanf("%c", &tmp);
-        //printf("tmp:%c", tmp);
-        if (tmp == 'q')exit(0);
-        mode = tmp - '0';
-        //printf("mode:%d", mode);
+        printf("Input 'quit'(without quotes) to quit this game\n");
+
+        while (true) {
+            scanf("%s", interact_buffer);
+            if (strcmp(interact_buffer, "quit") == 0) {
+                return;
+            } else if (interact_buffer[0] >= '0' && interact_buffer[0] <= '1') {
+                mode = interact_buffer[0] - '0';
+                break;
+            }
+#ifdef DEBUG_DRAW
+            else if (interact_buffer[0] == '2') {
+                mode = interact_buffer[0] - '0';
+                break;
+            }
+#endif
+            else {
+                throw_interact_error(1);
+            }
+        }
         switch (mode) {
             case HUMAN_VS_HUMAN:
                 human_vs_human();
@@ -48,7 +65,7 @@ void play() {
 #endif
             default:
                 mode = -1;
-                printf("Wrong code(%d)! input the right one!\n", tmp);
+                printf("Wrong code(%d)! input the right one!\n", mode);
         }
 
     }
@@ -56,73 +73,61 @@ void play() {
 
 
 void human_vs_computer() {
-    int human_player = BLACK;
-    int computer_player = WHITE;
-    int order_check = HUMAN_FIRST;
+    int human_player;
+    int computer_player;
+    int order_check;
 
     printf("Human first or computer first?\nHuman first: 1\nComputer first: 2\n");
-    scanf("%d", &order_check);
+    printf("Input 'quit'(without quotes) to quit this game\n");
+    while (true) {
+        scanf("%s", interact_buffer);
+        if (interact_buffer[0] == '1') {
+            order_check = HUMAN_FIRST;
+            break;
+        } else if (interact_buffer[0] == '2') {
+            order_check = COMPUTER_FIRST;
+            break;
+        } else if (strcmp(interact_buffer, "quit") == 0) {
+            return;
+        } else {
+            throw_interact_error(1);
+        }
+    }
     if (order_check == COMPUTER_FIRST) {
         human_player = WHITE;
         computer_player = BLACK;
         add_piece(7, 7, computer_player);
-    } else if (order_check == HUMAN_FIRST) {
+    } else {
         human_player = BLACK;
         computer_player = WHITE;
     }
     output_board(1);
-
-
-#ifdef PRUNE_DEBUG
-    extern int prune_cnt;
-#endif
-
     while (true) {
-
-        printf("Round for %s, input the position you want to place the piece\n",
-               player_side[human_player + COLOR_OFFSET]);
-        printf("Positions such as h8, H8, 8h, and 8H all could be accepted.\n");
-        printf("Input 'quit'(without quotes) to quit this game\n");
-
+        round_announcement(human_player);
 
         int i, j;
-        read_pos(&i, &j);
         int st = -1;
-        int cnt = 0;
         while (st != 1) {
-            if (cnt++ != 0) {
-                i = j = -1;
-
-                printf("There is already a piece in this place!\n");
-                printf("Round for %s, input the position you want to place the piece\n",
-                       player_side[human_player + COLOR_OFFSET]);
-                printf("Positions such as h8, H8, 8h, and 8H all could be accepted.\n");
-
-                while (!(i >= '0' && i <= '0' + BOARD_SIZE && j >= '0' && j <= '0' + BOARD_SIZE)) {
-                    read_pos(&i, &j);
-                }
-            }
+            read_pos(&i, &j);
             st = add_piece(i, j, human_player);
             if (st == 2) {
                 printf("Ban!\n");
                 return;
+            } else if (st == -1) {
+                printf("There is already a piece in this place!\n");
+                round_announcement(human_player);
             }
         }
         int win_status = winner_check();
         if (win_status == WHITE) {
             output_board(1);
-            printf("The player of %s won.\n", player_side[WHITE + COLOR_OFFSET]);
-            //printf("Press any key to quit\n");
-            //getchar();
+            printf("The player of %s won.\n", player_name[WHITE + COLOR_OFFSET]);
             return;
         } else if (win_status == BLACK) {
             output_board(1);
-            printf("The player of %s won.\n", player_side[BLACK + COLOR_OFFSET]);
-            //printf("Press any key to quit\n");
-            //getchar();
+            printf("The player of %s won.\n", player_name[BLACK + COLOR_OFFSET]);
             return;
         }
-        //drop_choice choice = alpha_beta_dfs(computer_player, DFS_MAX_DEPTH, 0 - INF, INF);
         drop_choice choice = deepening_search(computer_player, DFS_MAX_DEPTH);
         st = add_piece(choice.i, choice.j, computer_player);
 
@@ -130,23 +135,20 @@ void human_vs_computer() {
             output_board(1);
             printf("Ban found! The player of white won.\n");
             output_board(0);
-            return;
+            break;
         } else if (st == -1) {
             printf("Search error!\n");
         } else {
             output_board(1);
         }
-#ifdef PRUNE_DEBUG
-        prune_cnt = 0;
-#endif
         win_status = winner_check();
         if (win_status == WHITE) {
             output_board(1);
-            printf("The player of %s won.\n", player_side[WHITE + COLOR_OFFSET]);
+            printf("The player of %s won.\n", player_name[WHITE + COLOR_OFFSET]);
             break;
         } else if (win_status == BLACK) {
             output_board(1);
-            printf("The player of %s won.\n", player_side[BLACK + COLOR_OFFSET]);
+            printf("The player of %s won.\n", player_name[BLACK + COLOR_OFFSET]);
             break;
         }
     }
@@ -156,44 +158,31 @@ void human_vs_human() {
     int player = BLACK;
     while (true) {
         output_board(1);
-        printf("Round for %s, input the position you want to place the piece\n", player_side[player + COLOR_OFFSET]);
-        printf("Positions such as h8, H8, 8h, and 8H all could be accepted.\n");
-        printf("Input 'quit'(without quotes) to quit this game\n");
+        round_announcement(player);
         int i, j;
-        read_pos(&i, &j);
         int st = -1;
-        int cnt = 0;
         while (st == -1) {
-            if (cnt++ != 0) {
-                printf("There is already a piece in this place!\n");
-                printf("Round for %s, input the position you want to place the piece\n",
-                       player_side[player + COLOR_OFFSET]);
-                printf("Positions such as h8, H8, 8h, and 8H all could be accepted.\n");
-                read_pos(&i, &j);
-            }
+            read_pos(&i, &j);
             st = add_piece(i, j, player);
             if (st == 2) {
                 output_board(1);
                 printf("Ban found! The player of white won.\n");
-                //printf("Press any key to quit\n");
-                //getchar();
                 return;
+            } else if (st == -1) {
+                printf("There is already a piece in this place!\n");
+                round_announcement(player);
             }
         }
 
         int win_status = winner_check();
         if (win_status == WHITE) {
             output_board(1);
-            printf("The player of %s won.\n", player_side[WHITE + COLOR_OFFSET]);
-            //printf("Press any key to quit\n");
-            //getchar();
-            return;
+            printf("The player of %s won.\n", player_name[WHITE + COLOR_OFFSET]);
+            break;
         } else if (win_status == BLACK) {
             output_board(1);
-            printf("The player of %s won.\n", player_side[BLACK + COLOR_OFFSET]);
-            //printf("Press any key to quit\n");
-            //getchar();
-            return;
+            printf("The player of %s won.\n", player_name[BLACK + COLOR_OFFSET]);
+            break;
         }
         player = 0 - player;
     }
@@ -220,9 +209,9 @@ int read_pos(int *i, int *j) {
             *i = 15 - *i;
             break;
         } else {
-            printf("i:%d j:%d", (*i), (*j));
+            printf("Got input: i:%2d j:%2d\n", (*i), (*j));
 
-            printf("Invalid position, input again!\n");
+            throw_interact_error(1);
 
             *i = *j = -1;
             memset(input, 0, sizeof(input));
@@ -236,8 +225,18 @@ int read_pos(int *i, int *j) {
 void computer_vs_computer() {
     printf("This is used only for test\n");
     printf("Input search depth for WHITE and BLACK in order:\n");
-    int white_d, black_d;
-    scanf("%d%d", &white_d, &black_d);
+    int white_d = -1, black_d = -1;
+
+    scanf("%s", interact_buffer);
+    for (int i = 0; i < BUFFERSIZE; ++i) {
+        if (interact_buffer[i] != '\0')
+            white_d = interact_buffer[i] - '0';
+    }
+    scanf("%s", interact_buffer);
+    for (int i = 0; i < BUFFERSIZE; ++i) {
+        if (interact_buffer[i] != '\0')
+            black_d = interact_buffer[i] - '0';
+    }
 
     add_piece(7, 7, BLACK);
     output_board(0);
@@ -256,10 +255,10 @@ void computer_vs_computer() {
         }
         output_board(0);
         if ((winner_status = winner_check()) == WHITE) {
-            printf("The player of %s won.\n", player_side[WHITE + COLOR_OFFSET]);
+            printf("The player of %s won.\n", player_name[WHITE + COLOR_OFFSET]);
             return;
         } else if (winner_status == BLACK) {
-            printf("The player of %s won.\n", player_side[BLACK + COLOR_OFFSET]);
+            printf("The player of %s won.\n", player_name[BLACK + COLOR_OFFSET]);
             return;
         }
         printf("round for BLACK\n");
@@ -268,7 +267,7 @@ void computer_vs_computer() {
         output_board(0);
         if (st == 2) {
             printf("Ban!\n");
-            printf("The player of %s won.\n", player_side[WHITE + COLOR_OFFSET]);
+            printf("The player of %s won.\n", player_name[WHITE + COLOR_OFFSET]);
             return;
         } else if (st == -1) {
             printf("ERROR!\n");
@@ -276,12 +275,27 @@ void computer_vs_computer() {
             return;
         }
         if ((winner_status = winner_check()) == WHITE) {
-            printf("The player of %s won.\n", player_side[WHITE + COLOR_OFFSET]);
+            printf("The player of %s won.\n", player_name[WHITE + COLOR_OFFSET]);
             return;
         } else if (winner_status == BLACK) {
-            printf("The player of %s won.\n", player_side[BLACK + COLOR_OFFSET]);
+            printf("The player of %s won.\n", player_name[BLACK + COLOR_OFFSET]);
             return;
         }
+    }
+}
+
+inline void round_announcement(int player) {
+    printf("Round for %s, input the position you want to place the piece.\n", player_name[player + COLOR_OFFSET]);
+    printf("Positions such as h8, H8, 8h, and 8H all could be accepted.\n");
+    printf("Input 'quit'(without quotes) to quit this game.\n");
+}
+
+void throw_interact_error(int to_continue) {
+    printf("Invalid input!\n");
+    if (to_continue) {
+        printf("Input again.\n");
+    } else {
+        printf("Program ends\n");
     }
 }
 
