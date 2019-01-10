@@ -49,10 +49,12 @@ enum {
 
     sa3w,
     sa3b,
-    s4n3w,
-    s4n3b,
-    s4w3w,
-    s4w3b,
+    s4w,
+    s4b,
+
+    //special types that does not influence grade estimate but influence type recognition
+    s4w_with3,
+    s4b_with3,
 
     l6w,
     l6b
@@ -68,10 +70,10 @@ typedef struct {
 
 
 typedef struct {
-    int8_t trans[3];
-    int32_t grade;
+    int trans[3];
+    int grade;
     //uint8_t type;
-    int8_t fail;
+    int fail;
     __AC_node nd;
 } trie;
 

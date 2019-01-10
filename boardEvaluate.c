@@ -437,27 +437,28 @@ void evaluate_init() {
 
     type_grade[sa3w] = SPLIT_ALIVE_THREE;
     type_grade[sa3b] = -SPLIT_ALIVE_THREE;
-    type_grade[s4n3w] = SPLIT_ALIVE_FOUR_WITHOUT3;
-    type_grade[s4n3b] = -SPLIT_ALIVE_FOUR_WITHOUT3;
-    type_grade[s4w3w] = SPLIT_ALIVE_FOUR_WITH3;
-    type_grade[s4w3b] = -SPLIT_ALIVE_FOUR_WITH3;
+    type_grade[s4w] = SPLIT_ALIVE_FOUR;
+    type_grade[s4b] = -SPLIT_ALIVE_FOUR;
+    type_grade[s4w] = SPLIT_ALIVE_FOUR;
+    type_grade[s4b] = -SPLIT_ALIVE_FOUR;
 
 }
 
 inline void update_type(int *type_array, int type) {
+
     switch (type) {
-        case s4w3w:
-            ++type_array[s4w3w];
+        case s4w_with3:
+            //the split-four type has been considered in type s4w, so you do not need to add its type counter
             --type_array[a3w];
             break;
-        case s4w3b:
-            ++type_array[s4w3b];
+        case s4b_with3:
             --type_array[a3b];
             break;
         default:
             ++type_array[type];
             break;
     }
+
 }
 
 inline void ban_clear() {
@@ -466,8 +467,7 @@ inline void ban_clear() {
     ban_cnt[3] -= dfs_status.total_type[a3b] + dfs_status.total_type[sa3b];
 
 
-    ban_cnt[4] -= dfs_status.total_type[a4b] + dfs_status.total_type[h4b] + dfs_status.total_type[s4w3b] +
-                  dfs_status.total_type[s4n3b];
+    ban_cnt[4] -= dfs_status.total_type[a4b] + dfs_status.total_type[h4b] + dfs_status.total_type[s4b];
 
     ban_cnt[6] -= dfs_status.total_type[l6b];
 
@@ -477,8 +477,7 @@ inline void ban_detect() {
     ban_cnt[3] += dfs_status.total_type[a3b] + dfs_status.total_type[sa3b];
 
 
-    ban_cnt[4] += dfs_status.total_type[a4b] + dfs_status.total_type[h4b] + dfs_status.total_type[s4w3b] +
-                  dfs_status.total_type[s4n3b];
+    ban_cnt[4] += dfs_status.total_type[a4b] + dfs_status.total_type[h4b] + dfs_status.total_type[s4b];
 
     ban_cnt[6] += dfs_status.total_type[l6b];
 }
@@ -522,9 +521,12 @@ inline long long int bias_generator(int player_side) {
             }
         }
 
-        if (dfs_status.total_type[a3b] >= 2) {
+        if (dfs_status.total_type[a3b] + dfs_status.total_type[sa3b] >= 2) {
+            __ret += type_grade[a5b];
+        } else if (dfs_status.total_type[h4b] + dfs_status.total_type[a3b] + dfs_status.total_type[sa3b] >= 2) {
             __ret += type_grade[a5b];
         }
+
 
     } else if (player_side == BLACK) {
         if (record[dfs_status.steps].player == BLACK) {
@@ -542,7 +544,9 @@ inline long long int bias_generator(int player_side) {
             }
         }
 
-        if (dfs_status.total_type[a3w] >= 2) {
+        if (dfs_status.total_type[a3w] + dfs_status.total_type[sa3w] >= 2) {
+            __ret += type_grade[a5w];
+        } else if (dfs_status.total_type[h4w] + dfs_status.total_type[a3w] + dfs_status.total_type[sa3w] >= 2) {
             __ret += type_grade[a5w];
         }
 

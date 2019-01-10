@@ -9,7 +9,7 @@
 #include "customTypes.h"
 
 //CAUTIONS!!! this PATTERNS must be exactly the same as the number of patterns
-#define PATTERNS 44
+#define PATTERNS 48
 #define END 107
 
 void AC_build();
@@ -21,13 +21,12 @@ void AC_build();
 #define CONTINUOUS_TWO 10L
 #define CONTINUOUS_ONE 1L
 
-#define HALF_FOUR 1000L
+#define HALF_FOUR 800L
 #define HALF_THREE 80L
 #define HALF_TWO 5L
 
 #define SPLIT_ALIVE_THREE 150L
-#define SPLIT_ALIVE_FOUR_WITHOUT3 1000L
-#define SPLIT_ALIVE_FOUR_WITH3 800L
+#define SPLIT_ALIVE_FOUR 1000L
 
 #define LONG_CONTINUOUS 500000L
 

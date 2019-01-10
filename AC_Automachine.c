@@ -11,71 +11,71 @@ __AC_node AC_node[PATTERNS] = {
         {
                 a5w,
                 {VOID,  WHITE, WHITE, WHITE, WHITE, WHITE, VOID,  END},
-                {-6, 0,  END},
-                {l6w,   l6w},
+                {-6, 0, END},
+                {l6w, l6w},
                 FIVE_GRADE
         },
         {
                 a4w,
                 {VOID,  WHITE, WHITE, WHITE, WHITE, VOID,  END},
-                {-5, 0,  END},
-                {a5w,   a5w},
+                {-5, 0, END},
+                {a5w, a5w},
                 CONTINUOUS_FOUR
         },
         {
                 a3w,
                 {VOID,  WHITE, WHITE, WHITE, VOID,  END},
-                {-4, 0,  END},
-                {a4w,   a4w},
+                {-4, 0, END},
+                {a4w, a4w},
                 CONTINUOUS_THREE
         },
         {
                 a2w,
                 {VOID,  WHITE, WHITE, VOID,  END},
-                {-3, 0,  END},
-                {a3w,   a3w},
+                {-3, 0, END},
+                {a3w, a3w},
                 CONTINUOUS_TWO
         },
         {
                 a1w,
                 {VOID,  WHITE, VOID,  END},
-                {-2, 0,  END},
-                {a2w,   a2w},
+                {-2, 0, END},
+                {a2w, a2w},
                 CONTINUOUS_ONE
         },
         {
                 a5b,
                 {VOID,  BLACK, BLACK, BLACK, BLACK, BLACK, VOID,  END},
-                {-6, 0,  END},
-                {l6b,   l6b},
+                {-6, 0, END},
+                {l6b, l6b},
                 -FIVE_GRADE
         },
         {
                 a4b,
                 {VOID,  BLACK, BLACK, BLACK, BLACK, VOID,  END},
-                {-5, 0,  END},
-                {a5b,   a5b},
+                {-5, 0, END},
+                {a5b, a5b},
                 -CONTINUOUS_FOUR
         },
         {
                 a3b,
                 {VOID,  BLACK, BLACK, BLACK, VOID,  END},
-                {-4, 0,  END},
-                {a4b,   a4b},
+                {-4, 0, END},
+                {a4b, a4b},
                 -CONTINUOUS_THREE
         },
         {
                 a2b,
                 {VOID,  BLACK, BLACK, VOID,  END},
-                {-3, 0,  END},
-                {a3b,   a3b},
+                {-3, 0, END},
+                {a3b, a3b},
                 -CONTINUOUS_TWO
         },
         {
                 a1b,
                 {VOID,  BLACK, VOID,  END},
-                {-2, 0,  END},
-                {a2b,   a2b},
+                {-2, 0, END},
+                {a2b, a2b},
                 -CONTINUOUS_ONE
         },
         {
@@ -208,99 +208,125 @@ __AC_node AC_node[PATTERNS] = {
                 sa3w,
                 {VOID,  WHITE, VOID,  WHITE, WHITE, VOID,  END},
                 {-5, -3, 0, END},
-                {s4n3w, a4w, s4w3w},
+                {s4w, a4w, s4w},
                 SPLIT_ALIVE_THREE
         },
         {
                 sa3w,
                 {VOID,  WHITE, WHITE, VOID,  WHITE, VOID,  END},
                 {-5, -2, 0, END},
-                {s4w3w, a4w, s4n3w},
+                {s4w, a4w, s4w},
                 SPLIT_ALIVE_THREE
         },
         {
                 sa3b,
                 {VOID,  BLACK, VOID,  BLACK, BLACK, VOID,  END},
                 {-5, -3, 0, END},
-                {s4n3b, a4b, s4w3b},
+                {s4b, a4b, s4b},
                 -SPLIT_ALIVE_THREE
         },
         {
                 sa3b,
                 {VOID,  BLACK, BLACK, VOID,  BLACK, VOID,  END},
                 {-5, -2, 0, END},
-                {s4w3b, a4b, s4n3b},
+                {s4b, a4b, s4b},
                 -SPLIT_ALIVE_THREE
         },
         {
-                s4n3w,
+                s4w,
                 {WHITE, WHITE, WHITE, VOID,  WHITE, END},
                 {-1, END},
                 {h5b},
-                SPLIT_ALIVE_FOUR_WITHOUT3
+                SPLIT_ALIVE_FOUR
         },
         {
-                s4n3w,
+                s4w,
                 {WHITE, VOID,  WHITE, WHITE, WHITE, END},
-                {-4, END},
-                {h5b},
-                SPLIT_ALIVE_FOUR_WITHOUT3
-        },
-        {
-                s4n3w,
-                {WHITE, WHITE, VOID,  WHITE, WHITE, END},
                 {-3, END},
-                {h5w},
-                SPLIT_ALIVE_FOUR_WITHOUT3
+                {h5b},
+                SPLIT_ALIVE_FOUR
         },
         {
-                s4n3b,
+                s4w,
+                {WHITE, WHITE, VOID,  WHITE, WHITE, END},
+                {-2, END},
+                {h5w},
+                SPLIT_ALIVE_FOUR
+        },
+        {
+                s4b,
                 {BLACK, BLACK, BLACK, VOID,  BLACK, END},
                 {-1, END},
                 {h5b},
-                -SPLIT_ALIVE_FOUR_WITHOUT3
+                -SPLIT_ALIVE_FOUR
         },
         {
-                s4n3b,
+                s4b,
                 {BLACK, VOID,  BLACK, BLACK, BLACK, END},
-                {-4, END},
+                {-3, END},
                 {h5b},
-                -SPLIT_ALIVE_FOUR_WITHOUT3
+                -SPLIT_ALIVE_FOUR
         },
         {
-                s4n3b,
+                s4b,
                 {BLACK, BLACK, VOID,  BLACK, BLACK, END},
                 {-2, END},
                 {h5b},
-                -SPLIT_ALIVE_FOUR_WITHOUT3
+                -SPLIT_ALIVE_FOUR
         },
         {
-                s4w3w,
+                s4w,
                 {WHITE, WHITE, WHITE, VOID,  WHITE, END},
-                {-5, -1, END},
-                {h4w,   a5w},
-                SPLIT_ALIVE_FOUR_WITH3
+                {-1, END},
+                {a5w},
+                SPLIT_ALIVE_FOUR
         },
         {
-                s4w3w,
+                s4w,
                 {WHITE, VOID,  WHITE, WHITE, WHITE, END},
-                {-4, 0,  END},
-                {a5w,   h4w},
-                SPLIT_ALIVE_FOUR_WITH3
+                {-3, END},
+                {a5w},
+                SPLIT_ALIVE_FOUR
         },
         {
-                s4w3b,
+                s4b,
                 {BLACK, BLACK, BLACK, VOID,  BLACK, END},
-                {-5, -1, END},
-                {h4b,   a5b},
-                -SPLIT_ALIVE_FOUR_WITH3
+                {-1, END},
+                {a5b},
+                -SPLIT_ALIVE_FOUR
         },
         {
-                s4w3b,
+                s4b,
                 {BLACK, VOID,  BLACK, BLACK, BLACK, END},
-                {-4, 0,  END},
-                {a5b,   h4b},
-                -SPLIT_ALIVE_FOUR_WITH3
+                {-3, END},
+                {a5b,},
+                -SPLIT_ALIVE_FOUR
+        },
+        {
+                s4w_with3,
+                //remember that this does not contain an alive three
+                {VOID,  WHITE, WHITE, WHITE, VOID,  WHITE, END},
+                {END},
+                0
+        },
+        {
+                s4w_with3,
+                //remember that this does not contain an alive three
+                {VOID,  WHITE, VOID,  WHITE, WHITE, WHITE, END},
+                {END},
+                0
+        },
+        {
+                s4b_with3,
+                {VOID,  BLACK, BLACK, BLACK, VOID,  BLACK, END},
+                {END},
+                0
+        },
+        {
+                s4b_with3,
+                {VOID,  BLACK, VOID,  BLACK, BLACK, BLACK, END},
+                {END},
+                0
         },
         {
                 l6b,
@@ -318,8 +344,8 @@ __AC_node AC_node[PATTERNS] = {
 
         }
 };
-uint8_t root = 0;
-uint8_t count = 0;
+static unsigned int root = 0;
+static unsigned int count = 0;
 
 void AC_init() {
     root = count = 0;

@@ -71,7 +71,6 @@ int prune_cnt = 0;
 drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_t alpha, int64_t beta) {
     drop_choice result;
     result.broken_search_flag = false;
-    bool no_ban = true;
 
     if (search_depth == 0) {
         // it doesn't matter what the position is in the very bottom.
@@ -152,7 +151,6 @@ drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_
 
             if (is_ban()) {
                 dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, VOID);
-                no_ban = false;
                 continue;
             } else if (winner_check() == BLACK) {
                 dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, VOID);
@@ -213,7 +211,7 @@ inline drop_choice deepening_search(int search_player_side, int depth_bound) {
     time_display(d, best_choice.grade);
 #endif
     for (d = d + 2; d <= depth_bound; d += 2) {
-        best_choice = alpha_beta_dfs(search_player_side, d, 0 - INF, INF);
+        best_choice = best_choice_of_lower_depth = alpha_beta_dfs(search_player_side, d, 0 - INF, INF);
 #ifdef DEBUG_DRAW
         time_display(d, best_choice.grade);
 #endif
