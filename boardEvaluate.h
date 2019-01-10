@@ -43,8 +43,6 @@ void ban_detect();
 
 void increment_void(long long v[][PATTERN_TYPES+5], __AC_node *p, int index);
 
-long long int type_shift(int type, int player_side);
-
-long long int last_bias_generator(int player_side);
+long long int bias_generator(int player_side);
 
 #endif //GOBANG_BOARDEVALUATE_H

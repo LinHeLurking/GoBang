@@ -127,7 +127,7 @@ inline long long int grade_estimate(int player_side) {
         }
     }
 
-    __grade += last_bias_generator(player_side);
+    __grade += bias_generator(player_side);
 
     return __grade;
 }
@@ -502,106 +502,50 @@ inline long long int pos_estimate(int i, int j, int player_side) {
     return ans;
 }
 
-inline long long int type_shift(int type, int player_side) {
-    if (player_side == WHITE) {
-        switch (type) {
-            case a1w:
-                return CONTINUOUS_TWO;
-            case a2w:
-                return CONTINUOUS_THREE;
-            case a3w:
-                return CONTINUOUS_FOUR;
-            case a4w:
-                return FIVE_GRADE;
-            case a5w:
-                return FIVE_GRADE;
-            case h2w:
-                return HALF_THREE;
-            case h3w:
-                return HALF_FOUR;
-            case h4w:
-                return FIVE_GRADE;
-            case h5w:
-                return FIVE_GRADE;
-            case d5w:
-                return FIVE_GRADE;
-            case l6w:
-                return LONG_CONTINUOUS;
-            case sa3w:
-                return CONTINUOUS_FOUR;
-            case s4n3w:
-                FIVE_GRADE;
-            case s4w3w:
-                FIVE_GRADE;
-            default:
-                return 0;
-        }
-    } else {
-        switch (type) {
-            case a1b:
-                return -CONTINUOUS_TWO;
-            case a2b:
-                return -CONTINUOUS_THREE;
-            case a3b:
-                return -CONTINUOUS_FOUR;
-            case a4b:
-                return -FIVE_GRADE;
-            case a5b:
-                return -FIVE_GRADE;
-            case h2b:
-                return -HALF_THREE;
-            case h3b:
-                return -HALF_FOUR;
-            case h4b:
-                return -FIVE_GRADE;
-            case h5b:
-                return -FIVE_GRADE;
-            case d5b:
-                return -FIVE_GRADE;
-            case sa3b:
-                return -CONTINUOUS_FOUR;
-            case s4n3b:
-                return -FIVE_GRADE;
-            case s4w3b:
-                return -FIVE_GRADE;
-            case l6b:
-                return LONG_CONTINUOUS;
-            default:
-                return 0;
-        }
-    }
-}
-
-inline long long int last_bias_generator(int player_side) {
+inline long long int bias_generator(int player_side) {
     //todo: finish bias check here.
     long long __ret = 0;
-    if (player_side == WHITE && record[dfs_status.steps].player == WHITE) {
-        if (dfs_status.total_type[a3b] &&
-            !(dfs_status.total_type[h4w] || dfs_status.total_type[a4w])) {
-            __ret += 2 * type_grade[a3b];
+    if (player_side == WHITE) {
+        if (record[dfs_status.steps].player == WHITE) {
+            if (dfs_status.total_type[a3b] &&
+                !(dfs_status.total_type[h4w] || dfs_status.total_type[a4w])) {
+                __ret += 2 * type_grade[a3b];
+            }
+            if (dfs_status.total_type[sa3b] &&
+                !(dfs_status.total_type[h4w] || dfs_status.total_type[a4w])) {
+                __ret += 2 * type_grade[sa3b];
+            }
+            if (dfs_status.total_type[h4b] &&
+                !(dfs_status.total_type[a5w] || dfs_status.total_type[h5w] ||
+                  dfs_status.total_type[d5w] || dfs_status.total_type[l6w])) {
+                __ret += 2 * type_grade[h4b];
+            }
         }
-        if (dfs_status.total_type[sa3b] &&
-            !(dfs_status.total_type[h4w] || dfs_status.total_type[a4w])) {
-            __ret += 2 * type_grade[sa3b];
+
+        if (dfs_status.total_type[a3b] >= 2) {
+            __ret += type_grade[a5b];
         }
-        if (dfs_status.total_type[h4b] &&
-            !(dfs_status.total_type[a5w] || dfs_status.total_type[h5w] ||
-              dfs_status.total_type[d5w] || dfs_status.total_type[l6w])) {
-            __ret += 2 * type_grade[h4b];
+
+    } else if (player_side == BLACK) {
+        if (record[dfs_status.steps].player == BLACK) {
+            if (dfs_status.total_type[a3w] &&
+                !(dfs_status.total_type[h4b] || dfs_status.total_type[a4b])) {
+                __ret += 2 * type_grade[a3w];
+            }
+            if (dfs_status.total_type[sa3w] &&
+                !(dfs_status.total_type[h4b] || dfs_status.total_type[a4b])) {
+                __ret += 2 * type_grade[sa3w];
+            }
+            if (dfs_status.total_type[h4w] &&
+                !(dfs_status.total_type[a5b] || dfs_status.total_type[h5b] || dfs_status.total_type[d5b])) {
+                __ret += 2 * type_grade[h4w];
+            }
         }
-    } else if (player_side == BLACK && record[dfs_status.steps].player == BLACK) {
-        if (dfs_status.total_type[a3w] &&
-            !(dfs_status.total_type[h4b] || dfs_status.total_type[a4b])) {
-            __ret += 2 * type_grade[a3w];
+
+        if (dfs_status.total_type[a3w] >= 2) {
+            __ret += type_grade[a5w];
         }
-        if (dfs_status.total_type[sa3w] &&
-            !(dfs_status.total_type[h4b] || dfs_status.total_type[a4b])) {
-            __ret += 2 * type_grade[sa3w];
-        }
-        if (dfs_status.total_type[h4w] &&
-            !(dfs_status.total_type[a5b] || dfs_status.total_type[h5b] || dfs_status.total_type[d5b])) {
-            __ret += 2 * type_grade[h4w];
-        }
+
     }
 
     return __ret;

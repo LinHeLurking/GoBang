@@ -94,9 +94,9 @@ drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_
         drop_choice tmp;
         for (int k = 0; k < pos_num; ++k) {
 
-
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, WHITE);
 
+            //check whether a winner occurs only at this place is useless because it helps nothing.
             if (winner_check() == WHITE) {
                 dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, VOID);
                 result.grade = FIVE_GRADE;
@@ -105,15 +105,18 @@ drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_
                 break;
             }
 
+
             tmp = alpha_beta_dfs(0 - search_player_side, search_depth - 1, alpha, beta);
             tmp.i = drop_choice1[k].i, tmp.j = drop_choice1[k].j;
 
             if (tmp.grade > result.grade) {
                 result = tmp;
-                //result.broken_search_flag = false;
             }
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, VOID);
             alpha = long_long_max(alpha, result.grade);
+            if (result.grade >= FIVE_GRADE) {
+                break;
+            }
 
             if (beta < alpha) {
 #ifdef PRUNE_DEBUG
@@ -169,7 +172,9 @@ drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_
             }
             dfs_add_piece(drop_choice1[k].i, drop_choice1[k].j, VOID);
             beta = long_long_min(beta, result.grade);
-
+            if (result.grade <= -FIVE_GRADE) {
+                break;
+            }
 
             if (beta < alpha) {
 #ifdef PRUNE_DEBUG
@@ -213,9 +218,11 @@ inline drop_choice deepening_search(int search_player_side, int depth_bound) {
         time_display(d, best_choice.grade);
 #endif
         if (best_choice.broken_search_flag ||
-            abs(best_choice.grade) >= FIVE_GRADE ||
-                                   search_duration.start_clock - clock() >= 0.99 * TIME_LIMIT) {
+            search_duration.start_clock - clock() >= 0.99 * TIME_LIMIT) {
             return best_choice_of_lower_depth;
+        }
+        if (best_choice.grade * search_player_side >= FIVE_GRADE) {
+            return best_choice;
         }
     }
     return best_choice;
