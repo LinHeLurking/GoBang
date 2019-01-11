@@ -12,7 +12,7 @@
 
 void generate_possible_pos(drop_choice *drop_choice1, int *num, int search_player_side);
 
-drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_t alpha, int64_t beta);
+drop_choice alpha_beta_dfs(int search_player_side, unsigned int search_depth, long long alpha, long long beta);
 
 drop_choice deepening_search(int search_player_side, int depth_bound);
 
@@ -25,7 +25,7 @@ void time_init();
 //standarise the grade to fit with the scale of 8^remaining_depth
 long long int grade_standardise(long long int grade);
 
-void time_display(uint32_t depth, long long int dfs_grade);
+void time_display(unsigned int depth, long long int dfs_grade);
 
 int duration_check();
 

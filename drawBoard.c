@@ -32,7 +32,7 @@ char black_piece[2][4] = {{"○"},
                           {"△"}};
 //0==null 1==white -1==black
 
-
+// print the board onto the terminal
 void output_board(int clear) {
 #ifndef DEBUG_DRAW
     if(clear)
@@ -77,24 +77,6 @@ void output_board(int clear) {
     printf("BLACK: %lld\n", grade_estimate(BLACK));
 #endif
 
-#ifndef USE_HASH
-    printf("(without hash)\n");
-#endif
-
-
-#ifdef PLAYER_SIDE_DEBUG
-    printf("Last player: ");
-    switch (record[status.steps].player) {
-        case WHITE:
-            printf("white\n");
-            break;
-        case BLACK:
-            printf("black\n");
-            break;
-        default:
-            printf("No one\n");
-    }
-#endif
 }
 
 void dfs_output_board() {

@@ -29,8 +29,6 @@
 #endif
 
 #define INF 20000000000007
-#define CACHE_SIZE 10009897
-#define HASH (hash%CACHE_SIZE)
 #define COMPUTER_FIRST 2
 #define HUMAN_FIRST 1
 
@@ -38,13 +36,6 @@
 #define DEBUG_DRAW
 #endif
 
-#define USE_HASH
-//#define DFS_BOARD_DEBUG
-//#define PRUNE_DEBUG
-//#define PLAYER_SIDE_DEBUG
-//#define HASH_DEBUG
-//#define RECORD_DEBUG
-//#define BAN_DEBUG
 
 #define TRIE_SIZE 1000
 #define STATUS_NUM 3

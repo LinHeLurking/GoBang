@@ -11,7 +11,7 @@ extern boardStatus dfs_status;
 
 
 //0 for WHITE and 1 for BLACK
-unsigned long long prune_table[2][BOARD_SIZE][BOARD_SIZE];
+static unsigned long long prune_table[2][BOARD_SIZE][BOARD_SIZE];
 /*
  * values are stored in this table by 8^remaining_depth
  * and the scale of different depth are following:
@@ -62,13 +62,11 @@ inline void generate_possible_pos(drop_choice *drop_choice1, int *num, int searc
     *num = int_min(*num, FORCE_CUT);
 }
 
-#ifdef PRUNE_DEBUG
-int prune_cnt = 0;
-#endif
-
 //remember that the larger the grade is, the better the status is for WHITE. and vice versa.
 //alpha is the upper bound and beta is the lower bound.
-drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_t alpha, int64_t beta) {
+drop_choice alpha_beta_dfs(int search_player_side, unsigned int search_depth, long long alpha, long long beta) {
+    // as the name suggests, this is a depth first searching with the alpha-beta-prune method.
+    // the return type is a struct which stores the place and the grade of that choice.
     drop_choice result;
     result.broken_search_flag = false;
 
@@ -204,6 +202,7 @@ drop_choice alpha_beta_dfs(int search_player_side, uint32_t search_depth, int64_
 
 
 inline drop_choice deepening_search(int search_player_side, int depth_bound) {
+    // iterative deepening searching function that tries to use every seconds of the time limit.
     if (depth_bound <= 0) {
         printf("Search error!\n Invalid depth\n");
         exit(1);
@@ -219,6 +218,7 @@ inline drop_choice deepening_search(int search_player_side, int depth_bound) {
 #ifdef DEBUG_DRAW
         time_display(d, best_choice.grade);
 #endif
+        // if time is not enough, then return the choice of the searching of lower depth.
         if (best_choice.broken_search_flag ||
             search_duration.start_clock - clock() >= 0.99 * TIME_LIMIT) {
             return best_choice_of_lower_depth;
@@ -265,7 +265,7 @@ void time_init() {
     search_duration.start_clock = search_duration.end_clock = 0;
 }
 
-inline void time_display(uint32_t depth, long long int dfs_grade) {
+inline void time_display(unsigned int depth, long long int dfs_grade) {
     clock_t tm = (clock() - search_duration.start_clock);
     printf("time: %2.3lf  depth: %d  ", tm * 1.0 / CLOCKS_PER_SEC, depth);
     printf("grade: %lld\n", dfs_grade);

@@ -347,7 +347,8 @@ __AC_node AC_node[PATTERNS] = {
 static unsigned int root = 0;
 static unsigned int count = 0;
 
-void AC_init() {
+void __AC_init() {
+    // build the trans
     root = count = 0;
     for (int i = 0; i < TRIE_SIZE; ++i) {
         tr[i].grade = 0;
@@ -373,6 +374,7 @@ void insert(int *s, __AC_node nd) {
 
 
 void build_AC_fail() {
+    // build the 'fail' pointer of each node
     int AC_list[TRIE_SIZE];
     memset(AC_list, 0, sizeof(AC_list));
     int head = 0, tail = 0;
@@ -400,7 +402,9 @@ void build_AC_fail() {
 }
 
 void AC_build() {
-    AC_init();
+    // this program uses AC auto machine to recognise piece patterns
+    // following lines finish the initialization of AC auto machine
+    __AC_init();
     for (int i = 0; i < PATTERNS; ++i) {
         insert(AC_node[i].pattern, AC_node[i]);
     }

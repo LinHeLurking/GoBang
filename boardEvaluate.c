@@ -4,8 +4,6 @@
 
 #include "boardEvaluate.h"
 
-#define __WHITE 1
-#define __BLACK 0
 
 long long type_grade[PATTERN_TYPES];
 //long long last_bias[PATTERN_TYPES];
@@ -16,77 +14,11 @@ extern drop_record record[BOARD_SIZE * BOARD_SIZE + 5];
 
 extern trie tr[TRIE_SIZE];
 // values in ban_cnt are only valid right after calling update_grade()
-int ban_cnt[7];
+static int ban_cnt[7];
 
 //1==white wins -1== black wins 0==no one wins
 int winner_check() {
-    int __flag = VOID;
-    int continuous5[5] = {};
-    int sum = 0;
-    //clear these two after each loop
-    //loop in row
-    for (int i = 0; i < BOARD_SIZE; ++i) {
-        sum = 0;
-        memset(continuous5, 0, sizeof(continuous5));
-        for (int j = 0; j < BOARD_SIZE; ++j) {
-            sum -= continuous5[j % 5];
-            continuous5[j % 5] = dfs_status.board[i][j];
-            sum += continuous5[j % 5];
-            if (sum == 5)
-                __flag = WHITE;
-            else if (sum == -5)
-                __flag = BLACK;
-        }
-    }
-    //loop in col
-    for (int j = 0; j < BOARD_SIZE; ++j) {
-        sum = 0;
-        memset(continuous5, 0, sizeof(continuous5));
-        for (int i = 0; i < BOARD_SIZE; ++i) {
-            sum -= continuous5[i % 5];
-            continuous5[i % 5] = dfs_status.board[i][j];
-            sum += continuous5[i % 5];
-            if (sum == 5)
-                __flag = WHITE;
-            else if (sum == -5)
-                __flag = BLACK;
-        }
-    }
-    //loop oblique
-    //i+j==offset
-    for (int offset = 0; offset <= 2 * (BOARD_SIZE - 1); ++offset) {
-        sum = 0;
-        memset(continuous5, 0, sizeof(continuous5));
-        int i = int_min(offset, BOARD_SIZE - 1);
-        int j = offset - i;
-        for (; i >= 0 && j < BOARD_SIZE; --i, ++j) {
-            sum -= continuous5[i % 5];
-            continuous5[i % 5] = dfs_status.board[i][j];
-            sum += continuous5[i % 5];
-            if (sum == 5)
-                __flag = WHITE;
-            else if (sum == -5)
-                __flag = BLACK;
-        }
-    }
-    //i-j==offset
-    for (int offset = -(BOARD_SIZE - 1); offset < BOARD_SIZE; ++offset) {
-        sum = 0;
-        memset(continuous5, 0, sizeof(continuous5));
-        int i = int_max(0, offset);
-        int j = i - offset;
-        for (; i < BOARD_SIZE && j < BOARD_SIZE; ++i, ++j) {
-            sum -= continuous5[i % 5];
-            continuous5[i % 5] = dfs_status.board[i][j];
-            sum += continuous5[i % 5];
-            if (sum == 5)
-                __flag = WHITE;
-            else if (sum == -5)
-                __flag = BLACK;
-        }
-    }
-
-
+    // check whether a winner occurs.
     int flag;
     if (dfs_status.total_type[a5w] || dfs_status.total_type[d5w] || dfs_status.total_type[h5w] ||
         dfs_status.total_type[l6w] || dfs_status.total_type[l6b]) {
@@ -100,15 +32,11 @@ int winner_check() {
         flag = VOID;
     }
 
-    if (__flag != flag) {
-        printf("ERROR IN WINNER_CHECK!\n");
-    }
-
-    return __flag;
+    return flag;
 }
 
 inline long long int grade_estimate(int player_side) {
-
+    // estimating the grades by the number of each pattern and its grade.
     long long __grade = 0;
 
     if (player_side == WHITE) {
@@ -127,11 +55,14 @@ inline long long int grade_estimate(int player_side) {
         }
     }
 
+    // bias here means the offset for the player that just placed a piece and some mixed pattern type.
     __grade += bias_generator(player_side);
 
     return __grade;
 }
 
+// these four functions can estimate the grade of a line by the patterns in the board. and then they will update the
+// counter of total petterns.
 inline void update_line_type_row(int row_index) {
     for (int i = 1; i <= PATTERN_TYPES; ++i) {
         dfs_status.total_type[i] -= dfs_status.row_type[row_index][i];
@@ -414,7 +345,10 @@ inline void update_line_type_oblique_delta(int oblique_delta_index) {
 }
 
 inline void update_grade(int i, int j) {
+    //this function is used to update the information in a status_board right after a piece is dropped.
 
+    // in this program, ban is detected by counting the pattern increment after a piece dropping,
+    // so you have to clear the remaining numbers of previous counting processes.
     ban_clear();
 
     update_line_type_row(i);
@@ -427,7 +361,6 @@ inline void update_grade(int i, int j) {
 
 
 bool is_ban() {
-    //todo: there are problems with ban check, really.
     if (ban_cnt[6] > 0)
         return 1;
     if (ban_cnt[4] >= 2)
@@ -529,7 +462,6 @@ inline long long int pos_estimate(int i, int j, int player_side) {
 }
 
 inline long long int bias_generator(int player_side) {
-    //todo: finish bias check here.
     long long __ret = 0;
     if (player_side == WHITE) {
         if (record[dfs_status.steps].player == WHITE) {
@@ -580,5 +512,3 @@ inline long long int bias_generator(int player_side) {
 #undef END
 #undef MAX_PATTERN_LEN
 #undef COLOR_OFFSET
-#undef __WHITE
-#undef __BLACK

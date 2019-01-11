@@ -2,6 +2,15 @@
 // Created by les on 18-12-22.
 //
 
+/*
+ * almost all the custom types are defined in this file:
+ *      pattern enum
+ *      nodes in AC auto machine
+ *      trie of the AC auto machine
+ *      struct of the board status
+ *      struct of a choice
+ * */
+
 #ifndef GOBANG_CUSTOMTYPES_H
 #define GOBANG_CUSTOMTYPES_H
 
@@ -13,6 +22,7 @@
 #define MAX_PATTERN_LEN 20
 
 #define PATTERN_TYPES 28
+
 
 enum {
     /* axw: alive x piece(s) of white
@@ -96,8 +106,6 @@ typedef struct {
     //these are used to record the last place and the total steps
     int steps;
 
-    int __WHITE, __BLACK;
-
 } boardStatus;
 
 typedef struct {
@@ -108,15 +116,11 @@ typedef struct {
     int64_t grade;
     int i, j;
     //this is used for searching
-    //int player;
     int64_t grade_estimate;
 
     bool broken_search_flag;
 } drop_choice;
 
-typedef struct {
-    int8_t type[PATTERN_TYPES];
-} __line_status;
 
 typedef struct {
     clock_t start_clock;

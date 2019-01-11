@@ -18,7 +18,4 @@ int dfs_add_piece(int i, int j, int piece_color);
 
 void status_init();
 
-int32_t *board_acess(int32_t index1, int32_t index2, int32_t line_type);
-
-
 #endif //GOBANG_STATUSBOARD_H

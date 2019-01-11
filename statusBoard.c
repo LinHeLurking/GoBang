@@ -2,11 +2,18 @@
 // Created by Nine_yota on 2018-09-29.
 //
 
+/*
+ * status means the status of the whole board, which includes pieces and their places in the board,
+ * piece patterns of the board and the information of each void place.
+ * the board is split into two parts, one is used for the real status and the other is for dfs.
+ *
+ * record is an array that stores the choice of each player from the beginning.
+ * information in the record will be updated after each dfs drop is placed, which means piece dropping during dfs
+ * has effect on the record.
+ * */
+
 #include "statusBoard.h"
 
-//status_board[i][j] -> oblique_line_sum[i+j][j]
-
-//status_board[i][j] -> oblique_line_delta[i-j+BOARD_SIZE][j]
 
 boardStatus status;
 boardStatus dfs_status;
@@ -27,11 +34,10 @@ void __status_init(boardStatus *boardStatus1) {
     SET0(boardStatus1->total_type);
     SET0(boardStatus1->total_increment);
     boardStatus1->steps = 0;
-    boardStatus1->__WHITE = WHITE;
-    boardStatus1->__BLACK = BLACK;
 }
 
 void status_init() {
+    // call respond function to finish the initialization of the status_boards of real status and dfs status.
     __status_init(&status);
     __status_init(&dfs_status);
     record[0].i = record[0].j = -1;
@@ -56,8 +62,9 @@ int add_piece(int i, int j, int player_side) {
         record[status.steps].i = i;
         record[status.steps].j = j;
         record[status.steps].player = player_side;
+        // pay attention that is_ban() is only valid right after the piece is dropped.
+        // calling is_ban() at other moments makes no sense.
         if (is_ban()) {
-            //printf("Ban found!\n");
             check_code = 2;
         }
     }
@@ -83,22 +90,3 @@ int dfs_add_piece(int i, int j, int player_side) {
     return 1;
 }
 
-inline int32_t *board_acess(int32_t index1, int32_t index2, int32_t line_type) {
-    if (line_type == row) {
-        if (index1 >= 0 && index1 < BOARD_SIZE && index2 >= 0 && index2 < BOARD_SIZE)
-            return &dfs_status.board[index1][index2];
-    } else if (line_type == col) {
-        if (index1 >= 0 && index1 < BOARD_SIZE && index2 >= 0 && index2 < BOARD_SIZE)
-            return &dfs_status.board[index2][index1];
-    } else {
-        int32_t i;
-        if (line_type == oblique_sum) {
-            i = index1 - index2;
-        } else {
-            i = index2 + index1;
-        }
-        if (i >= 0 && i < BOARD_SIZE && index2 >= 0 && index2 < BOARD_SIZE)
-            return &dfs_status.board[i][index2];
-    }
-    return NULL;
-}

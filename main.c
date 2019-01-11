@@ -11,6 +11,7 @@ int main() {
 }
 
 void init() {
+    // initializer that finishes the preparations before main loop begins.
     AC_build();
     status_init();
     evaluate_init();

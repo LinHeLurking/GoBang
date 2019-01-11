@@ -2,6 +2,11 @@
 // Created by Nine_yota on 2018-09-29.
 //
 
+/*
+ * this file contains functions that finish the interactive tasks.
+ * play() check the mode(human vs human or human vs computer), then calls corresponding functions.
+ * */
+
 #include "interact.h"
 
 #define COLOR_OFFSET 1
@@ -19,12 +24,14 @@ static char player_name[3][10] = {
 static char interact_buffer[BUFFERSIZE];
 
 void play() {
+    // this is the exact main loop of the whole program.
+    // this function would interact with the user, call proper functions and throw interactive errors.
 #ifndef DEBUG_DRAW
     system("clear");
 #endif
     print_line(50, 1);
     printf("Welcome to Amadeus GoBang game!\n");
-    printf("\tAuthor: Lei Ci\n");
+    printf("\tWork of: Lei Ci\n");
     print_line(50, 1);
     printf("Please input the code of corresponding mode:\n");
 
@@ -67,6 +74,7 @@ void play() {
 
 
 void human_vs_computer() {
+    // well the name tells you what this can do.
     int human_player;
     int computer_player;
     int order_check;
@@ -192,6 +200,7 @@ void human_vs_human() {
 }
 
 int read_pos(int *i, int *j) {
+    // read the position input from the terminal and throw error if got invalid input.
     char input[10] = {};
     *i = *j = -1;
     while (true) {
@@ -226,6 +235,8 @@ int read_pos(int *i, int *j) {
 
 
 void computer_vs_computer() {
+    // this is just for fun and would be invisible if the macro DEBUG_DRAW is not defined.
+    // it turns out that results would not be good. skipping it is enough. LOL!
     printf("This is used only for test\n");
     printf("Input search depth for WHITE and BLACK in order:\n");
     int white_d = -1, black_d = -1;
@@ -288,6 +299,7 @@ void computer_vs_computer() {
 }
 
 inline void round_announcement(int player) {
+    // you know that writing repeatedly would be painful so that is why this function exists.
     printf("Round for %s, input the position you want to place the piece.\n", player_name[player + COLOR_OFFSET]);
     printf("Positions such as h8, H8, 8h, and 8H all could be accepted.\n");
     printf("Input 'quit'(without quotes) to quit this game.\n");
