@@ -1,7 +1,3 @@
-//
-// Created by les on 18-12-22.
-//
-
 /*
  * almost all the custom types are defined in this file:
  *      pattern enum

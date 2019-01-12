@@ -1,7 +1,3 @@
-//
-// Created by Nine_yota on 2018-09-29.
-//
-
 #ifndef GOBANG_BOARDEVALUATE_H
 #define GOBANG_BOARDEVALUATE_H
 

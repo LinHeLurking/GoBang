@@ -1,7 +1,3 @@
-//
-// Created by Nine_yota on 2018-09-29.
-//
-
 /*
  * status means the status of the whole board, which includes pieces and their places in the board,
  * piece patterns of the board and the information of each void place.

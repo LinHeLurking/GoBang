@@ -1,7 +1,3 @@
-//
-// Created by Nine_yota on 2018-09-29.
-//
-
 /*
  * this file contains functions that finish the interactive tasks.
  * play() check the mode(human vs human or human vs computer), then calls corresponding functions.

@@ -1,7 +1,3 @@
-//
-// Created by Nine_yota on 2018-10-08.
-//
-
 #include "mathFunc.h"
 
 

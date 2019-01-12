@@ -1,7 +1,3 @@
-//
-// Created by Nine_yota on 2018-10-07.
-//
-
 #include "statusSearch.h"
 
 #define FORCE_CUT 225

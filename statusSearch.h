@@ -1,8 +1,3 @@
-//
-// Created by Nine_yota on 2018-10-07.
-//
-
-
 #ifndef GOBANG_STATUSSEARCH_H
 #define GOBANG_STATUSSEARCH_H
 #include "icld.h"

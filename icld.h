@@ -1,7 +1,3 @@
-//
-// Created by Nine_yota on 2018-09-29.
-//
-
 #ifndef GOBANG_ICLD_H
 #define GOBANG_ICLD_H
 
@@ -21,11 +17,11 @@
 #define COMPUTER_VS_COMPUTER 2
 
 #ifndef DFS_MAX_DEPTH
-#define DFS_MAX_DEPTH 12
+#define DFS_MAX_DEPTH 10
 #endif
 
 #ifndef TIME_LIMIT
-#define TIME_LIMIT 10
+#define TIME_LIMIT 14
 #endif
 
 #define INF 20000000000007
@@ -36,17 +32,11 @@
 #define DEBUG_DRAW
 #endif
 
-
 #define TRIE_SIZE 1000
 #define STATUS_NUM 3
 
-
 #define COLOR_OFFSET 1
 
-#define GRADE_DEBUG printf("Direct grade estimate for BLACK: %lld\n",grade_estimate(BLACK));printf("Direct grade estimate for WHITE: %lld\n",grade_estimate(WHITE));
-
 #define SET0(a) memset(a,0,sizeof(a))
-
-#define PLAYER_IN_LINE player_side==1?1:0
 
 #endif //GOBANG_ICLD_H

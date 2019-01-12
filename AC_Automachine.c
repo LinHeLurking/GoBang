@@ -1,7 +1,3 @@
-//
-// Created by les on 18-10-10.
-//
-
 #include "AC_Automachine.h"
 #include "icld.h"
 

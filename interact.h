@@ -1,8 +1,3 @@
-//
-// Created by Nine_yota on 2018-09-29.
-//
-
-
 #ifndef GOBANG_INTERACT_H
 #define GOBANG_INTERACT_H
 

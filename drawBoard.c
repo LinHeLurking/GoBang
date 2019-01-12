@@ -1,8 +1,3 @@
-//
-// Created by Nine_yota on 2018-09-29.
-//
-
-
 #include "drawBoard.h"
 
 extern boardStatus status;
